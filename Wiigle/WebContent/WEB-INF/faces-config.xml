@@ -45,12 +45,6 @@
 	     <converter-class>br.com.projetofinal.view.utils.EntityConverter</converter-class>
 	</converter>
 	
-	<converter>
-	     <converter-id>SimpleIndexConverter</converter-id>
-	     <converter-class>br.com.projetofinal.view.utils.SimpleIndexConverter</converter-class>
-	</converter>
-	
-	
 	<!-- ************************************************************************-->
 	<!-- ***************************** MBeans ***********************************-->
 	<!-- ************************************************************************-->
