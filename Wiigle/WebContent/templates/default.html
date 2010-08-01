@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">      
+
+    <head>
+		<title>
+			Wiigle - <ui:insert name="titulo"></ui:insert>
+		</title>    
+    
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+	
+		<link href="includes/estilo.css" type="text/css" rel="stylesheet"/>
+				
+		<a4j:loadBundle basename="br.com.wiigle.view.resources.Labels" var="labels" />
+		<a4j:loadBundle basename="br.com.wiigle.view.resources.Botoes" var="botoes" />
+		<a4j:loadBundle basename="br.com.wiigle.view.resources.Mensagens" var="mensagens" />
+			
+    </head>
+
+    <body>
+    
+    	<div id="corpo">
+				
+            <div id="conteudo">
+     
+            	<ui:insert name="conteudo"></ui:insert>
+            	<!--
+            	<a4j:status id="processando" onstart="#{rich:component('travarTelaPanel')}.show()" onstop="#{rich:component('travarTelaPanel')}.hide()" />
+				<rich:modalPanel id="travarTelaPanel" autosized="true" moveable="false" resizeable="false">
+					<h:outputLabel value = "processando
+				-->
+
+					            	
+            </div> <!--  conteudo -->
+
+		</div> <!-- corpo -->		
+		
+		<div id = "rodape"/>
+
+	</body>
+	
+</html>
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12605739876860" configfile="/Wiigle/WebContent/WEB-INF/faces-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="946" id="pf12624716369540" referenceLink="//@navigationRule.0/@fromViewId|" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="login.jsf" x="338" y="178" id="pf12624716369553" referenceLink="//@navigationRule.0/@navigationCase.0/@toViewId|" path="/login.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="projeto.jsf" x="338" y="562" id="pf12624716369554" referenceLink="//@navigationRule.0/@navigationCase.1/@toViewId|" path="/meusProjetos.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="meusProjetos.jsf" x="122" y="1714" id="pf12655824364411" referenceLink="//@navigationRule.0/@navigationCase.1/@toViewId|" path="/meusProjetos.jsf"/>
+</pageflow:Pageflow>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 //EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:rich="http://richfaces.org/rich">    
+      
+	<ui:composition>
+		 <rich:messages id="messageId" passedLabel="Data is allowed to be stored." layout="list"
+		 				infoClass="rich-messages-label-info"
+		 				errorClass="rich-messages-label-error"
+		 				warnClass="rich-messages-label-warn">
+	         <f:facet name="header">
+	             <h:outputText value="Entered Data Status:"></h:outputText>
+	         </f:facet>
+	         <f:facet name="infoMarker">
+	             <h:graphicImage value="img/sucesso.gif" /> 
+	         </f:facet>
+	         <f:facet name="errorMarker">
+	             <h:graphicImage value="img/erro.gif" />   
+	         </f:facet>
+	         <f:facet name="warnMarker">
+	             <h:graphicImage value="img/warning-16x16.gif" />   
+	         </f:facet>
+		</rich:messages>
+	</ui:composition>
+</html>

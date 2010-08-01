@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Wiigle" basedir="." default="deploy-ear">
+
+	<!-- definindo as propriedades de nome-->
+	<property name="name.project" value="Wiigle" />
+	<property name="name.war" value="${name.project}.war" />
+	<property name="name.jar" value="${name.project}.jar" />
+	<property name="name.ear" value="${name.project}.ear" />
+		
+	 <!-- definicao das propriedades dos arquivos -->
+	<property name="dir" value="." />
+	<property name="dir.src" value="${dir}/src" />
+	<property name="dir.build" value="${dir}/build" />
+	<property name="dir.webcontent" value="${dir}/WebContent" />
+	<property name="dir.web-inf" value="${dir.webcontent}/WEB-INF" />
+	<property name="dir.bin" value="${dir}/bin" />
+	<property name="dir.lib" value="${dir.web-inf}/lib" />
+	<property name="dir.web-inf.classes" value="${dir.web-inf}/classes" />	
+	<property name="dir.war" value="${dir}/war" />
+	<property name="dir.ear" value="${dir}/ear" />
+	<property name="dir.src.resources" value="${dir.src}/br/com/projetofinal/view/resources" />
+	<property name="dir.bin.resources" value="${dir.bin}/br/com/projetofinal/view/resources" />
+	<!--<property name="model" value="br/com/projetofinal/model" />-->
+	<property name="view" value="br/com/wiigle/view" />
+	
+	<!-- definindo as propriedades de deploy-->
+	<property name="deploy.home" value="C:/jboss/jboss-5.1.0.GA/server/default/deploy"/>
+	<property name="jboss.home" value="C:/jboss/jboss-5.1.0.GA/" />
+	<property name="jboss.default" value="${jboss.home}/server/default" />
+	<property name="jboss.deploy" value="${jboss.default}/deploy" />
+	<property name="jboss.client" value="${jboss.home}/client" />
+	<property name="jboss.common.lib" value="${jboss.home}/common/lib" />
+	
+	 <!-- definindo as propriedades do modulo web-->
+	<property name="webxml.file" value="${dir.webcontent}/WEB-INF/web.xml" />
+	
+	 <!-- definindo as propriedades do ear-->
+	<property name="dir.metainf" value="${dir.webcontent}/META-INF" />
+	<property name="session.jar.file" value="${dir}/${name.jar}" />
+	<property name="application.ear.file" value="${dir}/${name.ear}" />
+	
+	
+	<target name="init">
+		<echo>Iniciando build do Projeto EAR com Ant</echo>
+	</target>
+		
+	<target name="clean" depends="init">
+		<delete dir="${dir.bin}"></delete>
+	</target>
+		
+	<target name="prepare" depends="init, clean">
+		<mkdir dir="${dir.bin}" />
+	</target>
+	
+	<!-- compilando os .java do diretorio src -->
+	<target name="compile" depends="init, clean, prepare">
+		<echo>Compilando as classes do diretorio src</echo>
+		
+		<javac srcdir="${dir.src}" destdir="${dir.bin}" verbose="false" debug="on" encoding="UTF-8">
+			<classpath>
+				<fileset dir="${jboss.common.lib}">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${jboss.client}">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${jboss.home}/server/default/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${jboss.deploy}/jbossweb.sar/jsf-libs">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${dir.lib}">
+				 	<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+		
+		<mkdir dir="${dir.bin.resources}" />
+	
+		<copy todir="${dir.bin.resources}">
+			<fileset dir="${dir.src.resources}"/>
+		</copy>
+	</target>
+	
+	 <!-- cria o arquivo war do ear -->
+	<target name="criaWar" depends="compile">
+		<echo>Gerando arquivo WAR</echo>
+	
+		<war warfile="${name.war}" webxml="${webxml.file}">
+			<fileset dir="${dir.webcontent}" >
+				<include name="**/*.jsp" />
+				<include name="**/*.html" />
+				<include name="**/*.gif" />
+				<include name="**/*.xml" />
+				<include name="**/*.css" />
+			</fileset>
+		
+			<classes dir="${dir.bin}">
+				<!-- As classes Java desses diretorios nao fazem parte do modulo web -->
+				<exclude name="${model}/**" />
+			</classes>
+		 	
+			<lib dir="${dir.lib}" />
+		
+			<webinf dir="${dir.web-inf}">
+				<include name="${webxml.file}" />
+			</webinf>
+		</war>
+	</target>
+	
+	<!--cria o JAR com os EJBs -->
+	<target name="criar JAR EJB" depends="criaWar">
+		<echo>Gerando arquivo JAR com EJB </echo>
+		
+		<jar jarfile="${session.jar.file}">
+			
+			<fileset dir="${dir.bin}">
+				<!-- Os beans do JSF nao estao no modulo EJB-->
+				<exclude name="${view}/**" />
+			</fileset>
+			
+	 	 	<metainf dir="${dir.metainf}">
+	 	 		<include name="persistence.xml" />
+	 	 	</metainf>
+		</jar>
+	</target>
+	
+	<!-- cria o arquivo EAR -->
+	<target name="criar arquivo EAR" depends="criar JAR EJB">
+		<echo>Gerando arquivo EAR </echo>
+		
+		<jar jarfile="${application.ear.file}">
+	
+			<metainf dir="${dir.metainf}">
+				<!--<include name="application.xml" />-->
+				<exclude name="persistence.xml" />
+			</metainf>
+		
+			<fileset dir="${dir}" includes="*.jar, *.war" />
+		</jar>
+	
+		<delete file="${dir}/${name.war}"></delete>
+		<delete file="${session.jar.file}"></delete>
+	</target>
+	
+	<!-- faz o deploy no JBoss -->
+	<target name="deploy-ear" depends="criar arquivo EAR, undeploy-ear">
+		<echo>Deploy aplicacao no JBOSS</echo>
+		<copy file="${application.ear.file}" todir="${deploy.home}" />
+		<delete dir="${dir.bin}"></delete>
+		<delete file="${application.ear.file}"></delete>
+	</target>
+	
+	<!-- undeploy da aplicacao -->
+	<target name="undeploy-ear">
+		<echo>UnDeploy aplicacao no JBOSS</echo>
+		<delete file="${deploy.home}/${name.ear}"/>
+	</target>
+
+</project>

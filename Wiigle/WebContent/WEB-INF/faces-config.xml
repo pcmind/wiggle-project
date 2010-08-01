@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+    version="1.2">
+    
+    <application>
+		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+
+		<resource-bundle>
+			<base-name>br.com.wiigle.view.resources.Botoes</base-name>
+			<var>botoes</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>br.com.wiigle.view.resources.Labels</base-name>
+			<var>labels</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>br.com.wiigle.view.resources.Titulos</base-name>
+			<var>titulos</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>br.com.wiigle.view.resources.Mensagens</base-name>
+			<var>mensagens</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>br.com.wiigle.view.resources.LimiteStrings</base-name>
+			<var>limiteStrings</var>
+		</resource-bundle>
+		
+	</application>
+	
+	<!-- ************************************************************************-->
+	<!-- ***************************** Converter  *******************************-->
+	<!-- ************************************************************************-->
+
+	<converter>
+	     <converter-id>EntityConverter</converter-id>
+	     <converter-class>br.com.projetofinal.view.utils.EntityConverter</converter-class>
+	</converter>
+	
+	<converter>
+	     <converter-id>SimpleIndexConverter</converter-id>
+	     <converter-class>br.com.projetofinal.view.utils.SimpleIndexConverter</converter-class>
+	</converter>
+	
+	
+	<!-- ************************************************************************-->
+	<!-- ***************************** MBeans ***********************************-->
+	<!-- ************************************************************************-->
+	
+	<managed-bean>
+	   <managed-bean-name>Pesquisa</managed-bean-name>
+	   <managed-bean-class>br.com.wiigle.view.bean.PesquisaMBean</managed-bean-class>
+	   <managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	
+
+	
+	
+	<!-- ************************************************************************-->
+	<!-- **************************** Navegação *********************************-->
+	<!-- ************************************************************************-->
+	
+	<!-- <navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-action>#{Login.login}</from-action>
+			<from-outcome>failure</from-outcome>
+			<to-view-id>/login.jsf</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-action>#{Login.login}</from-action>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/meusProjetos.jsf</to-view-id>
+		</navigation-case>
+	</navigation-rule> -->
+	
+</faces-config>
