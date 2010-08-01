@@ -1,0 +1,20 @@
+.topo {
+	margin-top: 50px;
+	margin-bottom: 30px;
+	background: url("../img/logo.png") top center no-repeat;
+	height: 90px;
+}
+
+.centro {
+	text-align: center;
+}
+
+.inputPesquisa {
+	width: 500px;
+	height: 25px;
+}
+
+.botao {
+	height: 25px;
+	margin: 10px 5px;
+}
