@@ -9,6 +9,7 @@
 		
 	<f:view>
 	
+			<link href="includes/estilo.css" type="text/css" rel="stylesheet"/>
 		<ui:composition template="templates/default.html">
 			
 			<ui:define name="titulo">
@@ -23,19 +24,29 @@
 					
 		  			<a4j:keepAlive beanName="Pesquisa"/>
 		  			
-		  			<div>
+		  			<div class="topo"></div>
+		  			
+		  			<div class="centro">
 						<h:inputText value="#{Pesquisa.textoConsulta}"
 										id="nomeId"
-										styleClass="larg300"/>
+										styleClass="inputPesquisa"/>
 					</div>
 					
-					<a4j:commandButton action="#{Pesquisa.desambiguar}" 
+					<div class="centro">
+						<a4j:commandButton action="#{Pesquisa.desambiguar}" 
 														value="#{botoes.desambiguacao}"
 														id="botaoSalvarId"
 														type="submit"
+														styleClass="botao"
 														ignoreDupResponses="true"/>
+						
+						<h:commandButton value="#{botoes.XXX}"
+										 id="botaoSexoId"
+										 type="reset"
+										 styleClass="botao"
+										 ignoreDupResponses="true"/>
 		  			
-
+					</div>
 	
 				</a4j:form>																					
 																			
