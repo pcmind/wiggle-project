@@ -6,7 +6,7 @@ import java.util.List;
 public class Termo {
 	
 	private String chave;
-	private List<String> desambiguacoes;
+	private List<Pagina> desambiguacoes;
 	private Date dataExpiracao;
 	
 	public String getChave() {
@@ -17,11 +17,11 @@ public class Termo {
 		this.chave = chave;
 	}
 	
-	public List<String> getDesambiguacoes() {
+	public List<Pagina> getDesambiguacoes() {
 		return desambiguacoes;
 	}
 	
-	public void setDesambiguacoes(List<String> desambiguacoes) {
+	public void setDesambiguacoes(List<Pagina> desambiguacoes) {
 		this.desambiguacoes = desambiguacoes;
 	}
 	

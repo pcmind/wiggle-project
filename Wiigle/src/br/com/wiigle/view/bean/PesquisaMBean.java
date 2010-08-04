@@ -30,10 +30,24 @@ public class PesquisaMBean {
 	}
 
 	public void desambiguar(){
-		//Recupera o termo digitado
+		//Recupera o texto digitado
 		String chave = textoConsulta;
 		
 		try{
+			//TODO Aplicar os algoritmos de processamento de texto (StopWords, Porter, etc.)
+			
+			//TODO Fazer as contagens de palavras, ou TF-IDF, e pegar as palavras que mais aparecem
+			
+			//TODO Para as palavras que mais aparecem, recuperar possíveis desambiguações
+			
+			//TODO Para cada desambiguação, recuperar e processar os links que aparecem em sua pagina
+			
+			//TODO Para cada conjunto de links da desambiguação, fazer contagem dos outros termos
+			
+			//TODO Comparar em qual domínio apareceram mais os outros termos
+			
+			//TODO Enviar resposta do domínio ao usuário
+			
 			//Verifica se já existe um termo no banco com esta chave
 			Termo termo = null; //TermoDAO.recuperarTermo(chave);
 			if(termo==null || termo.getDataExpiracao().before(new Date())){
