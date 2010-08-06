@@ -3,6 +3,7 @@ package br.com.wiigle.view.bean;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import br.com.wiigle.control.TermoHandler;
 import br.com.wiigle.control.TextProcessor;
@@ -12,7 +13,7 @@ import br.com.wiigle.model.Termo;
 public class PesquisaMBean {
 	
 	private String textoConsulta;
-	
+	private final int NUMERO_PALAVRAS_RELEVANTES = 5;
 	@PostConstruct
 	public void inicializar(){
 		System.out.println("Passou aqui");
@@ -28,11 +29,15 @@ public class PesquisaMBean {
 			//TODO Fazer as contagens de palavras, ou TF-IDF, e pegar as palavras que mais aparecem
 			ArrayList<String> relevantWords = TextProcessor.getRelevantWords(chave);
 			//TODO Para as palavras que mais aparecem, recuperar possíveis desambiguações
-			for (String palavra : relevantWords) {
+			int i = 0;
+			while(i<NUMERO_PALAVRAS_RELEVANTES){
+				String palavra = relevantWords.get(i);
 				//Recupera termo com chave = palavra
 				Termo termo = TermoHandler.findByKey(palavra);
 				//TODO Para cada conjunto de links da desambiguação, fazer contagem dos outros termos
 				
+				
+				i++;
 			}
 			
 			//TODO Comparar em qual domínio apareceram mais os outros termos
