@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -79,7 +81,22 @@ public class WikiRequester {
 	}
 	
 	public synchronized static ArrayList<String> getLinksFromPage(String chave){
+		//TODO FAZER A REQUISICAO WIKIPEDIA, E RECUPERAR O CONTEUDO DAS PAGINAS
+		String conteudo ="";
+		return scanLinks(conteudo);
+	}
+	
+	private static ArrayList<String> scanLinks(String text){
+		//Expressão regular que casa com os links
+		String regex = "\\[\\[[^\\[]*\\]\\]";
+		//Limpando o texto
+		text = text.replaceAll("\\{", "");
+		//Recupera os textos entre os links, para removê-los
+		String[] textos = Pattern.compile(regex).split(text);
+		for (int i = 0; i < textos.length; i++) {
+			text = text.replaceAll(textos[i], "####");
+		}
 		
-		return null;
+		return (ArrayList<String>)Arrays.asList(text.split("####"));
 	}
 }
