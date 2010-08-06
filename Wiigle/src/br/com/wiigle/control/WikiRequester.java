@@ -80,9 +80,13 @@ public class WikiRequester {
 		return retorno;
 	}
 	
-	public synchronized static ArrayList<String> getLinksFromPage(String chave){
-		//TODO FAZER A REQUISICAO WIKIPEDIA, E RECUPERAR O CONTEUDO DAS PAGINAS
-		String conteudo ="";
+	public synchronized static ArrayList<String> getLinksFromPage(String chave) throws Exception{
+		
+		//Fazer requisição wikipedia pela chave, e recuperar seu conteúdo
+		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+chave);
+		URLConnection wc = wiki.openConnection();
+		String conteudo = getPageContent(wc.getInputStream());
+		
 		return scanLinks(conteudo);
 	}
 	
