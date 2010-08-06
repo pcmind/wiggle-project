@@ -3,6 +3,14 @@ package br.com.wiigle.control;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -70,6 +78,37 @@ public class TextProcessor {
 	}
 	
 	public synchronized static ArrayList<String> getRelevantWords(String text){
-		return null;
+		Map<String, Integer> contagem = new HashMap<String, Integer>();
+		
+		//Para cada palavra do texto, contar o número de palavras
+		StringTokenizer palavras = new StringTokenizer(text);
+		while(palavras.hasMoreTokens()){
+			String token = palavras.nextToken();
+			Integer value = contagem.get(token);
+			if(value!=null)
+				value++;
+			else
+				contagem.put(token, Integer.valueOf(1));
+		}
+		
+		//Ordenar o map por ordem decrescente do número de palavras
+		ArrayList<String> resultado = sortByValue(contagem);
+		return resultado;
 	}
+	
+	private static ArrayList<String> sortByValue(Map<String, Integer> map) {
+		List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry>() {
+			public int compare(Map.Entry o1, Map.Entry o2) {
+				return ((Integer)o2.getValue()).compareTo((Integer)o1.getValue());
+			}
+		});
+		ArrayList<String> resultado = new ArrayList<String>();
+		for (Iterator iter = resultado.iterator(); iter.hasNext();) {
+			Map.Entry element = (Map.Entry) iter.next();
+			resultado.add((String)element.getKey());
+		}
+		return resultado;
+	}
+
 }
