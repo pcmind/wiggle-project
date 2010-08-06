@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Pagina {
 	private String chave;
-	private List<String> desambiguacoes;
+	private List<String> links;
 	
 	public String getChave() {
 		return chave;
@@ -14,11 +14,11 @@ public class Pagina {
 		this.chave = chave;
 	}
 	
-	public List<String> getDesambiguacoes() {
-		return desambiguacoes;
+	public List<String> getLinks() {
+		return links;
 	}
 	
-	public void setDesambiguacoes(List<String> desambiguacoes) {
-		this.desambiguacoes = desambiguacoes;
+	public void setLinks(List<String> links) {
+		this.links = links;
 	}
 }

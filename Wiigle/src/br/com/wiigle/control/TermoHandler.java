@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import br.com.wiigle.model.Pagina;
 import br.com.wiigle.model.Termo;
@@ -27,14 +28,14 @@ public class TermoHandler {
 			}
 			
 			//Recuperar desambiguações da palavra
-			ArrayList<String>disambiguations = WikiRequester.getDisambiguations(chave);
+			HashMap<String,String>disambiguations = WikiRequester.getDisambiguations(chave);
 			ArrayList<Pagina> paginas = new ArrayList<Pagina>();
 			
 			//TODO Para cada desambiguação, recuperar e processar os links que aparecem em sua pagina
-			for (String desambiguacao : disambiguations) {
+			for (String desambiguacao : disambiguations.keySet()) {
 				Pagina pag = new Pagina();
 				pag.setChave(desambiguacao);
-				pag.setDesambiguacoes(WikiRequester.getLinksFromPage(desambiguacao));
+				pag.setLinks(WikiRequester.getLinksFromPage(desambiguacao));
 				paginas.add(pag);
 			}
 			

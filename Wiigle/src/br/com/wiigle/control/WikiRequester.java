@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -12,7 +13,7 @@ import org.jdom.input.SAXBuilder;
 
 public class WikiRequester {
 	
-	public synchronized static ArrayList<String> getDisambiguations(String chave) throws IOException{
+	public synchronized static HashMap<String,String> getDisambiguations(String chave) throws IOException{
 		
 		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+chave+"_(disambiguation)");
 		URLConnection wc = wiki.openConnection();
@@ -26,7 +27,7 @@ public class WikiRequester {
 		}
 		
 		//Processar as desambiguações
-		ArrayList<String> colDesambiguacoes = processaDesambiguacoes(conteudo);
+		HashMap<String,String> colDesambiguacoes = processaDesambiguacoes(conteudo);
 		
 		return colDesambiguacoes;
 	}
@@ -54,9 +55,9 @@ public class WikiRequester {
 		return a.substring(a.indexOf("[[")+2,a.indexOf("]]"));
 	}
 	
-	private static ArrayList<String> processaDesambiguacoes(String desambiguacoes){
+	private static HashMap<String,String> processaDesambiguacoes(String desambiguacoes){
 		String[] linhas = desambiguacoes.split("\n");
-		ArrayList<String> retorno = new ArrayList<String>();
+		HashMap<String, String> retorno = new HashMap<String, String>();
 		for (String linha : linhas) {
 			if(!linha.startsWith("* [["))
 				continue;//Não é uma desambiguação
@@ -65,12 +66,14 @@ public class WikiRequester {
 			linha = linha.replaceFirst("\\* \\[\\[", "");
 			
 			//Removendo o resto da linha, para ficar apenas com os termos de desambiguação
-			linha = linha.substring(0, linha.indexOf("]]"));
-			
-			if(linha.contains("|"))
-				linha = linha.substring(0, linha.indexOf("|"));
-			
-			retorno.add(linha.trim());
+			String termo = linha.substring(0, linha.indexOf("]]"));
+			if(termo.contains("|"))
+				termo= termo.substring(0, termo.indexOf("|"));
+
+			//Recuperando descrição da desambiguação
+			String descricao = linha.substring(linha.indexOf(",")+1);
+
+			retorno.put(termo.trim(), descricao.trim());
 		}
 		return retorno;
 	}
