@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Pagina {
 	private String chave;
+	private String descricao;
 	private List<String> links;
 	
 	public String getChave() {
@@ -20,5 +21,13 @@ public class Pagina {
 	
 	public void setLinks(List<String> links) {
 		this.links = links;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 }

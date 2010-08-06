@@ -35,6 +35,7 @@ public class TermoHandler {
 			for (String desambiguacao : disambiguations.keySet()) {
 				Pagina pag = new Pagina();
 				pag.setChave(desambiguacao);
+				pag.setDescricao(disambiguations.get(desambiguacao));
 				pag.setLinks(WikiRequester.getLinksFromPage(desambiguacao));
 				paginas.add(pag);
 			}
