@@ -90,7 +90,7 @@ public class WikiRequester {
 		return scanLinks(conteudo);
 	}
 	
-	private static ArrayList<String> scanLinks(String text){
+	private static ArrayList<String> scanLinks(String text) throws Exception{
 		//Expressão regular que casa com os links
 		String regex = "\\[\\[[^\\[]*\\]\\]";
 		//Limpando o texto
@@ -100,7 +100,12 @@ public class WikiRequester {
 		for (int i = 0; i < textos.length; i++) {
 			text = text.replaceAll(textos[i], "####");
 		}
-		
-		return (ArrayList<String>)Arrays.asList(text.split("####"));
+		String[] links = text.split("####");
+		ArrayList<String> resultado = new ArrayList<String>();
+		for (int i = 0; i < links.length; i++) {
+			//Processar o link e jogar no resultado
+			resultado.add(TextProcessor.processText(links[i]));
+		}
+		return resultado;
 	}
 }

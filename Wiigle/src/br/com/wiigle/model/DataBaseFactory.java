@@ -15,6 +15,7 @@ public class DataBaseFactory {
 	private static Configuration getConfiguration(){
 		Configuration conf = Db4o.cloneConfiguration();
 		conf.objectClass(Termo.class).objectField("chave").indexed(true);
+		conf.objectClass(Termo.class).updateDepth(2);
 		return conf;
 	}
 	

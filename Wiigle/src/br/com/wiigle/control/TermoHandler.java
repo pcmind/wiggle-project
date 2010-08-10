@@ -16,7 +16,7 @@ public class TermoHandler {
 	private static final int VALIDADE_EM_DIAS = 5;
 	
 	
-	public synchronized static Termo findByKey(String chave) throws IOException{
+	public synchronized static Termo findByKey(String chave) throws Exception{
 		//Verifica se já existe no banco
 		Termo termo = TermoDAO.recuperarTermo(chave); 
 		//Verifica se é ainda é válido o termo

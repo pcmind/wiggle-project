@@ -21,13 +21,13 @@ public class TextProcessor {
 		texto = processaCaracteres(texto);
 		texto = removeStopWords(texto);
 		texto = aplicaPorter(texto);
-		texto = transformaEmMaiusculas(texto);
+		texto = transformaEmMinusculas(texto);
 		
-		return null;
+		return texto;
 	}
 	
-	private static String transformaEmMaiusculas(String texto) {
-		return texto.toUpperCase();
+	private static String transformaEmMinusculas(String texto) {
+		return texto.toLowerCase();
 	}
 
 	private static String aplicaPorter(String texto) {
@@ -75,7 +75,8 @@ public class TextProcessor {
 		return Normalizer.normalize(texto).replaceAll("[\\W&&[^\\s]]", "");
 	}
 	
-	public synchronized static ArrayList<String> getRelevantWords(String text){
+	@SuppressWarnings("unchecked")
+	public synchronized static ArrayList<String> getRelevantWords(String text, Integer max){
 		Map<String, Integer> contagem = new HashMap<String, Integer>();
 		
 		//Para cada palavra do texto, contar o número de palavras
@@ -90,21 +91,24 @@ public class TextProcessor {
 		}
 		
 		//Ordenar o map por ordem decrescente do número de palavras
-		ArrayList<String> resultado = sortByValue(contagem);
+		ArrayList<String> resultado = sortByValue(contagem, max);
 		return resultado;
 	}
 	
-	private static ArrayList<String> sortByValue(Map<String, Integer> map) {
+	@SuppressWarnings("unchecked")
+	public synchronized static ArrayList sortByValue(Map<?, Integer> map, Integer max) {
 		List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry>() {
 			public int compare(Map.Entry o1, Map.Entry o2) {
 				return ((Integer)o2.getValue()).compareTo((Integer)o1.getValue());
 			}
 		});
-		ArrayList<String> resultado = new ArrayList<String>();
+		ArrayList resultado = new ArrayList();
 		for (Iterator iter = resultado.iterator(); iter.hasNext();) {
 			Map.Entry element = (Map.Entry) iter.next();
-			resultado.add((String)element.getKey());
+			resultado.add(element.getKey());
+			if(max!=null && max<=resultado.size())
+				break;
 		}
 		return resultado;
 	}
