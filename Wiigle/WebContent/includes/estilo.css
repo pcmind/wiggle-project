@@ -9,12 +9,11 @@
 	text-align: center;
 }
 
-.inputPesquisa {
-	width: 500px;
-	height: 25px;
-}
-
 .botao {
 	height: 25px;
 	margin: 10px 5px;
+}
+
+.inputPesquisa{
+	min-width:420px;
 }
