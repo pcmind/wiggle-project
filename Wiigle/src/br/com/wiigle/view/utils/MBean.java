@@ -16,6 +16,9 @@ public abstract class MBean {
 
 	private ResourceBundle mensagens;
 	
+	public static final String SUCESSO = "success";
+	public static final String FALHA = "failure";
+	
 	public MBean() {
 		
 		carregarMensagens();
@@ -42,8 +45,6 @@ public abstract class MBean {
 		
 		List<SelectItem> selectItems = new ArrayList<SelectItem>();
 		
-		SortedMap<String, T> ordenadoPeloNomeMetodo = new TreeMap<String, T>();
-		
 		if (lista != null) {
 			
 			String valor;
@@ -52,24 +53,18 @@ public abstract class MBean {
 			for (T objeto: lista) {
 				try {
 					valor = PropertyUtils.getProperty(objeto, nomeMetodo).toString();
-				
+					
 				// se nao conseguiu pegar esse valor
 				} catch (Exception e) {
 					
 					//busca o valor no toString do objeto
 					valor = objeto.toString();
 				} 
-
-				ordenadoPeloNomeMetodo.put(valor, objeto);
+				selectItems.add(new SelectItem(objeto, valor));
+				
 			}
 		}
 		
-		for (String chave: ordenadoPeloNomeMetodo.keySet()) {
-			T objeto = ordenadoPeloNomeMetodo.get(chave);
-			//guarda o objeto e sua chave na lista de SelectItems
-			selectItems.add(new SelectItem(objeto, chave));
-		}
-
 		return selectItems;
 	}
 	
