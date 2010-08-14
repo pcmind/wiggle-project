@@ -18,10 +18,11 @@ public class TextProcessor {
 	
 	public synchronized static String processText(String texto) throws Exception{
 		//TODO Ainda não foi testado - adaptei do meu trabalho do Xexeo
+		texto = transformaEmMinusculas(texto);
 		texto = processaCaracteres(texto);
 		texto = removeStopWords(texto);
 		texto = aplicaPorter(texto);
-		texto = transformaEmMinusculas(texto);
+		
 		
 		return texto;
 	}
@@ -76,7 +77,7 @@ public class TextProcessor {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public synchronized static ArrayList<String> getRelevantWords(String text, Integer max){
+	public synchronized static List<String> getRelevantWords(String text, Integer max){
 		Map<String, Integer> contagem = new HashMap<String, Integer>();
 		
 		//Para cada palavra do texto, contar o número de palavras
@@ -91,12 +92,12 @@ public class TextProcessor {
 		}
 		
 		//Ordenar o map por ordem decrescente do número de palavras
-		ArrayList<String> resultado = sortByValue(contagem, max);
+		List<String> resultado = sortByValue(contagem, max);
 		return resultado;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public synchronized static ArrayList sortByValue(Map<?, Integer> map, Integer max) {
+	public synchronized static List sortByValue(Map<?, Integer> map, Integer max) {
 		List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry>() {
 			public int compare(Map.Entry o1, Map.Entry o2) {

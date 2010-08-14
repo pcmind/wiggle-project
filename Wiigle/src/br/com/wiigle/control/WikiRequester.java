@@ -5,8 +5,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.jdom.Document;
@@ -15,7 +16,7 @@ import org.jdom.input.SAXBuilder;
 
 public class WikiRequester {
 	
-	public synchronized static HashMap<String,String> getDisambiguations(String chave) throws IOException{
+	public synchronized static Map<String,String> getDisambiguations(String chave) throws IOException{
 		
 		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+chave+"_(disambiguation)");
 		URLConnection wc = wiki.openConnection();
@@ -29,7 +30,7 @@ public class WikiRequester {
 		}
 		
 		//Processar as desambiguações
-		HashMap<String,String> colDesambiguacoes = processaDesambiguacoes(conteudo);
+		Map<String,String> colDesambiguacoes = processaDesambiguacoes(conteudo);
 		
 		return colDesambiguacoes;
 	}
@@ -57,7 +58,7 @@ public class WikiRequester {
 		return a.substring(a.indexOf("[[")+2,a.indexOf("]]"));
 	}
 	
-	private static HashMap<String,String> processaDesambiguacoes(String desambiguacoes){
+	private static Map<String,String> processaDesambiguacoes(String desambiguacoes){
 		String[] linhas = desambiguacoes.split("\n");
 		HashMap<String, String> retorno = new HashMap<String, String>();
 		for (String linha : linhas) {
@@ -80,7 +81,7 @@ public class WikiRequester {
 		return retorno;
 	}
 	
-	public synchronized static ArrayList<String> getLinksFromPage(String chave) throws Exception{
+	public synchronized static List<String> getLinksFromPage(String chave) throws Exception{
 		
 		//Fazer requisição wikipedia pela chave, e recuperar seu conteúdo
 		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+chave);
@@ -90,7 +91,7 @@ public class WikiRequester {
 		return scanLinks(conteudo);
 	}
 	
-	private static ArrayList<String> scanLinks(String text) throws Exception{
+	private static List<String> scanLinks(String text) throws Exception{
 		//Expressão regular que casa com os links
 		String regex = "\\[\\[[^\\[]*\\]\\]";
 		//Limpando o texto
@@ -101,7 +102,7 @@ public class WikiRequester {
 			text = text.replaceAll(textos[i], "####");
 		}
 		String[] links = text.split("####");
-		ArrayList<String> resultado = new ArrayList<String>();
+		List<String> resultado = new ArrayList<String>();
 		for (int i = 0; i < links.length; i++) {
 			//Processar o link e jogar no resultado
 			resultado.add(TextProcessor.processText(links[i]));

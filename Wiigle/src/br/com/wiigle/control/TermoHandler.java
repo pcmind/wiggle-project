@@ -1,10 +1,10 @@
 package br.com.wiigle.control;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import br.com.wiigle.model.Pagina;
 import br.com.wiigle.model.Termo;
@@ -28,8 +28,8 @@ public class TermoHandler {
 			}
 			
 			//Recuperar desambiguações da palavra
-			HashMap<String,String>disambiguations = WikiRequester.getDisambiguations(chave);
-			ArrayList<Pagina> paginas = new ArrayList<Pagina>();
+			Map<String,String>disambiguations = WikiRequester.getDisambiguations(chave);
+			List<Pagina> paginas = new ArrayList<Pagina>();
 			
 			//TODO Para cada desambiguação, recuperar e processar os links que aparecem em sua pagina
 			for (String desambiguacao : disambiguations.keySet()) {
