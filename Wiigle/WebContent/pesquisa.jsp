@@ -27,25 +27,68 @@
 		  			<div class="topo"></div>
 		  			
 		  			<div class="centro">
-						<h:inputText value="#{Pesquisa.textoConsulta}"
-										id="nomeId"
-										styleClass="inputPesquisa"/>
+						 <h:inputText value="#{Pesquisa.consulta.valor}" id="pesquisaId" styleClass = "inputPesquisa"
+						 rendered = "#{!Pesquisa.renderizaUpload}"/>
+		                <rich:suggestionbox id="suggestionBoxId" for="pesquisaId" tokens=",[]"
+		                    width="400"
+		                    height="300"
+		                    suggestionAction="#{Pesquisa.autocomplete}" var="result"
+		                    fetchValue="#{result.valor}" rows="#{Pesquisa.intRows}"
+		                    nothingLabel="Nada encontrado" columnClasses="center"
+		                    usingSuggestObjects="true">
+		                    
+		                    <h:column>
+		                        <h:outputText value="#{result.valor}" />
+		                    </h:column>
+		                    <h:column>
+		                        <h:outputText value="#{result.valor}" style="font-style:italic" />
+		                    </h:column>
+		                </rich:suggestionbox>
 					</div>
+					
+					<div class="centro">	
+					
+					<rich:fileUpload fileUploadListener = "#{Pesquisa.listener}"
+									 maxFilesQuantity="#{Pesquisa.uploadsAvailable}"   
+                                     id="uploadId"   
+                                     immediateUpload="#{Pesquisa.autoUpload}"   
+									 acceptedTypes = "txt"
+									 listHeight="60px"
+									 listWidth="625px"
+									 locale="pt_BR"
+									 rendered = "#{Pesquisa.renderizaUpload}" 
+									 style= "text-align: center"/>
+					
+					</div>
+				
 					
 					<div class="centro">
 						<a4j:commandButton action="#{Pesquisa.desambiguar}" 
 														value="#{botoes.desambiguacao}"
-														id="botaoSalvarId"
+														id="botaoDesambiguacaoId"
 														type="submit"
 														styleClass="botao"
 														ignoreDupResponses="true"/>
 						
-						<h:commandButton value="#{botoes.XXX}"
-										 id="botaoSexoId"
-										 type="reset"
+						
+						<h:commandButton action= "#{Pesquisa.upload}" 
+										 value="#{botoes.upload}"
+										 id="botaoUploadId"
+										 type="submit"
+										 rendered= "#{!Pesquisa.renderizaUpload}"
 										 styleClass="botao"
-										 ignoreDupResponses="true"/>
-		  			
+										 ignoreDupResponses="true"
+										 reRender="botaoCancelarId, botaoUploadId, uploadId,pesquisaId, botaoDesambiguacaoId" />
+		  				
+		  				<h:commandButton action= "#{Pesquisa.cancelar}" 
+										 value="#{botoes.cancelar}"
+										 id="botaoCancelarId"
+										 type="submit"
+										 rendered= "#{Pesquisa.renderizaUpload}"
+										 styleClass="botao"
+										 ignoreDupResponses="true"
+										 reRender="botaoCancelarId, botaoUploadId, uploadId,pesquisaId, botaoDesambiguacaoId" />
+		  				
 					</div>
 	
 				</a4j:form>																					
