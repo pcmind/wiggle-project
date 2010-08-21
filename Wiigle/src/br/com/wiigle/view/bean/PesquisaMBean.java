@@ -47,7 +47,7 @@ public class PesquisaMBean {
 	public boolean renderizaUpload;
 	
 	
-
+	//quantidade de linhas que aparece na suggestionbox
 	private Integer intRows;
 	
 	@PostConstruct
@@ -75,7 +75,10 @@ public class PesquisaMBean {
 	}
 
 	  public List<Consulta> autocomplete(Object suggest) {
-	        String pref = (String)suggest;
+	      //TODO aqui entrará o código de auto 
+		  manterPesquisa.desambiguacaoRapida((String) suggest);
+		  return null;
+		 /* String pref = (String)suggest;
 	        List<Consulta> result = new ArrayList<Consulta>();
 
 	        Iterator<Consulta> iterator = getListaConsulta().iterator();
@@ -86,7 +89,7 @@ public class PesquisaMBean {
 	                result.add(elem);
 	            }
 	        }
-	        return result;
+	        return result; */
 	    }
 	    
 	public void resetFilter() {
@@ -126,11 +129,6 @@ public class PesquisaMBean {
 	public void desambiguar(){
 		
 		manterPesquisa.desambiguacao(consulta);
-		//Recupera o texto digitado
-		
-		
-		
-
 	}
 	
 	 /**
