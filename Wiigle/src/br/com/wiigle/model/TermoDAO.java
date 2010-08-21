@@ -1,5 +1,7 @@
 package br.com.wiigle.model;
 
+import br.com.wiigle.model.entity.Termo;
+
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
