@@ -14,6 +14,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
+import br.com.wiigle.model.entity.Link;
+import br.com.wiigle.model.entity.Pagina;
+import br.com.wiigle.model.entity.Termo;
+
 public class WikiRequester {
 	
 	public synchronized static Map<String,String> getDisambiguations(String chave) throws IOException{
@@ -81,19 +85,21 @@ public class WikiRequester {
 		return retorno;
 	}
 	
-	public synchronized static List<String> getLinksFromPage(String chave) throws Exception{
+	public synchronized static List<Link> getLinksFromPage(Pagina pag) throws Exception{
 		
 		//Fazer requisição wikipedia pela chave, e recuperar seu conteúdo
-		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+chave);
+		URL wiki = new URL("http://en.wikipedia.org/wiki/Special:Export/"+pag.getChave());
 		URLConnection wc = wiki.openConnection();
-		String conteudo = getPageContent(wc.getInputStream());
+		pag.setConteudo(getPageContent(wc.getInputStream()));
 		
-		return scanLinks(conteudo);
+		return scanLinks(pag);
 	}
 	
-	private static List<String> scanLinks(String text) throws Exception{
+	private static List<Link> scanLinks(Pagina pagina) throws Exception{
 		//Expressão regular que casa com os links
 		String regex = "\\[\\[[^\\[]*\\]\\]";
+		String text = pagina.getConteudo(); 
+		
 		//Limpando o texto
 		text = text.replaceAll("\\{", "");
 		//Recupera os textos entre os links, para removê-los
@@ -102,11 +108,21 @@ public class WikiRequester {
 			text = text.replaceAll(textos[i], "####");
 		}
 		String[] links = text.split("####");
-		List<String> resultado = new ArrayList<String>();
+		List<Link> listaLink = new ArrayList<Link>();
 		for (int i = 0; i < links.length; i++) {
-			//Processar o link e jogar no resultado
-			resultado.add(TextProcessor.processText(links[i]));
+			//Criar o link e jogar no resultado
+			//tá errado ainda, deu sono xD
+			Link link = new Link();
+			link.setPaginaOrigem(pagina);
+			link.setPaginaDestino(new Pagina()); //tenho fé que conseguiremos catar no banco.
+			
+			//onde tá o alias ?
+			link.setAlias(new Termo());
+			//TODO nao verifica se é strong link ainda
+			link.setStrongLink(true);
+			listaLink.add(link);
+			
 		}
-		return resultado;
+		return listaLink;
 	}
 }

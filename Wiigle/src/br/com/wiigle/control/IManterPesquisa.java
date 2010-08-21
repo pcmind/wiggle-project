@@ -14,4 +14,11 @@ public interface IManterPesquisa {
 
 	public List<String> desambiguacao(Consulta consulta);
 	
+	/**
+	 * Desambiguacao do suggestionBox
+	 * @param consulta
+	 * @return
+	 */
+	public List<String> desambiguacaoRapida(String consulta);
+	
 }

@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import br.com.wiigle.model.Pagina;
-import br.com.wiigle.model.Termo;
 import br.com.wiigle.model.TermoDAO;
+import br.com.wiigle.model.entity.Pagina;
+import br.com.wiigle.model.entity.Termo;
 
 public class TermoHandler {
 	
@@ -36,11 +36,11 @@ public class TermoHandler {
 				Pagina pag = new Pagina();
 				pag.setChave(desambiguacao);
 				pag.setDescricao(disambiguations.get(desambiguacao));
-				pag.setLinks(WikiRequester.getLinksFromPage(desambiguacao));
+				pag.setListaLink(WikiRequester.getLinksFromPage(pag));
 				paginas.add(pag);
 			}
 			
-			termo.setDesambiguacoes(paginas);
+			//termo.setDesambiguacoes(paginas);
 			
 			//Seta a nova validade no termo
 			Calendar validade = Calendar.getInstance();

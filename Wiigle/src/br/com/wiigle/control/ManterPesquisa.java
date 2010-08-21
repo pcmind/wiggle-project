@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import br.com.wiigle.model.Pagina;
-import br.com.wiigle.model.Termo;
+import br.com.wiigle.model.entity.Pagina;
+import br.com.wiigle.model.entity.Termo;
+import br.com.wiigle.model.entity.TermoIndexado;
 import br.com.wiigle.view.utils.Consulta;
 
 /**
@@ -23,6 +25,11 @@ public class ManterPesquisa implements IManterPesquisa{
 
 	
 	private final int NUMERO_PALAVRAS_RELEVANTES = 5;
+	
+	
+	public List<String> desambiguacaoRapida(String consulta){
+		return null;
+	}
 	
 	public List<String> desambiguacao(Consulta consulta) {
 		if(consulta.isPath()){
@@ -60,16 +67,19 @@ public class ManterPesquisa implements IManterPesquisa{
 	private List<String> desambiguacao(String consulta){
 		try{
 			//Aplicar os algoritmos de processamento de texto (StopWords, Porter, etc.)
-			consulta = TextProcessor.processText(consulta);
+			Set<TermoIndexado> listaTermo = TextProcessor.processText(consulta);
 			
 			//Fazer as contagens de palavras, ou TF-IDF, e pegar as palavras que mais aparecem
-			List<String> relevantWords = TextProcessor.getRelevantWords(consulta,NUMERO_PALAVRAS_RELEVANTES);
+			List<Termo> relevantWords = TextProcessor.getRelevantWords(listaTermo,NUMERO_PALAVRAS_RELEVANTES);
 			//Map com as paginas e contagens:
 			Map<Pagina, Integer> contagem = new HashMap<Pagina, Integer>();
+			
+			
 			//Para as palavras que mais aparecem, recuperar possíveis desambiguações
-			for (String palavra : relevantWords) {
+		
+			/*for (Termo palavra : relevantWords) {
 				//Recupera termo com chave = palavra
-				Termo termo = TermoHandler.findByKey(palavra);
+				Termo termo = TermoHandler.findByKey(palavra.getChave());
 				//Para cada conjunto de links da desambiguação, fazer contagem dos outros termos
 				for (Pagina pagina : termo.getDesambiguacoes()) {
 					for (String link : pagina.getLinks()) {
@@ -80,11 +90,11 @@ public class ManterPesquisa implements IManterPesquisa{
 								i++;
 							else
 								contagem.put(pagina, 1);
-						} // end if contagem links
-					} // end if links da pagina
-				} // end if paginas do termo
+						} 
+					} 
+				} 
 				
-			} // end if palavras relevantes
+			} */
 			
 			//Comparar em qual domínio apareceram mais os outros termos
 			//TODO atualmente pega apenas a pagina que mais aparece.

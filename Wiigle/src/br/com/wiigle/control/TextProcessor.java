@@ -5,45 +5,54 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+import br.com.wiigle.model.entity.Termo;
+import br.com.wiigle.model.entity.TermoIndexado;
 
 public class TextProcessor {
 	
 	private static String stopWordRegex = null;
 	
-	public synchronized static String processText(String texto) throws Exception{
+	public synchronized static Set<TermoIndexado> processText(String texto) throws Exception{
 		//TODO Ainda não foi testado - adaptei do meu trabalho do Xexeo
 		texto = transformaEmMinusculas(texto);
 		texto = processaCaracteres(texto);
 		texto = removeStopWords(texto);
-		texto = aplicaPorter(texto);
+		Set<TermoIndexado> listaTermo = aplicaPorter(texto);
 		
-		
-		return texto;
+		return listaTermo;
 	}
 	
 	private static String transformaEmMinusculas(String texto) {
 		return texto.toLowerCase();
 	}
 
-	private static String aplicaPorter(String texto) {
+	private static Set<TermoIndexado> aplicaPorter(String texto) {
 		PorterStemmer ps = new PorterStemmer();
 		
+		Set<TermoIndexado> listaTermo =  new HashSet<TermoIndexado>();
 		texto = texto.toLowerCase();
 		
 		// Para cada palavra do texto, aplicar o Porter:
 		StringTokenizer palavras = new StringTokenizer(texto);
-		String resultado = texto;
+		TermoIndexado termoIndexado;
 		while(palavras.hasMoreTokens()){
-			String token = palavras.nextToken();
-			resultado = resultado.replace(token, ps.stem(token));
+			termoIndexado = new TermoIndexado();
+			Termo termo = new Termo();
+			termo.setChave(palavras.nextToken());
+			termoIndexado.setChave(ps.stem(termo.getChave())); 
+			termo.setTermoIndexado(termoIndexado);
+			termoIndexado.getListaTermo().add(termo);
+			termoIndexado.setQtdRelevante(termoIndexado.getQtdRelevante()+1);
+			listaTermo.add(termoIndexado);
 		}
-		return resultado;
+		return listaTermo;
 	}
 
 	private static String removeStopWords(String texto) throws Exception {
@@ -77,41 +86,43 @@ public class TextProcessor {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public synchronized static List<String> getRelevantWords(String text, Integer max){
-		Map<String, Integer> contagem = new HashMap<String, Integer>();
+	public synchronized static List<Termo> getRelevantWords(Set<TermoIndexado> setTermo, Integer max){
 		
-		//Para cada palavra do texto, contar o número de palavras
-		StringTokenizer palavras = new StringTokenizer(text);
-		while(palavras.hasMoreTokens()){
-			String token = palavras.nextToken();
-			Integer value = contagem.get(token);
-			if(value!=null)
-				value++;
-			else
-				contagem.put(token, Integer.valueOf(1));
+		List<TermoIndexado> listaTermoIndexado = new ArrayList<TermoIndexado>(setTermo);
+		
+		//ordem decrescente
+		Collections.sort(listaTermoIndexado, new Comparator<TermoIndexado>() {
+			public int compare(TermoIndexado o1, TermoIndexado o2) {
+				return ((Integer)o2.getQtdRelevante()).compareTo((Integer)o1.getQtdRelevante());
+			}
+		});
+		List<Termo> listaTermo = new ArrayList<Termo>();
+		for(int i = 0; i< max; i++){
+			listaTermo.addAll(listaTermoIndexado.get(i).getListaTermo());
 		}
 		
-		//Ordenar o map por ordem decrescente do número de palavras
-		List<String> resultado = sortByValue(contagem, max);
-		return resultado;
+		return listaTermo;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public synchronized static List sortByValue(Map<?, Integer> map, Integer max) {
-		List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
+		
+		
+		/*List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry>() {
 			public int compare(Map.Entry o1, Map.Entry o2) {
 				return ((Integer)o2.getValue()).compareTo((Integer)o1.getValue());
 			}
 		});
-		ArrayList resultado = new ArrayList();
+		List resultado = new ArrayList();
 		for (Iterator iter = resultado.iterator(); iter.hasNext();) {
 			Map.Entry element = (Map.Entry) iter.next();
 			resultado.add(element.getKey());
 			if(max!=null && max<=resultado.size())
 				break;
 		}
-		return resultado;
+		return resultado; */
+		return null;
 	}
 
 }
