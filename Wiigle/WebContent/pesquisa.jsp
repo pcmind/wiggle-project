@@ -56,8 +56,7 @@
 									 listHeight="60px"
 									 listWidth="625px"
 									 locale="pt_BR"
-									 rendered = "#{Pesquisa.renderizaUpload}" 
-									 style= "text-align: center"/>
+									 rendered = "#{Pesquisa.renderizaUpload}"/>
 					
 					</div>
 				
