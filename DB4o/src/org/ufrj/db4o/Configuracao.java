@@ -15,7 +15,7 @@ public class Configuracao {
 		this.host = host;
 	}
 
-	private String getHost() {
+	public String getHost() {
 		return host;
 	}
 
@@ -38,7 +38,7 @@ public class Configuracao {
 	public String getHostName(){
 		int posicao = host.indexOf(":");
 		if(posicao!= -1){
-			return host.substring(0, posicao+1);
+			return host.substring(0, posicao);
 		}
 		
 		return host;
@@ -47,7 +47,7 @@ public class Configuracao {
 	public int getPort(){
 		int posicao = host.indexOf(":");
 		if(posicao!= -1){
-			return Integer.parseInt(host.substring(posicao));
+			return Integer.parseInt(host.substring(posicao+1));
 		}
 		
 		return 0;

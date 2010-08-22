@@ -2,12 +2,16 @@ package org.ufrj.db4o;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -23,9 +27,12 @@ import org.ufrj.db4o.wrapper.EntityId;
 
 public class EntityHandler {
 
+	public static Class[] listaAnotacoesAssociacao = {OneToOne.class, OneToMany.class, ManyToOne.class, ManyToMany.class};
+	
 	public static EntityClass create(Class clazz) throws OperacaoNaoRealizadaException{
 		
 		EntityClass entityClass = new EntityClass();
+		entityClass.setClazz(clazz);
 		
 		//recupera um possível alias da classe
 		Entity annEntity = (Entity) clazz.getAnnotation(Entity.class);
@@ -54,6 +61,7 @@ public class EntityHandler {
 		
 		EntityId entityId = new EntityId();
 		entityId.setClazz(field.getClass());
+		entityId.setNomeAtributo(field.getName());
 		if(field.getAnnotation(GeneratedValue.class)!=null){
 			entityId.setAutoIncrement(true);
 		}
@@ -61,26 +69,85 @@ public class EntityHandler {
 	}
 	
 	private static EntityField geraEntityField(Field field){
+		
 		EntityField entityField = new EntityField();
+		entityField.setFieldName(field.getName());
 		
-		if(field.getClass().equals(List.class) || field.getClass().equals(ArrayList.class) ||
-				field.getClass().equals(Set.class) || field.getClass().equals(HashSet.class)){
+		if(field.getType().equals(List.class) || field.getType().equals(ArrayList.class) ||
+				field.getType().equals(Set.class) || field.getType().equals(HashSet.class)){
+			
+			entityField.setClazz(GenericTypeInfo.extractTypeCollection(field));
+			entityField.setCollection(true);
 			
 			
+		}else{
+			entityField.setClazz(GenericTypeInfo.extractType(field));
+			Class entityClazz = entityField.getClazz();
 			
+			//tipos do java.lang são sempre carregados por um entity manager
+			if(entityClazz.equals(Integer.class) || entityClazz.equals(Float.class) || entityClazz.equals(String.class)
+					|| entityClazz.equals(int.class) || entityClazz.equals(float.class) || entityClazz.equals(long.class)
+					|| entityClazz.equals(boolean.class) || entityClazz.equals(Boolean.class)){
+				entityField.setFetchLazy(false);
+				
+			}
 		}
 		
-		Annotation annField = field.getAnnotation(OneToOne.class);
-		if(annField!=null){
-			
+		Annotation annAssociacao = null;
+		for(Class annotationClass : listaAnotacoesAssociacao){
+			annAssociacao = field.getAnnotation(annotationClass);
+			if(annAssociacao!=null){
+				try {
+					Method metodo = annotationClass.getMethod("fetch", (Class[])null );
+					FetchType fetch = (FetchType) metodo.invoke(annAssociacao,(Object[]) null);
+					
+					//o default é lazy
+					if(fetch.equals(FetchType.EAGER)){
+						entityField.setFetchLazy(false);
+					}
+					
+					metodo = annotationClass.getMethod("cascade", (Class[])null );
+					CascadeType[] listaCascade = (CascadeType[]) metodo.invoke(annAssociacao,(Object[]) null);
+					for(CascadeType cascade : listaCascade){
+						if(cascade.equals(CascadeType.ALL)){
+							entityField.setCascadeDelete(true);
+							entityField.setCascadeInsert(true);
+							entityField.setCascadeUpdate(true);
+							break;
+						
+						}else if(cascade.equals(CascadeType.MERGE)){
+							entityField.setCascadeUpdate(true);
+						}else if(cascade.equals(CascadeType.PERSIST)){
+							entityField.setCascadeInsert(true);
+						}else if(cascade.equals(CascadeType.REMOVE)){
+							entityField.setCascadeDelete(true);
+						}
+					}
+					
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;// só pode existir uma anotação desse tipo, caso tenha mais de uma ela será ignorada.
+			}
 		}
-		annField = field.getAnnotation(OneToMany.class);
-		annField = field.getAnnotation(ManyToOne.class);
-		annField = field.getAnnotation(ManyToMany.class);
-		
 		
 		return entityField;
 	}
+	
+	
 	
 	
 }

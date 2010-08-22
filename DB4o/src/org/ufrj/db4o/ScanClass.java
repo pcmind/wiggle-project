@@ -65,7 +65,7 @@ public class ScanClass {
 	                getClassesInDirectory(packageOrClass, file, packagePatterns, classes);  
 	            } else if (file.getName().endsWith(".class")) {  
 	                if (matchesAny(packageOrClass, packagePatterns)) {  
-	                    System.out.println(packageOrClass); 
+	                    //System.out.println(packageOrClass); 
 	                    try {
 							classes.add(Class.forName(packageOrClass.replace(".class", "").replaceAll("/", ".")));
 						} catch (ClassNotFoundException e) {
@@ -92,7 +92,7 @@ public class ScanClass {
 	                String name = entry.getName();  
 	                if (!entry.isDirectory() && name.endsWith(".class")) {  
 	                    if (matchesAny(name, packagePatterns)) {  
-	                        System.out.println(name); 
+	                       // System.out.println(name); 
 	                        
 								classes.add(Class.forName(name));
 							}
