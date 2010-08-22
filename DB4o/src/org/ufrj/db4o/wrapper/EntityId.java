@@ -16,7 +16,7 @@ public class EntityId {
 	public void setClazz(Class<?> clazz) {
 		if(clazz!=null){
 			this.clazz = clazz;
-			nomeAtributo = clazz.getSimpleName();
+			
 		}
 	}
 
@@ -24,7 +24,11 @@ public class EntityId {
 		return clazz;
 	}
 
-		public String getNomeAtributo() {
+	public void setNomeAtributo(String nomeAtributo){
+		this.nomeAtributo = nomeAtributo;
+	}
+	
+	public String getNomeAtributo() {
 		return nomeAtributo;
 	}
 

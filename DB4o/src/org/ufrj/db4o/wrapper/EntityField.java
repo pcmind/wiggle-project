@@ -6,6 +6,8 @@ public class EntityField {
 	
 	private Class<?> clazz;
 	
+	private boolean collection;
+	
 	private boolean fetchLazy;
 	
 	private boolean cascadeUpdate;
@@ -14,6 +16,14 @@ public class EntityField {
 	
 	private boolean cascadeDelete;
 
+	public EntityField() {
+		this.collection = false;
+		fetchLazy = true;
+		cascadeUpdate = false;
+		cascadeDelete = false;
+		cascadeInsert = false;
+	}
+	
 	public void setClazz(Class<?> clazz) {
 		this.clazz = clazz;
 	}
@@ -22,10 +32,10 @@ public class EntityField {
 		return clazz;
 	}
 
-	public void setFieldName(String fieldName) {
+	public void setFieldName(String fieldName){
 		this.fieldName = fieldName;
 	}
-
+	
 	public String getFieldName() {
 		return fieldName;
 	}
@@ -60,6 +70,14 @@ public class EntityField {
 
 	public boolean isCascadeDelete() {
 		return cascadeDelete;
+	}
+
+	public void setCollection(boolean collection) {
+		this.collection = collection;
+	}
+
+	public boolean isCollection() {
+		return collection;
 	}
 	
 }

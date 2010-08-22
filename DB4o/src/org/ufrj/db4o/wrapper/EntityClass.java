@@ -1,5 +1,6 @@
 package org.ufrj.db4o.wrapper;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,14 +36,18 @@ public class EntityClass {
 	}
 	
 	public void adicionarField(EntityField entityField){
-		getFieldsMap().put(entityField.getClazz().getSimpleName(), entityField);
+		getFieldsMap().put(entityField.getFieldName(), entityField);
+	}
+	
+	public Collection<EntityField> getListaEntityField(){
+		return getFieldsMap().values();
 	}
 	
 	public EntityField recuperarField(String nomeField){
 		return getFieldsMap().get(nomeField);
 	}
 	
-	public Set<String> recuperarListaField(){
+	public Set<String> getListaNomeField(){
 		return this.fieldsMap.keySet();
 	}
 

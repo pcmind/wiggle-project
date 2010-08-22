@@ -1,6 +1,7 @@
 package org.ufrj.db4o.wrapper;
 
 import java.util.Comparator;
+import java.util.Map;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -16,9 +17,11 @@ public class ObjectContainerWrapper implements ObjectContainer{
 
 	
 	private ObjectContainer delegate;
+	private Map<String, EntityClass> mapaEntidades;
 	
-	public ObjectContainerWrapper(ObjectContainer objectContainer){
+	public ObjectContainerWrapper(ObjectContainer objectContainer, Map<String, EntityClass> mapaEntidades){
 		this.delegate = objectContainer;
+		this.mapaEntidades = mapaEntidades;
 	}
 
 	@Override

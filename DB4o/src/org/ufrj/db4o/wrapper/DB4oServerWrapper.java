@@ -25,6 +25,7 @@ import com.db4o.ObjectSet;
 import com.db4o.config.ConfigScope;
 import com.db4o.config.Configuration;
 import com.db4o.config.ObjectClass;
+import com.db4o.config.ObjectField;
 import com.db4o.cs.config.ClientConfiguration;
 import com.db4o.cs.config.ServerConfiguration;
 import com.db4o.cs.internal.config.ClientConfigurationImpl;
@@ -112,7 +113,9 @@ public static int BLOCK_SIZE = 8;
 		
 		
 		if(config==null){
+			config = newServerConfiguration();
 			configuracaoPadraoServidor(config);
+			configuraEntidades(config);
 		}
 		
 		ObjectServer objectServer = config.networking().clientServerFactory().openServer(config, databaseFileName, port);
@@ -144,24 +147,18 @@ public static int BLOCK_SIZE = 8;
 		return openServer(null, databaseFileName, port);
 	}
 
-	private static ServerConfiguration criarServerConfiguration() {
-		
-		ServerConfiguration config = newServerConfiguration();
-		configuracaoPadraoServidor(config);
-		configuraEntidades(config);
-		
-		
-		return config;
-	}
-
-	
 	private static void configuraEntidades(ServerConfiguration config) {
-		//recupera todas as entidades declaradas no sistema
-		Set<Class<?>> classes = ScanEntity.findAll(Thread.currentThread().getContextClassLoader());
-		
-		
-		
-		
+		for(EntityClass entityClass: mapaEntidades.values()){
+			ObjectClass objectClass = config.common().objectClass(entityClass.getClazz());
+			
+			for(EntityField entityField : entityClass.getListaEntityField()){
+				ObjectField objectField = objectClass.objectField(entityField.getFieldName());
+				objectField.cascadeOnActivate(!entityField.isFetchLazy());
+				objectField.cascadeOnDelete(entityField.isCascadeDelete());
+				objectField.cascadeOnUpdate(entityField.isCascadeUpdate());
+			}
+			
+		}
 	}
 
 
@@ -240,6 +237,7 @@ public static int BLOCK_SIZE = 8;
 		if(config==null){
 			config = newClientConfiguration();
 			configuracaoPadraoClient(config);
+			configuraEntidades(config);
 		}
 		
 		
@@ -251,9 +249,24 @@ public static int BLOCK_SIZE = 8;
 			throw new InvalidLoginException("Usuário ou senha inválido", e);
 		}
 		
-		return new ObjectContainerWrapper(container);
+		return new ObjectContainerWrapper(container, mapaEntidades);
 	}
 	
+	private static void configuraEntidades(ClientConfiguration config) {
+		for(EntityClass entityClass: mapaEntidades.values()){
+			ObjectClass objectClass = config.common().objectClass(entityClass.getClazz());
+			
+			for(EntityField entityField : entityClass.getListaEntityField()){
+				ObjectField objectField = objectClass.objectField(entityField.getFieldName());
+				objectField.cascadeOnActivate(!entityField.isFetchLazy());
+				objectField.cascadeOnDelete(entityField.isCascadeDelete());
+				objectField.cascadeOnUpdate(entityField.isCascadeUpdate());
+			}
+			
+		}
+		
+	}
+
 	/**
 	 * opens a db4o client instance with a fresh client configuration.
 	 * 
@@ -271,9 +284,7 @@ public static int BLOCK_SIZE = 8;
 	}
 	
 	private static void configuracaoPadraoClient(ClientConfiguration config) {
-		
-		
-		
+			
 		//config.common().activationDepth(0);
 		//config.common().addAlias(null);
 		config.common().allowVersionUpdates(ALLOW_VERSION_UPDATE); //c - s
@@ -298,12 +309,7 @@ public static int BLOCK_SIZE = 8;
 		//config.networking().singleThreadedClient(false);
 		//TODO Socket4Factory socketFactory = config.networking().socketFactory();
 		
-		
-		
-		
-		ObjectClass objectClass = config.common().objectClass(null); //configura as classes
-		//objectClass.
-		
+				
 				
 	}
 	
