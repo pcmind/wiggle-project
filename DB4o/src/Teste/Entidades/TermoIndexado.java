@@ -5,24 +5,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
 /**
  * É o termo que foi pré-processado (aplicando-se o algoritmo de Porter)
  * 
  * @author Pedro
  *
  */
+@Entity
 public class TermoIndexado {
 
 	//o nome do termo indexado.
+	@Column(name= "chave")
 	private String chave;
 	
 	//quantidade de entidades relevantes que referenciam esse termo. 
 	//Utilizado também para facilitar o algoritmo de índices invertidos
+	@Column(name="relevante")
 	private Integer qtdRelevante;
 	
 	//Melhor guardar apenas o id, pq carregar todas as páginas gera um grande overhead.
 	private List<Integer> listaIdPaginas = new ArrayList<Integer>();
 	
+	@OneToMany(cascade= CascadeType.ALL, fetch= FetchType.EAGER, mappedBy="termoIndexado")
 	private Set<Termo> listaTermo = new HashSet<Termo>();
 
 	public TermoIndexado(){

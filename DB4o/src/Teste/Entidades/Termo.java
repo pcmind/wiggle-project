@@ -2,6 +2,11 @@ package Teste.Entidades;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 
 /**
  * Classe que representa um termo presente numa página da Wikipedia.
@@ -9,13 +14,19 @@ import java.util.Date;
  * @author Pedro
  *
  */
+@Entity
 public class Termo {
 
 	//nome do termo.
+	@Column(name="chave")
 	private String chave;
 	
+	@ManyToOne
+	@JoinColumn(name="termo_indexado")
 	private TermoIndexado termoIndexado;
 	
+	
+	@Column(name="data_expiracao")
 	private Date dataExpiracao;
 	
 	public void setChave(String chave) {
