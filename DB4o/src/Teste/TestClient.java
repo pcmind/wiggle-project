@@ -22,7 +22,7 @@ public class TestClient {
 		
 		ObjectContainer container = null;
 		try {
-			container = DB4oServerWrapper.openClient("localhost", 5050, "Pedro", "pedro");
+			container = DB4oServerWrapper.openClient();
 		} catch (InvalidLoginException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
