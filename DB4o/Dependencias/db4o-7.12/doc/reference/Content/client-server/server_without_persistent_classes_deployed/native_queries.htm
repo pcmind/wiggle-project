@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Client-Server|Server Without Persistent Classes Deployed" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Native Queries	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#client-server/server_without_persistent_classes_deployed/native_queries.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../client-server.htm">Client-Server</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../server_without_persistent_classes_deployed.htm">Server Without Persistent Classes Deployed</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Native Queries</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Native Queries</h1>
+        <p>We have checked in the SODA topic that SODA queries
+can work with a server without application classes deployed. So we can expect
+optimized Native Queries (converted to SODA under the hood) to work as well: 
+</p>
+        <p>
+            <p MadCap:conditions="Primary.Java,Primary.All languages">
+                <pre class="prettyprint" xml:space="preserve">Client.java: getPilotsNative
+private static void getPilotsNative() throws IOException  {
+    System.out.println("Retrieving Pilot objects: <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>");
+    ObjectContainer oc = Db4o.openClient("localhost", 0xdb40, "db4o","db4o");
+    try  {
+      List &lt;Pilot&gt; result = oc.query(new Predicate&lt;Pilot&gt;()  {
+            public boolean match(Pilot pilot)  {
+                return pilot.getPoints() == 5;
+            }
+        });
+      listResult(result);
+    } finally  {
+      oc.close();
+    }
+  }</pre>
+            </p>
+            <p MadCap:conditions="Global.Primary:java" />
+            <p MadCap:conditions="Global.Primary:cs" />
+            <p MadCap:conditions="Global.Primary:vb" />
+        </p>
+        <p>Unfortunately, if
+the query cannot be optimized to SODA, the server needs to instantiate the
+classes to run the query. This is not possible if the class is not available</p>
+        <p>This
+query won't work:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">Client.java: getPilotsNativeUnoptimized
+private static void getPilotsNativeUnoptimized() throws IOException  {
+    System.out.println("Retrieving Pilot objects: Native Query Unoptimized");
+    ObjectContainer oc = Db4o.openClient("localhost", 0xdb40, "db4o","db4o");
+    try  {
+      List &lt;Pilot&gt; result = oc.query(new Predicate&lt;Pilot&gt;()  {
+            public boolean match(Pilot pilot)  {
+                return pilot.getPoints() % 2 == 0;
+            }
+        });
+      listResult(result);
+    } finally  {
+      oc.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>If you want to use unoptimized Native Queries in a client-server environment, you must make sure, that the Native Query classes are deployed on the server side. You can do so by implementing all predicate classes in a separate library and deploying it on both the client and the server side. See also <a href="../../usage_pitfalls/native_queries.htm">Usage Pitfalls</a>. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="server_without_persistent_classes_deployednoclassesjava.zip">Java</a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

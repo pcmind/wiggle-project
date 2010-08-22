@@ -1,0 +1,361 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Typehandlers" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Custom Typehandler Example	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/typehandlers/custom_typehandler_example.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../typehandlers.htm">Typehandlers</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Custom Typehandler Example</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Custom Typehandler Example</h1>
+        <p>For a custom typehandler example we will try to write a very
+simple typehandler for StringBuffer(java) and StringBuilder(.NET). These
+classes are basically just another representation of String, so we can look at
+the StringHandler implementation in db4o source. </p>
+        <p>To keep it simple we will skip information required for
+indexing - please look at IndexableTypeHandler in db4o sources to get more
+information on how to handle indexes.</p>
+        <p>The first thing should be #write method, which determines
+how the object is persisted:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: write
+public void write(WriteContext context, Object obj)  {
+    String str = ((StringBuffer)obj).toString();
+    WriteBuffer buffer = context;
+    buffer.writeInt(str.length());
+    writeToBuffer(buffer, str);
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: writeToBuffer
+private static void writeToBuffer(WriteBuffer buffer, String str) {
+      final int length = str.length();
+      char[] chars = new char[length];
+      str.getChars(0, length, chars, 0);
+      for (int i = 0; i &lt; length; i ++) {
+          buffer.writeByte((byte) (chars[i] &amp; 0xff));
+          buffer.writeByte((byte) (chars[i] &gt;&gt; 8));
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>As you can see from the code above, there are 3 steps:</p>
+        <ol>
+            <li value="1">Get
+     the buffer from WriteContext/I WriteContext</li>
+            <li value="2">Write
+     the length of the StringBuffer/StringBuilder</li>
+            <li value="3">Transfer
+     the object to char array and write them in Unicode</li>
+        </ol>
+        <p>Next step is to read the same from the buffer. It is just
+opposite to the write method:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: read
+public Object read(ReadContext context)  {
+    ReadBuffer buffer = context;
+    String str = "";
+    int length = buffer.readInt();
+    if (length &gt; 0)  {
+      str = readBuffer(buffer, length);
+    }
+    return new StringBuffer(str);
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: readBuffer
+private static String readBuffer(ReadBuffer buffer, int length) {
+      char[] chars = new char[length];
+    for(int ii = 0; ii &lt; length; ii++) {
+      chars[ii] = (char)((buffer.readByte() &amp; 0xff) | ((buffer.readByte() &amp; 0xff) &lt;&lt; 8));
+    }
+    return new String(chars, 0, length);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Delete is simple - we just reposition the buffer offset to the end of the
+slot:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: delete
+public void delete(DeleteContext context)  {
+    context.readSlot();
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Try to experiment with the #delete method by implementing cascade on delete.
+Use FirstClassObjectHandler as an example.</p>
+        <p>We are done with the read/write operations. But as you remember, in order to
+read an object, we must find it through a query, and that's where we will need
+a #compare method  (well, you do not need
+it if your query does not contain any comparison criteria, but this is normally
+not the case):</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: prepareComparison
+public PreparedComparison prepareComparison(Context ctx, final Object obj)  {
+    return new PreparedComparison()  {
+      public int compareTo(Object target)  {
+        return compare((StringBuffer)obj, (StringBuffer)target);
+      }
+    };
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: compare
+private final int compare(StringBuffer a_compare, StringBuffer a_with)  {
+    if (a_compare == null)  {
+      if (a_with == null)  {
+        return 0;
+      }
+      return -1;
+    }
+    if (a_with == null)  {
+      return 1;
+    }
+    char c_compare[] = new char[a_compare.length()];
+    a_compare.getChars(0, a_compare.length() - 1, c_compare, 0);
+    char c_with[] = new char[a_with.length()];
+    a_with.getChars(0, a_with.length() - 1, c_with, 0);
+    
+    return compareChars(c_compare, c_with);
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: compareChars
+private static final int compareChars(char[] compare, char[] with)  {
+    int min = compare.length &lt; with.length ? compare.length : with.length;
+    for (int i = 0; i &lt; min; i++)  {
+      if (compare[i] != with[i])  {
+        return compare[i] - with[i];
+      }
+    }
+    return compare.length - with.length;
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The last method left: #defragment. This one only moves the offset to the beginning
+of the object data, i.e. skips Id and size information (to be compatible to
+older versions):</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StringBufferHandler.java: defragment
+public void defragment(DefragmentContext context)  {
+    // To stay compatible with the old marshaller family
+    // In the marshaller family 0 number 8 represented
+    // length required to store <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> and object length information
+    context.incrementOffset(8);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>This <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../typehandlers.htm">Typehandler<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> implementation can be tested with a class below. Please, pay special attention to #configure method, which adds StringBufferHandler/StringBuilderHandler to the database configuration: </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">
+                <a name="kanchor53"></a>TypehandlerExample.java
+package com.db4odoc.typehandler;
+
+import java.io.File;
+import java.io.IOException;
+
+import com.db4o.Db4o;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.config.Configuration;
+import com.db4o.defragment.Defragment;
+import com.db4o.ext.DatabaseFileLockedException;
+import com.db4o.query.Query;
+import com.db4o.reflect.ReflectClass;
+import com.db4o.reflect.generic.GenericReflector;
+import com.db4o.reflect.jdk.JdkReflector;
+import com.db4o.typehandlers.TypeHandlerPredicate;
+
+public class TypehandlerExample  {
+
+  private final static String DB4O_FILE_NAME = "reference.db4o";
+  private static ObjectContainer _container = null;
+
+
+  public static void main(String[] args) throws IOException  {
+    testReadWriteDelete();
+    //testDefrag();
+    testCompare();
+  }
+  // end main
+
+  private static Configuration configure()  {
+    Configuration configuration = Db4o.newConfiguration();
+    // add a custom typehandler support
+        
+        TypeHandlerPredicate predicate = new TypeHandlerPredicate()  {
+            public boolean match(ReflectClass classReflector, int version)  {
+              GenericReflector reflector = new GenericReflector(
+                  null, new JdkReflector(Thread.currentThread().getContextClassLoader()));
+          ReflectClass claxx = reflector.forName(StringBuffer.class.getName()); 
+          boolean res = claxx.equals(classReflector);  
+                return res;
+            }
+        };
+        
+        configuration.registerTypeHandler(predicate, new StringBufferHandler());
+    return configuration;  
+  }
+  // end configure
+  
+  
+  private static void testReadWriteDelete() {
+    storeCar();
+    // Does it still work after close? 
+    retrieveCar();
+    // Does deletion work?
+    deleteCar();
+    retrieveCar();
+  }
+  // end testReadWriteDelete
+
+  private static void retrieveCar()  {
+    ObjectContainer container = database(configure());
+    if (container != null) {
+      try  {
+        ObjectSet result = container.query(Car.class);
+        Car car = null;
+        if (result.hasNext()) {
+          car = (Car)result.next();
+        }
+        System.out.println("Retrieved: " + car);
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }
+  // end retrieveCar
+
+  private static void deleteCar()  {
+    ObjectContainer container = database(configure());
+    if (container != null) {
+      try  {
+        ObjectSet result = container.query(Car.class);
+        Car car = null;
+        if (result.hasNext()) {
+          car = (Car)result.next();
+        }
+        container.delete(car);
+        System.out.println("Deleted: " + car);
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }
+  // end deleteCar
+
+  private static void storeCar()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = database(configure());
+    if (container != null) {
+      try  {
+       Car car = new Car("BMW");
+        container.store(car);
+        car = (Car)container.query(Car.class).next();
+        System.out.println("Stored: " + car);
+        
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }
+  // end storeCar
+
+  private static void testCompare()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = database(configure());
+    if (container != null) {
+      try  {
+        Car car = new Car("BMW");
+        container.store(car);
+        car = new Car("Ferrari");
+        container.store(car);
+        car = new Car("Mercedes");
+        container.store(car);
+        Query query = container.query();
+        query.constrain(Car.class);
+        query.descend("model").orderAscending();
+        ObjectSet result = query.execute();
+        listResult(result);
+        
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }
+  // end testCompare
+
+  public static void testDefrag() throws IOException {
+    new File(DB4O_FILE_NAME + ".backup").delete();
+    storeCar();
+    Defragment.defrag(DB4O_FILE_NAME);
+    retrieveCar();
+  }
+  // end testDefrag
+  
+  private static ObjectContainer database(Configuration configuration)  {
+    if (_container == null)  {
+      try  {
+        _container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+      } catch (DatabaseFileLockedException ex)  {
+        System.out.println(ex.getMessage());
+      }
+    }
+    return _container;
+  }
+  // end database
+
+  private static void closeDatabase()  {
+    if (_container != null)  {
+      _container.close();
+      _container = null;
+    }
+  }
+  // end closeDatabase
+
+
+  private static void listResult(ObjectSet result)  {
+        System.out.println(result.size());
+        while(result.hasNext())  {
+            System.out.println(result.next());
+        }
+    }
+    // end listResult
+  
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="typehandlerjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

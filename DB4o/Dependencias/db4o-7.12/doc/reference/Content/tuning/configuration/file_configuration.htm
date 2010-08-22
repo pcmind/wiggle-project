@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning|Configuration" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>File Configuration	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#tuning/configuration/file_configuration.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../configuration.htm">Configuration</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">File Configuration</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor128"></a>File Configuration</h1>
+        <p>
+            <MadCap:conditionalText MadCap:conditions="Primary.Java">FileConfiguration</MadCap:conditionalText> interface contains file-related configuration methods. These methods should be called for Embedded db4o object container or db4o object server.  </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void blobPath(String path) throws IOException;</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p><a name="kanchor129"></a>configures the path to be used to store and read Blob data. For more information see <a href="../../implementation_strategies/type_handling/blobs.htm">Blobs</a></p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void blockSize(int bytes)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets the storage data blocksize for new object containers. The standard setting is 1 allowing for a maximum database file size of 2GB. This value can be increased to allow larger database files, although some space will be lost to padding because the size of some stored objects will not be an exact multiple of the block size. A  recommended setting for large database files is 8, since internal pointers have this length. This setting is only effective when the database is first created. The size can be any integer in range from 1 to 127.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void databaseGrowthSize(int bytes)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>configures the size database files should grow in bytes, when no free slot is found within. Tuning setting. Whenever no free slot of sufficient length can be found within the current database file, the database file's length is extended. This configuration setting configures by how much it should be extended, in bytes. This configuration setting is intended to reduce fragmentation. Higher values will produce bigger database files and less fragmentation. To extend the database file, a single byte array is created and written to the end of the file in one write operation. Be aware that a high setting will require allocating memory for this byte array.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void disableCommitRecovery();</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>turns commit recovery off. db4o uses a two-phase commit algorithm. In a first step all intended changes are written to a free place in the database file, the "transaction commit record". In a second step the actual changes are performed. If the system breaks down during commit, the commit process is restarted when the database file is opened the next time. On very rare occasions (possibilities: hardware failure or editing the database file with an external tool) the transaction commit record may be broken. In this case, this method can be used to try to open the database file without commit recovery. The method should only be used in emergency situations after consulting db4o support.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public FreespaceConfiguration freespace;</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Returns freespace configuration for this file configuration.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void generateUUIDs(ConfigScope)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>configures db4o to generate UUIDs for stored objects. For more information see <a href="../../implementation_strategies/ids_and_uuids/unique_universal_ids.htm">Unique Universal IDs</a>.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void generateVersionNumbers(ConfigScope)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>configures db4o to generate version numbers for stored objects. For more
+information see
+<a href="../../implementation_strategies/ids_and_uuids/unique_universal_ids.htm">Unique Universal IDs</a>.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void lockDatabaseFile(boolean flag)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>can be used to turn the database file locking thread off. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void readOnly(boolean flag)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>turns readOnly mode on and off. Readonly mode allows to open an unlimited number of reading processes on one database file. It is also convenient for deploying db4o database files on CD-ROM.</p>In client-server environment this setting should be used on client side.
+
+<p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>public void recoveryMode(boolean flag)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>turns recovery mode on and off. Recovery mode can be used to try to retrieve as much as possible out of an already corrupted database. In recovery mode internal  checks are more relaxed. Null or invalid objects may be returned  instead of throwing exceptions. Use this method with care as a last resort to get data out of a corrupted database.</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>public void reserveStorageSpace(long byteCount)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>tuning feature only: reserves a number of bytes in database files. The global setting is used for the creation of new database files. Without this setting storage space will be allocated continuously as necessary. The allocation of a fixed number of bytes at one time makes it more likely that the database will be stored in one chunk on the mass storage. Less read/write head movement can result in improved performance. Note: Allocated space will be lost on abnormal termination of the database engine (hardware crash, VM crash). A <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/maintenance/defragment.htm">Defragment<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> run will recover the lost space. For the best possible performance, this method should be called before the Defragment run to configure the allocation of storage space to be slightly greater than the anticipated database file size.</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>public void storage(<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/storage.htm">Storage<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> storage);</code></p><p><code>public Storage storage();</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p><a name="kanchor130"></a>Allows to configure a custom IO byte storage mechanism. One of the db4o implementations can be used, i.e. MemoryStorage, NonFlushingStorage etc. or a user-implemented storage based on Storage/IStorage interface. Possible usecases: improved performance with a native library, encryption, mirrored storage to 2 files etc.</p><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

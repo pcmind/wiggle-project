@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Platform Specific Issues|Android" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Schema Evolution	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#platform_specific_issues/android/schema_evolution.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../platform_specific_issues.htm">Platform Specific Issues</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../android.htm">Android</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Schema Evolution</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Schema Evolution</h1>
+        <p>When a new application development is considered it is
+important to think about its evolution. What happens if your initial model does
+not suffice and you need changes or additions? Let's look how db4o and SQLite
+applications can handle it.</p>
+        <p>To keep the example simple, let's add a registration record
+to our car:</p>
+        <pre class="prettyprint" xml:space="preserve">RegistrationRecord.java
+package com.db4odoc.android.compare.refactored;
+
+import java.util.Date;
+
+public class RegistrationRecord  {
+  private String number;
+  private Date year;
+
+  public RegistrationRecord(String number, Date year) {
+    this.number = number;
+    this.year = year;
+  }
+
+  public String getNumber()  {
+    return number;
+  }
+
+  public void setNumber(String number)  {
+    this.number = number;
+  }
+
+  public Date getYear()  {
+    return year;
+  }
+
+  public void setYear(Date year)  {
+    this.year = year;
+  }
+  
+  
+  
+}</pre>
+        <p>Now we will need to modify Car class to attach the record:</p>
+        <pre class="prettyprint" xml:space="preserve">Car.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+package com.db4odoc.android.compare.refactored;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+
+public class Car  {   
+    private String model;
+    private Pilot pilot;
+    private RegistrationRecord registration;
+
+  public RegistrationRecord getRegistration()  {
+    return registration;
+  }
+
+  public void setRegistration(RegistrationRecord registration)  {
+    this.registration = registration;
+  }
+
+    public Car() {
+      
+    }
+    
+    public Car(String model)  {
+        this.model=model;
+        this.pilot=null;
+    }
+      
+    public Pilot getPilot()  {
+        return pilot;
+    }
+    
+    public void setPilot(Pilot pilot)  {
+        this.pilot = pilot;
+    }
+    
+    public String getModel()  {
+        return model;
+    }
+    
+    public String toString()  {
+      if (registration == null) {
+        return model + "["+pilot+"]";
+      } else  {
+        DateFormat df = new SimpleDateFormat("d/M/yyyy");
+        return model + ": " + df.format(registration.getYear());
+      }
+    }
+
+  public void setModel(String model)  {
+    this.model = model;
+  }
+
+}</pre>
+        <p>Ok, the application is changed to cater for new class. What
+about our databases?</p><a name="Schema Evolution in db4o"></a>
+        <h3>Schema Evolution in db4o</h3>
+        <p>db4o supports such schema change on the fly: we can select
+values and update the new field too: </p>
+        <pre class="prettyprint" xml:space="preserve">Db4oExample.java: selectCarAndUpdate
+public static void selectCarAndUpdate()  {
+      ObjectContainer container = database();
+      if (container != null) {
+      Query query = container.query();
+      query.constrain(Car.class);
+      query.descend("pilot").descend("points").constrain(new Integer(15));
+
+      long startTime = System.currentTimeMillis();
+      ObjectSet  result = query.execute();
+      result.reset();
+      if (!result.hasNext()) {
+        logToConsole(0, "Car not found, refill the database to continue.", false);
+      } else  {
+        Car car = (Car)result.next();
+        logToConsole(startTime, "Selected Car (" + car + "): ", false);
+        startTime = System.currentTimeMillis();
+        car.setRegistration(new RegistrationRecord("A1", 
+new Date(System.currentTimeMillis())));
+        logToConsole(startTime, "Updated Car (" + car + "): ", true);
+      }
+      
+      }
+    }</pre><a name="Schema Evolution in SQLite"></a>
+        <h3>Schema Evolution in SQLite</h3>
+        <p>For SQLite database model should be synchronized with the
+object model:</p>
+        <pre class="prettyprint" xml:space="preserve">SqlExample.java: upgradeDatabase
+public static void upgradeDatabase(SQLiteDatabase db)  {
+    db.execSQL("create table REG_RECORDS ("
+        + "id text primary key," + "year date);");
+    db.execSQL("CREATE INDEX IDX_REG_RECORDS ON REG_RECORDS (id);");
+    db.execSQL("alter table " + DB_TABLE_CAR + " add reg_record text;");
+
+  }</pre>
+        <p>Now we can try to retrieve and update records:</p>
+        <pre class="prettyprint" xml:space="preserve">SqlExample.java: selectCarAndUpdate
+public static void selectCarAndUpdate()  {
+    SQLiteDatabase db = database();
+    if (db != null)  {
+      long startTime = System.currentTimeMillis();
+      
+      db.execSQL("insert into REG_RECORDS (id,year) values ('A1', DATETIME('NOW'))");
+      ContentValues updateValues = new ContentValues();
+          
+        // update car
+          updateValues.put("reg_record", "A1");
+          int count = db.update(DB_TABLE_CAR, updateValues, "pilot in (select id from pilot where points = 15)", null);
+          if (count == 0) {
+            logToConsole(0, "Car not found, refill the database to continue.", false);
+          } else  {  
+            Cursor c =
+                  db.query("select c.model, r.id, r.year from car c, " +
+                      "REG_RECORDS r, pilot p where c.reg_record = r.id " +
+                      "and c.pilot = p.id and p.points = 15;", null);
+              if (c.count() == 0)  {
+                logToConsole(0, "Car not found, refill the database to continue.", false);
+                return;
+              }
+              c.first();
+              String date = c.getString(2);
+              SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd H:mm:ss");
+              try  {
+                Date dt = sf.parse(date);
+                RegistrationRecord record = new RegistrationRecord(c.getString(1), dt);
+                
+                Car car = new Car();
+                car.setModel(c.getString(0));
+                car.setRegistration(record);
+                logToConsole(startTime, "Updated Car (" + car + "): ", true);
+              } catch (ParseException e) {
+                Log.e(Db4oExample.class.getName(), e.toString());
+              }
+              
+          }
+    }
+  }</pre><a name="Conclusion"></a>
+        <h3>Conclusion</h3>
+        <p>You can see that schema evolution is much easier with db4o.
+But the main difficulty that is not visible from the example is that schema
+evolution with SQLite database can potentially introduce a lot of bugs that
+will be difficult to spot. For more information see
+<a href="../../implementation_strategies/refactoring_and_schema_evolution.htm">Refactoring and Schema Evolution</a>.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

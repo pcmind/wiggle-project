@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Native Query Collection" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Sorting	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/native_query_collection/sorting.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../native_query_collection.htm">Native Query Collection</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Sorting</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Sorting</h1>
+        <p>The following examples represent <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> sorting techniques. <a href="store_pilots.htm">Store Pilots</a> function is used to fill in the database.  </p><a name="GetSortedPilots"></a>
+        <h2>GetSortedPilots</h2>
+        <p>Select all the pilots from the database and sort descending by points. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: getSortedPilots
+public static void getSortedPilots()  {
+    ObjectContainer container = database();
+    try  {
+      List result = container.query(new Predicate&lt;Pilot&gt;()  {
+        public boolean match(Pilot pilot)  {
+          return true;
+        }
+      }, new QueryComparator&lt;Pilot&gt;()  {
+        // sort by points
+        public int compare(Pilot p1, Pilot p2)  {
+          return p2.getPoints() - p1.getPoints();
+        }
+      });
+      listResult(result);
+    } finally  {
+      closeDatabase();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="GetPilotsSortByNameAndPoints"></a>
+        <h2>GetPilotsSortByNameAndPoints</h2>
+        <p>Select all pilots, sort descending by name and by points. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: getPilotsSortByNameAndPoints
+public static void getPilotsSortByNameAndPoints()  {
+    ObjectContainer container = database();
+    try  {
+      List result = container.query(new Predicate&lt;Pilot&gt;()  {
+        public boolean match(Pilot pilot)  {
+          return true;
+        }
+      }, new QueryComparator&lt;Pilot&gt;()  {
+        // sort by name then by points: descending
+        public int compare(Pilot p1, Pilot p2)  {
+          int result = p1.getName().compareTo(p2.getName());
+          if (result == 0)  {
+            return p1.getPoints() - p2.getPoints();
+          } else  {
+            return -result;
+          }
+        }
+      });
+      listResult(result);
+    } finally  {
+      closeDatabase();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="GetPilotsSortWithComparator"></a>
+        <h2>GetPilotsSortWithComparator</h2>
+        <p>Sort by points using pre-defined comparator. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: getPilotsSortWithComparator
+public static void getPilotsSortWithComparator()  {
+    ObjectContainer container = database();
+    try  {
+      List result = container.query(new Predicate&lt;Pilot&gt;()  {
+        public boolean match(Pilot pilot)  {
+          return true;
+        }
+      }, new PilotComparator());
+      listResult(result);
+    } finally  {
+      closeDatabase();
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: PilotComparator
+public static class PilotComparator implements Comparator&lt;Pilot&gt;  {
+    public int compare(Pilot p1, Pilot p2)  {
+      int result = p1.getName().compareTo(p2.getName());
+      if (result == 0)  {
+        return p1.getPoints() - p2.getPoints();
+      } else  {
+        return -result;
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="nqcollectionjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

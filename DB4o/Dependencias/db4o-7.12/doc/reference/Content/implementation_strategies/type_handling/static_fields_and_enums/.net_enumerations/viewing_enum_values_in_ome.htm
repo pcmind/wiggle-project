@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Viewing Enum Values In OME</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../../index_CSH.html#implementation_strategies/type_handling/static_fields_and_enums/.net_enumerations/viewing_enum_values_in_ome.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Viewing Enum Values In OME</h1>
+        <p>
+            <br />
+        </p>
+        <p>As it was
+mentioned before enums do not carry any database identity and are stored in
+their parent object slot. If you open a database with Enum values in <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../object_manager_enterprise.htm">OME<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>, you
+will be able to see the enum class in the db4o Browser view, however if you
+proceed and select "Show all objects" from the right-click menu - you will see
+that there are no Enum objects stored in the database.</p>
+        <p>But don't
+worry - Enum is just an integer, so all we actually need is just values of the
+Enum fields in the database. &#160;Please,
+select a class with the Enum field in the db4o Browser view (if you are using
+the database from the previous example - Door class). Right-click it and select
+"Show all objects". </p>
+        <p>
+            <img src="viewing_enum_values_in_ome/ome-door-null.jpg" />
+        </p>
+        <p>Something
+went wrong here - there are no Enum values and nulls are stored instead. Is the
+information lost? </p>
+        <p>Here you
+will need to understand how Enum values are stored in the database. In order to
+save space in the database file, db4o stores only the absolutely necessary
+information for the enums:</p>
+        <ul>
+            <li value="1">Enum
+class id</li>
+            <li value="2">Enum
+numeric value</li>
+        </ul>
+        <p><a name="kanchor211"></a>The actual Enum representation will be picked
+up in the runtime using Enum class definition. As OME by default runs without
+class definitions using Generic Reflector, OME can't interpret the Enum field
+value correctly.&#160; In order to fix it go
+to "Tools" -&gt; "Object Manager Enterprise" -&gt; "Options" menu and select "Assembly
+Search Path..." and add the path to the assembly, containing the Enum definition.
+Now disconnect and reconnect the database and browse the objects again:</p>
+        <p>
+            <img src="viewing_enum_values_in_ome/ome-door.jpg" />
+        </p>
+        <script type="text/javascript" src="../../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

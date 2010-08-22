@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Using Automatic Properties	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#platform_specific_issues/automatic_properties/using_automatic_properties.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Using Automatic Properties</h1>
+        <p>What
+happens if we use automatic properties with db4o persistent objects? Let's
+create classes with automatic fields and see what we can and can not do with
+them:</p>
+        <pre class="prettyprint" xml:space="preserve">Pilot.cs
+namespace Db4objects.Db4odoc.AutoProperties
+ {
+  public class Pilot
+   {
+    
+    public Pilot(string name, int points)
+     {
+      Name = name;
+      Points = points;
+    }
+        
+    public int Points
+     {
+      get; set;
+    }
+        
+    public void AddPoints(int points)
+     {
+      Points += points;
+    }
+        
+    public string Name
+     {
+      get; set;
+    }
+        
+    override public string ToString()
+     {
+      return string.Format("{0}/{1}", Name, Points);
+    }
+  }
+}</pre>
+        <pre class="prettyprint" xml:space="preserve">Car.cs
+namespace Db4objects.Db4odoc.AutoProperties
+ {
+  public class Car
+   {
+        
+    public Car(string model)
+     {
+      Model = model;
+      Pilot = null;
+    }
+
+        public Car(string model, Pilot pilot)
+         {
+            Model = model;
+            Pilot = pilot;
+        }
+        
+        public Pilot Pilot
+     {
+      get; set;
+    }
+        
+    public string Model         
+     {
+      get; set;
+    }
+        
+    override public string ToString()
+     {
+      return string.Format("{0}[{1}]", Model, Pilot);
+    }
+  }
+}</pre>Let's store
+some cars and query them using SODA:
+<pre class="prettyprint" xml:space="preserve">PropertiesExample.cs: FillUpDb
+private static void FillUpDB()
+         {
+      File.Delete(Db4oFileName);
+      IObjectContainer db=Db4oFactory.OpenFile(Db4oFileName);
+      try  {
+            for (int i=0; i&lt;10000;i++) {
+            AddCar(db,i);
+          }
+      }
+      finally  {
+        db.Close();
+      }
+    }</pre><pre class="prettyprint" xml:space="preserve">PropertiesExample.cs: TestSODA
+private static void TestSODA()
+         {
+            IConfiguration configuration = Db4oFactory.NewConfiguration();
+            configuration.ObjectClass(typeof(Car)).
+ObjectField("Pilot").Indexed(true);
+            configuration.ObjectClass(typeof(Pilot)).
+ObjectField("Points").Indexed(true);
+            configuration.Diagnostic().AddListener(new DiagnosticToConsole());
+            IObjectContainer db = Db4oFactory.OpenFile(
+configuration, Db4oFileName);
+            try
+              {
+                IQuery query = db.Query();
+                query.Constrain(typeof(Car));
+                query.Descend("Pilot").Descend("Points").Constrain("99");
+
+                IObjectSet  result = query.Execute();
+                Console.WriteLine("Test SODA");
+                ListResult(result);
+            }
+            finally
+             {
+                db.Close();
+            }
+        }</pre>If you run
+this code you will see that replacing field names with properties does not work
+at all. Luckily we still have other query types to use: Query By Example, LINQ,
+<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>:
+<pre class="prettyprint" xml:space="preserve">PropertiesExample.cs: TestQBE
+private static void TestQBE()
+         {
+            IConfiguration configuration = Db4oFactory.NewConfiguration();
+            configuration.Diagnostic().AddListener(new DiagnosticToTrace());
+            IObjectContainer db = Db4oFactory.OpenFile(configuration, Db4oFileName);
+            try
+             {
+                IObjectSet result = db.QueryByExample(new Car
+("BMW", new Pilot("Tester",1)));
+                Console.WriteLine("Test <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../object_lifecycle/querying/query_by_example.htm">QBE<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>");
+                ListResult(result);
+            }
+            finally
+             {
+                db.Close();
+            }
+        }</pre><pre class="prettyprint" xml:space="preserve">PropertiesExample.cs: TestLINQ
+private static void TestLinq()
+         {
+            IConfiguration configuration = Db4oFactory.NewConfiguration();
+            configuration.Diagnostic().AddListener(new DiagnosticToTrace());
+            IObjectContainer db = Db4oFactory.OpenFile(configuration, Db4oFileName);
+            try
+             {
+                IEnumerable&lt;Car&gt; result = from Car c in db
+                                            where c.Model.Equals("BMW") 
+                                            select c;
+
+                Console.WriteLine("Test LINQ:");
+                ListResult(result);
+            }
+            finally
+             {
+                db.Close();
+            }
+        }</pre>Unfortunately,
+as we saw above SODA queries do not work, therefore QBE, LINQ and NQ will run
+unoptimized.
+
+
+  
+     
+    
+
+
+        <p MadCap:conditions="Primary.Online">Download example code:</p><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

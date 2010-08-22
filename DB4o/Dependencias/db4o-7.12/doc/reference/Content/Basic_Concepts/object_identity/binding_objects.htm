@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Basic Concepts|Object Identity" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Binding objects	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#Basic_Concepts/object_identity/binding_objects.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../Basic_Concepts.htm">Basic Concepts</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../object_identity.htm">Object Identity</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Binding Objects</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Binding objects</h1>
+        <p>Db4o adds additional flexibility to its reference system allowing the user to re-associate an object with its stored instance or to replace an object in database:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:  </p>
+            <p><code>ExtObjectContainer#bind(object,id)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Typical usecases could be:</p>
+        <ul>
+            <li value="1"><a href="../../implementation_strategies/type_handling/static_fields_and_enums.htm">enums and static fields</a>
+            </li>
+            <li value="2">working on objects disconnected from the database</li>
+            <li value="3">refactoring</li>
+        </ul>
+        <p>The following requirements should be met:</p>
+        <ul>
+            <li value="1">The <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> needs to be a valid internal object ID, previously retrieved with ExtObjectContainer#getID(object)</li>
+            <li value="2">The object parameter needs to be of the same class as the stored object.</li>
+        </ul>
+        <p>Calling ExtObjectContainer#bind(object,id) does not have any impact on persisted objects. It only attaches the new object to the database identity. ObjectContainer#set(object) should be used to persist the change.</p>
+        <p>Let's look how it works in practice. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">IdentityExample.java: testBind
+private static void testBind() {
+    setObjects();
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      Query q = container.query();
+      q.constrain(Car.class);
+      q.descend("model").constrain("Ferrari");
+      ObjectSet result = q.execute();
+      Car car1 = (Car)result.queryByExample(0);
+      long IdCar1 = container.ext().getID(car1);
+      Car car2 = new Car("BMW", new Pilot("Rubens Barrichello"));
+      container.ext().bind(car2,IdCar1);
+      container.store(car2);
+
+      result = container.query(Car.class);
+      listResult(result);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>So this method gives you control over internal object storage. But its usage is potentially dangerous and normally should be avoided. Let's look at an example how <code>bind</code> can damage your object consistency:</p>
+        <p>Imagine three objects referencing each other:</p>
+        <p>a1 =&gt; b1 =&gt; c1</p>
+        <p>Now if you call #bind() to replace b1 with b2 in memory you will get the 
+following:</p>
+        <p>a1 =&gt; b1 =&gt; c1 b2 =&gt; c1</p>
+        <p>b2 will be the new in-memory copy of the persistent object formerly known as 
+b1. a1 will still point to b1 which is now a transient object. If you now 
+store a1, you will get a duplicate copy of b1 stored.</p>
+        <p>Please, remember this scenario and use ExtObjectContainer#bind(object,id) only for short-lived objects and in controlled situations where no other references exist.</p>
+        <p>For the scenarios, which merging disconnected transient object, please refer to <a href="http://developer.db4o.com/ProjectSpaces/view.aspx/Incubator">Merge Module</a> project suggested design. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="identityJava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

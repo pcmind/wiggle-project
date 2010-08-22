@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Maintenance|Defragment" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Defragmentation Configuration	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/maintenance/defragment/defragmentation_configuration.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../maintenance.htm">Maintenance</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../defragment.htm">Defragment</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Defragmentation Configuration</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Defragmentation Configuration</h1>
+        <p>DefragmentConfig class allows you fine-tune the
+defragmentation process. This topic discusses different settings available
+through DefragmentConfig.</p><a name="Original File"></a>
+        <h2>Original File</h2>
+        <p>The path to the file to be defragmented. Can be specified in
+the constructor:</p>
+        <p><code>configuration
+= new DefragmentConfig(origPath)</code>
+        </p><a name="Backup File"></a>
+        <h2>Backup File</h2>
+        <p><code>configuration = new DefragmentConfig(origPath, backupPath)</code>
+        </p>
+        <p>The path to the
+backup of the original file. If this file exists before the defragmentation, an
+IOException will be thrown and no action taken.</p>
+        <p>If you want the
+backup file to be deleted automatically before the defragment run, specify:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.forceBackupDelete(true)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" /><a name="Mapping"></a>
+        <h2>Mapping</h2>
+        <p>You can also specify the desired Mapping to be used
+internally:</p>
+        <p><code>configuration = new DefragmentConfig(origPath, backupPath, mapping)</code>
+        </p>
+        <p><code>mapping</code>is an object of a class implementing ContextIDMapping interface. Mapping is
+used to keep track of objects moved during defragmentation. Db4o provides 2
+mapping classes.</p>
+        <p><b>TreeIDMapping </b>- default in-memory mapping. Will increase the
+memory usage, but is a faster alternative. Set up <a href="http://developer.db4o.com/Resources/view.aspx/Reference/Implementation_Strategies/Maintenance/Defragment/Defragmentation_Configuration#Commit Frequency">objectCommitFrequency</a> to
+control memory usage.</p>
+        <p><b>BTreeIDMapping</b> - mapping is done in a separate file using
+B-tree method. Reduces the memory usage, but is a much slower option.</p><a name="Class Filter"></a>
+        <h2>Class Filter</h2>
+        <p>Defragmentation
+process uses <code>StoredClassFilter accept</code> method to define which
+classes should be left in a database after the defragmentation. By default, all
+classes are left. However, you can use AvailableClassFilter to get rid of the
+deleted classes instances:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.storedClassFilter(new
+AvailableClassFilter())</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>In this case only the classes known to the classloader will
+be left in the database, the rest will be deleted.</p><a name="Database Configuration"></a>
+        <h2>Database Configuration</h2>
+        <p>For db4o configurations that influence low-level file layout
+details, it is important to provide the defragmentation process with the copy
+of db4o configuration:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.db4oConfig(db4oConfiguration)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>For more information about db4o configuration see
+<a href="../../../tuning/configuration.htm">Configuration</a>.</p><a name="Commit Frequency"></a>
+        <h2>Commit Frequency</h2>
+        <p>Commit frequency sets the number of processed objects that
+should trigger an immediate commit of the target file. By default, frequency =
+0 and commit never happens.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.objectCommitFrequency(frequency)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method can be used to reduce memory usage during
+defragmentation.</p><a name="Upgrading"></a>
+        <h2>Upgrading</h2>
+        <p>You can upgrade your database file together with the
+defragmentation:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.upgradeFile(tempFile)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method can be used to reduce memory usage during
+defragmentation, however it will make it slower.</p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

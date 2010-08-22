@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Working With Structured Objects" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Retrieving Structured Objects	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_lifecycle/working_with_structured_objects/retrieving_structured_objects.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../working_with_structured_objects.htm">Working With Structured Objects</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Retrieving Structured Objects</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Retrieving Structured Objects</h1><a name="QBE"></a>
+        <H2>QBE</H2>
+        <p>To retrieve all cars a simple 'blank' prototype can be used.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveAllCarsQBE
+private static void retrieveAllCarsQBE(ObjectContainer container)  {
+    Car proto = new Car(null);
+    ObjectSet result = container.queryByExample(proto);
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>You can also query for all pilots, of course.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveAllPilotsQBE
+private static void retrieveAllPilotsQBE(ObjectContainer container)  {
+    Pilot proto = new Pilot(null, 0);
+    ObjectSet result = container.queryByExample(proto);
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Now let's initialize the prototype to specify all cars driven by Rubens Barrichello.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveCarByPilotQBE
+private static void retrieveCarByPilotQBE(ObjectContainer container)  {
+    Pilot pilotproto = new Pilot("Rubens Barrichello", 0);
+    Car carproto = new Car(null);
+    carproto.setPilot(pilotproto);
+    ObjectSet result = container.queryByExample(carproto);
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>What about retrieving a pilot by car? You simply don't need that -if you already know the car, you can simply access the pilot field directly.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveCarByPilotQBE
+private static void retrieveCarByPilotQBE(ObjectContainer container)  {
+    Pilot pilotproto = new Pilot("Rubens Barrichello", 0);
+    Car carproto = new Car(null);
+    carproto.setPilot(pilotproto);
+    ObjectSet result = container.queryByExample(carproto);
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="Native Queries"></a>
+        <H2>Native Queries</H2>
+        <p>Using native queries with constraints on deep structured objects is straightforward, you can do it just like you would in plain other code. Let's constrain our query to only those cars driven by a Pilot with a specific name:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveCarsByPilotNameNative
+private static void retrieveCarsByPilotNameNative(
+      ObjectContainer container)  {
+    final String pilotName = "Rubens Barrichello";
+    ObjectSet results = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getPilot().getName().equals(pilotName);
+      }
+    });
+    listResult(results);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="SODA Query API"></a>
+        <H2>SODA Query API </H2>
+        <p>In order to use SODA for querying for a car given its pilot's name you have to descend two levels into our query.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveCarByPilotNameQuery
+private static void retrieveCarByPilotNameQuery(
+      ObjectContainer container)  {
+    Query query = container.query();
+    query.constrain(Car.class);
+    query.descend("pilot").descend("name").constrain(
+        "Rubens Barrichello");
+    ObjectSet result = query.execute();
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>You can also constrain the pilot field with a prototype to achieve the same result.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrieveCarByPilotProtoQuery
+private static void retrieveCarByPilotProtoQuery(
+      ObjectContainer container)  {
+    Query query = container.query();
+    query.constrain(Car.class);
+    Pilot proto = new Pilot("Rubens Barrichello", 0);
+    query.descend("pilot").constrain(proto);
+    ObjectSet result = query.execute();
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Descending into a query provides you with another query. Starting out from a query root you can descend in multiple directions. In practice this is the same as ascending from one child to a parent and descending to another child. The queries turn one-directional references in objects into true relations. Here is an example that queries for "a Pilot that is being referenced by a Car, where the Car model is 'Ferrari'":</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: retrievePilotByCarModelQuery
+private static void retrievePilotByCarModelQuery(
+      ObjectContainer container)  {
+    Query carquery = container.query();
+    carquery.constrain(Car.class);
+    carquery.descend("model").constrain("Ferrari");
+    Query pilotquery = carquery.descend("pilot");
+    ObjectSet result = pilotquery.execute();
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>
+            <img src="graph3.gif" />
+        </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="structuredjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

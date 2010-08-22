@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Querying|Query By Example" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>QBE Limitations	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#object_lifecycle/querying/query_by_example/qbe_limitations.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../querying.htm">Querying</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../query_by_example.htm">Query By Example</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">QBE Limitations	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>QBE Limitations</h1>
+        <p>As it was mentioned <a href="../query_by_example.htm">before</a> <![CDATA[ ]]><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../query_by_example.htm">QBE<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> has some serious limitations. 
+</p>
+        <p>Query-By-Example evaluates all non-null
+fields and all simple type variables that do not hold their default
+values against the stored objects. Check to make sure that you are
+not constraining the resultset by accidentally initializing variables
+on your template objects. Typical places could be:  </p>
+        <ul>
+            <li value="1">Constructors
+</li>
+            <li value="2">Constructors in ancestors of your class </li>
+            <li value="3">Static
+initialization </li>
+            <li value="4">Static initialization in ancestors of your
+class.</li>
+        </ul>
+        <p>The following classes provide an example of classes that cannot be used with QBE:</p>
+        <ul>
+            <li value="1"><a href="qbe_limitations/pilot1.htm">Pilot1</a>
+            </li>
+            <li value="2"><a href="qbe_limitations/pilot1derived.htm">Pilot1Derived</a>
+            </li>
+            <li value="3"><a href="qbe_limitations/pilot2.htm">Pilot2</a>
+            </li>
+            <li value="4"><a href="qbe_limitations/pilot2derived.htm">Pilot2Derived</a>
+            </li>
+        </ul>
+        <p>The following examples show the results of QBE usage with the classes above. Note, that there are some differences between Java and .NET behavior: </p>
+        <ul>
+            <li value="1">in Java QBE does not return any results when static initialization or initialization in a constructor is present;</li>
+            <li value="2">in .NET QBE will return results in the above-mentioned cases, but it can't guarantee that the result will be correct if the value was changed in the constructor. </li>
+        </ul>
+        <p>1. QBE used against a class that has arbitrary member initialization in the constructor: </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QBEExample.java: test1
+private static void test1()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        // Pilot1 contains initialisation in the constructor
+        Pilot1 pilot = new Pilot1("Kimi Raikkonen");
+        container.store(pilot);
+        // QBE does not return any results
+        ObjectSet result = container.queryByExample(new Pilot1("Kimi Raikonnen"));
+        System.out.println(
+"Test QBE on class with member initialization in constructor");
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>2. This example is similar to the previous one, but uses a class derived from the class in test1:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QBEExample.java: test2
+private static void test2()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        // Pilot1Derived derives the constructor with initialisation
+        Pilot1Derived pilot = new Pilot1Derived("Kimi Raikkonen");
+        container.store(pilot);
+        // QBE does not return any results
+        ObjectSet result = container.queryByExample(
+new Pilot1Derived("Kimi Raikonnen"));
+        System.out.println("Test QBE on class with member " + 
+" initialization in ancestor constructor");
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>3. This example uses QBE against a class with static member initialization:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QBEExample.java: test3
+private static void test3()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        // Pilot2 uses static initialization of points member
+        Pilot2 pilot = new Pilot2("Kimi Raikkonen");
+        container.store(pilot);
+        // QBE does not return any results
+        ObjectSet result = container.queryByExample(new Pilot2("Kimi Raikonnen"));
+        System.out.println("Test QBE on class with static member initialization");
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>4. This example is similar to test3, but a derived class is used:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QBEExample.java: test4
+private static void test4()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        // Pilot2Derived is derived from class with static initialization of points member
+        Pilot2Derived pilot = new Pilot2Derived("Kimi Raikkonen");
+        container.store(pilot);
+        // QBE does not return any results
+        ObjectSet result = container.queryByExample(
+new Pilot2Derived("Kimi Raikonnen"));
+        System.out.println(
+"Test QBE on class derived from a class with static member initialization");
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <MadCap:conditionalText MadCap:conditions="Primary.Online">Download example code:
+        
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="qbejava.zip">Java </a></MadCap:conditionalText></MadCap:conditionalText>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

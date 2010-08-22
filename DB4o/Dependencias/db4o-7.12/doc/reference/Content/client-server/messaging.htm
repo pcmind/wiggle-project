@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Client-Server" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Messaging	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#client-server/messaging.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../client-server.htm">Client-Server</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Messaging</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor166"></a><a name="kanchor167"></a>Messaging</h1>
+        <p>In client/server mode the TCP connection between the client and the server can also be used to send messages from the client to the server.</p>
+        <p>Possible usecases could be:</p>
+        <ul>
+            <li value="1">shutting down and restarting the server</li>
+            <li value="2">triggering server backup</li>
+            <li value="3">using a customized login strategy to restrict the number of allowed client connections</li>
+        </ul>
+        <p>Here is some example code how this can be done.</p>
+        <p>First we need to decide on a class that we want to use as the message. Any object that is storable in db4o can be used as a message, but strings and other simple types will not be carried (as they are not storable in db4o on their own). Let's create a dedicated class:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">MyClientServerMessage.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.messaging;
+
+
+class MyClientServerMessage  {
+
+    private String info;
+
+    public MyClientServerMessage(String info) {
+        this.info = info;
+    }
+    
+    public String toString() {
+        return "MyClientServerMessage: " + info;
+    }
+
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Now we have to add some code to the server to react to arriving messages. This can be done by configuring a MessageRecipient object on the server. Let's simply print out all objects that arrive as messages. For the following we assume that we already have an ObjectServer object, opened with <a href="embedded.htm">Db4o.openServer()</a>.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">MessagingExample.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.messaging;
+
+import com.db4o.Db4o;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectServer;
+import com.db4o.config.Configuration;
+import com.db4o.messaging.MessageContext;
+import com.db4o.messaging.MessageRecipient;
+import com.db4o.messaging.MessageSender;
+
+
+public class MessagingExample  {
+  private final static String DB4O_FILE_NAME="reference.db4o";
+  
+  public static void configureServer()  {
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.clientServer().setMessageRecipient(new MessageRecipient()  {
+      public void processMessage(MessageContext context,
+          Object message)  {
+        // message objects will arrive in this code block
+        System.out.println(message);
+      }
+    });
+    ObjectServer objectServer = Db4o.openServer(configuration, DB4O_FILE_NAME, 0);
+        
+    try  {
+      ObjectContainer clientObjectContainer = objectServer.openClient();
+      // Here is what we would do on the client to send the message
+      MessageSender sender = clientObjectContainer.ext().configure().
+clientServer().getMessageSender();
+
+      sender.send(new MyClientServerMessage("Hello from client."));
+      clientObjectContainer.close();
+    } finally  {
+      objectServer.close();
+    }
+  }
+  // end configureServer 
+   
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The MessageSender object on the client can be reused to send multiple messages.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="messagingjava.zip">Java</a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

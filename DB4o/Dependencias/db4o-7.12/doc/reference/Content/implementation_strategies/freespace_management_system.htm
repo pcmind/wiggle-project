@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Freespace Management System	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#implementation_strategies/freespace_management_system.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Freespace Management System	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Freespace Management System</h1>
+        <p>Db4o <a href="#" class="glossaryTerm_0">Freespace</a> manager is a special system that is responsible for allocating, discarding, merging of space for db4o usage and keeping database size at minimum</p>
+        <p>Db4o organizes its files into variable-sized slots with one degree of indirection (pointer slots). The physical address of a pointer slot corresponds to the internal <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> of the respective object. On the lowest level the database file is seen as a uniform pool of bytes, from which slots of variable size can be allocated.</p>
+        <p>Freespace manager keeps track of the portions of the database file that haven't been allocated for use and gets notified when slots are 'freed', i.e. returned back to the pool.</p>
+        <p>That is how it works:</p>
+        <ul>
+            <li value="1">All objects are written to the database file immediately, when they are stored or updated.</li>
+            <li value="2">Updated objects get a new or previously freed place in the database file.</li>
+            <li value="3">New or modified pointers to new or modified objects are stored in RAM. </li>
+            <li value="4">Old and deleted objects are marked as 'freespace'.</li>
+        </ul>
+        <p>In general case each persisted object occupies one slot. This slot contains metadata, values of direct primitive members and references to the slots of non-primitive members. What actually goes directly into a slot and what is external is not fixed and differs from version to version. However, there is one level of indirection: a reference to a non-primitive member will not refer to the member's slot directly, but rather to the 'pointer', which is an 8 byte slot containing the address in the file and the data length. The address of this pointer slot is the object's internal ID that is used for indexing, etc.</p>
+        <p>For a simple example, assume we have</p>
+        <blockquote>
+            <p><code>class Car { String manufacturer; }</code>
+            </p>
+            <p><code>class Driver { String name; Car car; }</code>
+            </p>
+        </blockquote>
+        <p>and an object graph like this</p>
+        <blockquote>
+            <p>Driver: name='Barrichello', car={Car: manufacturer='BMW'}</p>
+        </blockquote>This will translate into four slots 
+<blockquote><p><i>1234: [4711, length(Driver)] </i><i>4711: [Driver,'Barrichello',0815] </i><i>0815: [4321, length(Car)] </i><i>4321: [Car,'BMW']</i></p></blockquote><p>with 1234 being the db4o ID of the driver and 0815 the ID of the car. Whenever the driver or the car object is updated, its actual slot may be stored somewhere else, but the pointer slot (the ID) will remain the same and keep track of the slot's address. (Please, note that this is a simplified example: actual implementation uses more slots and more sophisticated processing).</p><p> More Reading:<ul><li value="1"><p><a href="freespace_management_system/two_freespace_systems.htm">Two Freespace Systems</a></p></li><li value="2"><p><a href="freespace_management_system/how_to_use_freespacemanager.htm">How To Use FreespaceManager</a></p></li><li value="3"><p><a href="freespace_management_system/defragmentation_role.htm">Defragmentation Role</a></p></li></ul></p><script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

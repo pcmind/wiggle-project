@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Conflict Resolution	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#db4o_replication_system_drs/advanced_replication_strategies/events/conflict_resolution.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Conflict Resolution</h1>
+        <p>The most popular usage of replication callback events is conflict resolution. When an object was changed in both replicating databases you must have a strategy to decide, which value must be final. In the simplest case one of the databases is made "dominant" and the changes in this database always override other changes. The following example demonstrates this behavior:</p>
+        <p MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">EventsExample.java: conflictResolutionExample
+private static void conflictResolutionExample()  {
+    Configuration config = Db4o.newConfiguration();
+    config.generateUUIDs(ConfigScope.GLOBALLY);
+    config.generateVersionNumbers(ConfigScope.GLOBALLY);
+
+    //  Open databases
+    ObjectContainer desktop = Db4o.openFile(config, "desktop.db4o");
+    ObjectContainer handheld = Db4o.openFile(config, "handheld.db4o");
+
+    Pilot pilot = new Pilot("Scott Felton", 200);
+    handheld.store(pilot);
+    handheld.commit();
+    /**//* Clean the reference cache to make sure that objects in memory
+    * won't interfere
+    */ 
+    handheld.ext().refresh(Pilot.class, Integer.MAX_VALUE);
+    
+    /**//* Replicate changes from handheld to desktop
+     * Note, that only objects replicated from one database to another will 
+     * be treated as the same. If you will create an object and save it to both
+     * databases, <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../db4o_replication_system_drs.htm">dRS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> will count them as 2 different objects with identical 
+     * fields.
+     */
+    ReplicationSession replication = Replication.begin(handheld, desktop);
+    ObjectSet changedObjects = replication.providerA().objectsChangedSinceLastReplication();
+    while (changedObjects.hasNext())
+      replication.replicate(changedObjects.next());
+    replication.commit();
+    
+    // change object on the handheld
+    pilot = (Pilot)handheld.query(Pilot.class).next();
+    pilot.setName("S.Felton");
+    handheld.store(pilot);
+    handheld.commit();
+    
+    //  change object on the desktop
+    pilot = (Pilot)desktop.query(Pilot.class).next();
+    pilot.setName("Scott");
+    desktop.store(pilot);
+    desktop.commit();
+    
+    /**//* The replication will face a conflict: Pilot object was changed on the 
+    * handheld and on the desktop.
+    * To resolve this conflict we will add an event handler, which makes
+    * desktop changes dominating.
+    */
+    ReplicationEventListener listener;
+    listener = new ReplicationEventListener()  {
+      public void onReplicate(ReplicationEvent event)  {
+        if (event.isConflict())  {
+          ObjectState chosenObjectState = event.stateInProviderB();
+          event.overrideWith(chosenObjectState);
+        }
+      }
+    };
+
+    replication = Replication.begin(handheld, desktop, listener);
+
+    //The state of the desktop after the replication should not change, as it dominates
+    changedObjects = replication.providerA().objectsChangedSinceLastReplication();
+    while (changedObjects.hasNext())
+      replication.replicate(changedObjects.next());
+
+    //Commit
+    replication.commit();
+    replication.close();
+    
+    // Check what we've got on the desktop
+    ObjectSet result = desktop.query(Pilot.class);
+    System.out.println(result.size());
+    while (result.hasNext())  {
+      System.out.println(result.next());
+    }
+    handheld.close();
+    desktop.close();
+    
+    new File("handheld.db4o").delete();
+    new File("desktop.db4o").delete();
+
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="drseventsjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT  configuracao (fiction)>
+
+<!ELEMENT   fiction (book)+>
+
+<!ELEMENT   biography (book)+>
+
+<!ELEMENT   science (book)+>
+
+<!ELEMENT   book (#PCDATA)>

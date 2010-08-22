@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Simple Persistence	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#object_lifecycle/simple_persistence.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Simple Persistence</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Simple Persistence<a name="kanchor22"></a><a name="kanchor23"></a><a name="kanchor24"></a></h1>
+        <p>db4o makes your work with persistent objects very simple and 
+straightforward. The only <MadCap:conditionalText MadCap:conditions="Primary.Java">store</MadCap:conditionalText>(object) method is used for both saving and 
+modification of any object that exists in your model.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QueryExample.java: storePilot
+public static void storePilot()  {
+      new File(YAPFILENAME).delete();
+      ObjectContainer db=Db4o.openFile(YAPFILENAME);
+        try  {
+          Pilot pilot=new Pilot("Michael Schumacher",0);
+          db.store(pilot);
+          System.out.println("Stored "+pilot);
+          // change pilot and resave updated
+          pilot.addPoints(10);
+          db.store(pilot);
+          System.out.println("Stored "+pilot);
+        } finally  {
+          db.close();
+        }
+        retrieveAllPilots();
+    }</pre>
+            <pre class="prettyprint" xml:space="preserve">QueryExample.java: updatePilotWrong
+public static void updatePilotWrong()  {
+      storePilot();
+      ObjectContainer db=Db4o.openFile(YAPFILENAME);
+      try  {
+      // Even completely identical Pilot object
+      // won't work for update of the saved pilot
+        Pilot pilot = new Pilot("Michael Schumacher",10);
+        pilot.addPoints(10);
+        db.store(pilot);
+        System.out.println("Added 10 points for "+pilot);
+        } finally  {
+        db.close();
+      }
+      retrieveAllPilots();
+    }</pre>
+            <pre class="prettyprint" xml:space="preserve">QueryExample.java: updatePilot
+public static void updatePilot()  {
+      storePilot();
+      ObjectContainer db=Db4o.openFile(YAPFILENAME);
+      try  {
+        // first retrieve the object from the database
+          ObjectSet result=db.queryByExample(new Pilot("Michael Schumacher",10));
+          Pilot found=(Pilot)result.next();
+          found.addPoints(10);
+          db.store(found);
+          System.out.println("Added 10 points for "+found);
+    } finally  {
+      db.close();
+    }
+    retrieveAllPilots();
+    }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Deletion is just as easy:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QueryExample.java: deletePilot
+public static void deletePilot()  {
+      storePilot();
+      ObjectContainer db=Db4o.openFile(YAPFILENAME);
+      try  {
+//       first retrieve the object from the database
+        ObjectSet result=db.queryByExample(new Pilot("Michael Schumacher",10));
+        Pilot found=(Pilot)result.next();
+        db.delete(found);
+        System.out.println("Deleted "+found);
+        } finally  {
+        db.close();
+      }
+        retrieveAllPilots();
+    }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The objects are identified by their references in an application cache. You do not need to implement any additional identification systems (like primary keys 
+in <span class="MCTextPopup"><a href="javascript:void(0);" class="MCTextPopupSpot" onclick="FMCTextPopup( event, this ); return false;">RDBMS<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a><span class="MCTextPopupBody" style="display: none; ">Relational Database Management System</span></span>). See <a href="../Basic_Concepts/object_identity.htm">Identity chapter</a> for 
+details. The uniqueness of an object is defined only by its reference, if you 
+will create 2 objects of the same class with exactly the same fields and save 
+them to db4o - you will get 2 objects in your database. As you can see from the 
+examples an object instance should be retrieved from the database 
+before updating or deleting or you can use the newly created object if it was 
+stored in the same session. Creating a new instance identical to the object in the 
+database and saving it, will create a new object in the database.</p>
+        <p>Db4o does 
+all the "dirty" work of objects transition between your classes and 
+persistent state using <a href="../implementation_strategies/db4o_reflection_api.htm">Reflection</a> . No 
+mappings or additional coding is needed from your side. If you will need to 
+change your application model for the next version you will also be surprised 
+with the simplicity: all the changes are done in one place - your code, and the 
+most common operations are done completely automatically (see <a href="../implementation_strategies/refactoring_and_schema_evolution.htm">Refactoring 
+And Schema Evolution</a> chapter for details).</p>
+        <p>Please, remember that all db4o work is done within <a href="../Basic_Concepts/transaction.htm">Transaction</a>, which can be committed or rolled back depending on the result you want to achieve. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="queriesjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

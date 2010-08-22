@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Native Query Optimization	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#tuning/native_query_optimization.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Native Query Optimization	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor149"></a>Native Query Optimization</h1>
+        <p>Native Queries will run out of the box in any environment. If optimization is turned on (default) Native Queries will be converted to <a href="../object_lifecycle/querying/soda_query.htm">SODA</a> where this is possible, allowing db4o to use indexes and optimized internal comparison algorithms.Otherwise <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> may be executed by instantiating all objects, using <a href="../object_lifecycle/querying/soda_evaluations.htm">SODA Evaluations</a>. Naturally performance will not be as good in this case.</p><a name="Optimization Theory"></a>
+        <H2>Optimization Theory </H2>
+        <p>For Native Query Java bytecode and .NET IL code are analyzed to create an AST-like expression tree. Then the flow graph of the expression tree is analyzed and converted to a SODA query graph.</p>
+        <p>For example:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>List&lt;Pilot&gt; pilots = container.query(new Predicate&lt;Pilot&gt;() {</code>
+            </p>
+            <p><code>                                                public boolean match(Pilot pilot) {</code>
+            </p>
+            <p><code>                                                            return pilot.getName().equals("Michael Schumacher")</code>
+            </p>
+            <p><code>&amp;&amp; pilot.getPoints() == 100;</code>
+            </p>
+            <p><code>                                                }</code>
+            </p>
+            <p><code>                                    });</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>First of all the following code will be extracted:</p>
+        <p>query#constrain(Pilot)</p>
+        <p>Then a more complex analysis will be run to convert the contents of the #match method into a SODA-understandable syntax. On a simple example it is easy to see what will happen:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>return pilot.getName().equals("Michael Schumacher") &amp;&amp; pilot.getPoints() == 100;</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>easily converts into:</p>
+        <p><code>CANDIDATE.name == "Michael Schumacher"</code>
+        </p>
+        <p><code>CANDIDATE.points == 100</code>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages"><a name="NQ Optimization For Java"></a>
+            <H2>NQ Optimization For Java</H2>
+            <p><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> optimisation on Java requires db4onqopt.jar and bloat.jar to be present in the CLASSPATH.The Native Query optimizer is still under development to eventually "understand" all Java constructs. Current optimization supports the following constructs well:</p>
+            <UL>
+                <LI value="1">compile-time constants</LI>
+                <LI value="2">simple member access</LI>
+                <LI value="3">primitive comparisons</LI>
+                <LI value="4">#equals() on primitive wrappers and Strings</LI>
+                <LI value="5">#contains()/#startsWith()/#endsWith() for Strings</LI>
+                <LI value="6">arithmetic expressions</LI>
+                <LI value="7">boolean expressions</LI>
+                <LI value="8">static field access</LI>
+                <LI value="9">array access for static/predicate fields</LI>
+                <LI value="10">arbitrary method calls on static/predicate fields (without candidate based params)</LI>
+                <LI value="11">candidate methods composed of the above</LI>
+                <LI value="12">chained combinations of the above</LI>
+            </UL>
+            <p>This list will constantly grow with the latest versions of db4o.</p>
+            <p>Note that the current implementation doesn't support polymorphism and multiline methods yet.</p>
+            <p>db4o for Java supplies three different possibilities to run optimized native queries, optimization at</p>
+            <OL>
+                <LI value="1"><a href="native_query_optimization/optimization_at_query_execution_time.htm">query execution time</a>
+                </LI>
+                <LI value="2"><a href="../object_lifecycle/activation/transparent_activation_framework/ta_enhanced_example/ta_enhancement_at_build_time.htm">deployment time</a>
+                </LI>
+                <LI value="3"><a href="../object_lifecycle/activation/transparent_activation_framework/ta_enhanced_example/ta_enhancement_at_load_time.htm">class loading time</a>
+                </LI>
+            </OL>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>For more information on NQ optimization see <a href="native_query_optimization/monitoring_optimization.htm">Monitoring Optimization</a>.</p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

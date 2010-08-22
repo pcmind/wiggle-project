@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Client-Server|Remote Code Execution" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Using Messaging API For Remote Code Execution	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#client-server/remote_code_execution/using_messaging_api_for_remote_code_execution.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../client-server.htm">Client-Server</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../remote_code_execution.htm">Remote Code Execution</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Using Messaging API For Remote Code Execution</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Using Messaging API For Remote Code Execution</h1>
+        <p>Messaging API gives you an easy and powerful tool for remote code execution. The short overview of the API is in <a href="../messaging.htm">Messaging chapter</a>. </p>
+        <p>All you will need to do is to define specific message class or classes (should be shared between client and server).</p>
+        <p>The client side can issue messages using:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>MessageSender#send(message) </code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The server side should register a message listener:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>Configuration#setMessageRecipient(MessageRecipient)</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />Message recipient should define a response to the different messages received in
+<p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: <code>processMessage(ObjectContainer objectContainer, Object message) </code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>method. ObjectContainer parameter gives full control over the database.</p><p>Let's reset our database and try updating using special UpdateServer message.</p><p MadCap:conditions="Primary.Java,Primary.All languages"><pre class="prettyprint" xml:space="preserve">RemoteExample.java: setObjects
+private static void setObjects()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      for (int i = 0; i &lt; 5; i++)  {
+        Car car = new Car("car" + i);
+        container.store(car);
+      }
+      container.store(new RemoteExample());
+    } finally  {
+      container.close();
+    }
+    checkCars();
+  }</pre></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>You can also put some information in the message being sent (UpdateServer class).</p><p>The advantage of this method is that having predefined message types you can make any changes to the handling code only on the server side. In the situations with many distributed clients it can really save you lots of time on support.</p><p MadCap:conditions="Primary.Online">Download example code:</p><p MadCap:conditions="Primary.Online"><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="remote_code_executionremotejava.zip">Java</a></MadCap:conditionalText></p><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

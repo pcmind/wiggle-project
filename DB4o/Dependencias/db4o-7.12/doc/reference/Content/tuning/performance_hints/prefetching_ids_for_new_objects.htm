@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning|Performance Hints" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Prefetching IDs For New Objects	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#tuning/performance_hints/prefetching_ids_for_new_objects.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../performance_hints.htm">Performance Hints</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Prefetching IDs For New Objects</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor144"></a>Prefetching IDs For New Objects</h1>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>void ClientServerConfiguration.prefetchIDCount(int prefetchIDCount);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Sets the number of IDs to be pre-allocated in
+the database for new objects created on the client</p><a name="Advantage"></a>
+        <h2>Advantage</h2>
+        <p>Prefetching several IDs for the new objects
+created on the client allows to improve the performance by reducing
+client-server communication.</p><a name="Effect"></a>
+        <h2>Effect</h2>
+        <p>When a new object is
+created on a client, the client should contact the server to get the next
+available object <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>. PrefetchIDCount allows to specify how many IDs
+should be pre-allocated on the server and prefetched by the client. This method
+helps to reduce client-server communication.</p>
+        <p>PrefetchIDCount can
+be tuned to approximately match the usual amount of objects created in one
+operation to improve the performance.</p>
+        <p>If PrefetchIDCount =1
+a client will have to connect to the server for each new objects created</p>
+        <p>If PrefetchIDCount is
+bigger than the amount of new objects to be created the database will keep
+unnecessary preallocated space. </p>
+        <p>The default
+PrefetchIDCount is 10.</p><a name="Alternate Strategies"></a>
+        <h2>Alternate Strategies</h2>A possible alternative can be using
+<a href="../../client-server/remote_code_execution/using_messaging_api_for_remote_code_execution.htm">Messaging</a>for bulk inserts on the server. 
+
+
+    
+  <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

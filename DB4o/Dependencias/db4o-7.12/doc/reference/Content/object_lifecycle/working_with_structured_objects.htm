@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Working With Structured Objects	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#object_lifecycle/working_with_structured_objects.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Working With Structured Objects	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Working With Structured Objects</h1>
+        <p>In real world objects are referenced by each other creating deep reference structures.</p>
+        <p>This chapter will give you an overview of how db4o deals with structured objects.</p>
+        <p>For an example we will use a simple model, where Pilot class is referenced from Car class.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">Pilot.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+package com.db4odoc.structured;
+
+public class Pilot  {
+  private String name;
+
+  private int points;
+
+  public Pilot(String name, int points)  {
+    this.name = name;
+    this.points = points;
+  }
+
+  public int getPoints()  {
+    return points;
+  }
+
+  public void addPoints(int points)  {
+    this.points += points;
+  }
+
+  public String getName()  {
+    return name;
+  }
+
+  public String toString()  {
+    return name + "/" + points;
+  }
+}</pre>
+            <pre class="prettyprint" xml:space="preserve">Car.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+package com.db4odoc.structured;
+
+public class Car  {
+  private String model;
+
+  private Pilot pilot;
+
+  public Car(String model)  {
+    this.model = model;
+    this.pilot = null;
+  }
+
+  public Pilot getPilot()  {
+    return pilot;
+  }
+
+  public void setPilot(Pilot pilot)  {
+    this.pilot = pilot;
+  }
+
+  public String getModel()  {
+    return model;
+  }
+
+  public String toString()  {
+    return model + "[" + pilot + "]";
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p> More Reading:<ul><li value="1"><p><a href="working_with_structured_objects/retrieving_structured_objects.htm">Retrieving Structured Objects</a></p></li><li value="2"><p><a href="working_with_structured_objects/updating_structured_objects.htm">Updating Structured Objects</a></p></li><li value="3"><p><a href="working_with_structured_objects/deleting_structured_objects.htm">Deleting Structured Objects</a></p></li></ul></p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

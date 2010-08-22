@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Reserving Storage Space	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#tuning/performance_hints/reserving_storage_space.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Reserving Storage Space</h1>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>configuration.reserveStorageSpace(byteCount)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" /><a name="Advantage"></a>
+        <h2>Advantage</h2>
+        <p>The allocation of a fixed number of bytes at
+one time makes it more likely that the database will be stored in one chunk
+on the mass storage. Less read/write head movement can result in improved
+performance.</p><a name="Effect"></a>
+        <h2>Effect</h2>
+        <p>ReserveStorageSpace setting reserves an
+additional space (byteCount) in a database file.</p>
+        <p>The functionality of this setting depends on
+the context:</p>
+        <ul>
+            <li value="1">global context:
+new database files will be created with an additional amount of bytes reserved;</li>
+            <li value="2">
+                <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText>context: each call to reserveStorageSpace will allocate an extra space in the
+database file.</li>
+        </ul>
+        <p>Note: Allocated space will be lost on abnormal
+termination of the database engine (hardware crash, VM crash). A <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/maintenance/defragment.htm">Defragment<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> run
+will recover the lost space. For the best possible performance, this method
+should be called before the Defragment run to configure the allocation of
+storage space to be slightly greater than the anticipated database file size.</p><a name="Alternate Strategies"></a>
+        <h2>Alternate Strategies</h2>
+        <p>An alternative strategy can be to use MemoryStorage:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>MemoryIoAdapter
+adapter = new MemoryIoAdapter();</code>
+            </p>
+            <p><code>configuration.io(adapter);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>You can control the
+growth of the memory file by:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>adapter.growBy(100);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>And you can control
+the size of the file on disk using RandomAccessFile API. For more information
+see <a href="../../implementation_strategies/storage/memory_storage.htm">MemoryStorage</a>.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

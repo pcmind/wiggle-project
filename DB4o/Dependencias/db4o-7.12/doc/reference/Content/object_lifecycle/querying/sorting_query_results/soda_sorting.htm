@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Querying|Sorting Query Results" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>SODA Sorting	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#object_lifecycle/querying/sorting_query_results/soda_sorting.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../querying.htm">Querying</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../sorting_query_results.htm">Sorting Query Results</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">SODA Sorting</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>SODA Sorting</h1>
+        <p>SODA query API gives you a possibility to sort any field in ascending or descending order and combine sorting of different fields. For example, let's retrieve the objects of the Pilot class <a href="../sorting_query_results.htm">saved before</a>, sorting "points" field in descending order and "name" field in ascending.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SortingExample.java: getObjectsSODA
+public static void getObjectsSODA()  {
+
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      Query query = container.query();
+      query.constrain(Pilot.class);
+      query.descend("name").orderAscending();
+      query.descend("points").orderDescending();
+      long t1 = System.currentTimeMillis();
+      ObjectSet result = query.execute();
+      long t2 = System.currentTimeMillis();
+      long diff = t2 - t1;
+      System.out.println("Time to query and sort with  SODA: "
+          + diff + " ms.");
+      listResult(result);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p>
+            <pre class="prettyprint lang-vb" xml:space="preserve">SortingExample.vb: GetObjectsSODA
+Private Shared Sub GetObjectsSODA()
+            Dim db As IObjectContainer = Db4oFactory.OpenFile(Db4oFileName)
+            Try
+                Dim query As IQuery = db.Query
+                query.Constrain(GetType(Pilot))
+                query.Descend("_name").OrderAscending()
+                query.Descend("_points").OrderDescending()
+                Dim dt1 As DateTime = DateTime.UtcNow
+                Dim result As IObjectSet = query.Execute
+                Dim dt2 As DateTime = DateTime.UtcNow
+                Dim diff As TimeSpan = dt2 - dt1
+                Console.WriteLine("Time to query and sort with SODA: " _ 
++ diff.TotalMilliseconds.ToString() + " ms.")
+                ListResult(result)
+            Finally
+                db.Close()
+            End Try
+        End Sub</pre>
+            <p>
+            </p>
+            <p MadCap:conditions="Global.Primary:vb" />
+        </p>
+        <p>Obvious disadvantages of this method:</p>
+        <ul>
+            <li value="1">limitations of SODA queries (not type-safe and not compile-time checked);</li>
+            <li value="2">limitations if sorting mechanism (only alphabetical for strings, numerical for numbers and object id for objects)</li>
+        </ul>
+        <p>The valuable advantage of this method is its high performance.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="sortingjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

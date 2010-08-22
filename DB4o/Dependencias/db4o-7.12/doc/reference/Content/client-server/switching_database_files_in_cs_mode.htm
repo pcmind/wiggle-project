@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Switching Database Files in CS Mode	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#client-server/switching_database_files_in_cs_mode.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Switching Database Files in CS Mode</h1>
+        <p>This functionality is deprecated!
+        </p>
+        <p>ExtClient is an extended interface, which can be used to access database from the client side. ExtClient/IExtClient object can be simply cast from the <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText>, returned by openClient method:</p>
+        <ol>
+            <p MadCap:conditions="Primary.Java,Primary.All languages">
+                <p>Java: <code>ExtClient clientExt = (ExtClient) server.openClient()</code></p>
+            </p>
+            <p MadCap:conditions="Global.Primary:java" />
+            <p MadCap:conditions="Global.Primary:cs" />
+            <p MadCap:conditions="Global.Primary:vb" />
+        </ol>
+        <p>Please, note that this cast is only possible in embedded server mode. </p>
+        <p>ExtClient is extending ExtObjectContainer interface. In addition ExtClient provides 3 client-specific methods:</p>
+        <ul>
+            <li value="1">switchToFile(String fileName)/SwitchToFile(string fileName)</li>allows to switch your client database connection to another file using the same server connection. 
+<li value="2">switchToMainFile()/SwitchToMainFile() </li>switchs the connection back to the original database file. 
+<li value="3">boolean isAlive()/IsAlive()</li>checks if the client is currently connected to a server, returns true if the client is alive.</ul><a name="Switching Database Files"></a>
+        <h2>Switching Database Files</h2>
+        <p>In some special cases you may want to store different objects to different files. </p>
+        <p>This approach has the following advantages:</p>
+        <ul>
+            <li value="1">easier rights management</li>
+            <li value="2">easier backup</li>
+            <li value="3">possible later load balancing to multiple servers</li>
+            <li value="4">better performance of smaller individual database files</li>
+            <li value="5">special debugging database files can be used</li>
+        </ul>
+        <p>To make database switch handling easier you should consider using the ExtClient#switchToFile(fileName) and ExtClient#switchToMainFile() methods. This allows you to use single connection to the server for all database files, thus avoiding overhead of opening and managing new connections (a server starts a new thread for each connection). All you have to do is just point out which database file to use.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ExtClientExample.java: switchExtClients
+private static void switchExtClients()  {
+    new File(DB4O_FILE_NAME).delete();
+    new File(EXTFILENAME).delete();
+    ObjectServer server = Db4oClientServer.openServer(Db4oClientServer
+        .newServerConfiguration(), DB4O_FILE_NAME, 0);
+    try  {
+      ObjectContainer client = server.openClient();
+      deleteAll(client); // added to solve sticking objects in doctor
+      Car car = new Car("BMW");
+      client.store(car);
+      System.out.println("Objects in the main database file:");
+      retrieveAll(client);
+
+      System.out.println("Switching to additional database:");
+      ExtClient clientExt = (ExtClient) client;
+      clientExt.switchToFile(EXTFILENAME);
+      car = new Car("Ferrari");
+      clientExt.store(car);
+      retrieveAll(clientExt);
+      System.out.println("Main database file again: ");
+      clientExt.switchToMainFile();
+      retrieveAll(clientExt);
+      clientExt.close();
+    } finally  {
+      server.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="Multiple Database Usecase"></a>
+        <h2>Multiple Database Usecase</h2>
+        <p>The following can be an example usecase of multiple database usage.</p>
+        <p>The main database file is used for login, user and rights management only. Multiple satellite database files are used for different applications or multiple user circles. User authorization to the satellite databases is not checked.</p>
+        <p>Only one single db4o server session needs to be run. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="clientserverjava.zip">Java</a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

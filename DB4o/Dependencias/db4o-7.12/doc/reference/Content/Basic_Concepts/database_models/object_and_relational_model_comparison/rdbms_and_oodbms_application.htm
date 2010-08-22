@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Basic Concepts|Database Models|Object And Relational Model Comparison" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>RDBMS And OODBMS Application	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#Basic_Concepts/database_models/object_and_relational_model_comparison/rdbms_and_oodbms_application.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../Basic_Concepts.htm">Basic Concepts</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../database_models.htm">Database Models</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../object_and_relational_model_comparison.htm">Object And Relational Model Comparison</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">RDBMS And  OODBMS Application</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>RDBMS And OODBMS Application</h1>
+        <p>Relational data systems are proven market leaders in
+persistence solutions. They are mature and reliable choice for a general
+purpose solution. Moreover, <span class="MCTextPopup"><a href="javascript:void(0);" class="MCTextPopupSpot" onclick="FMCTextPopup( event, this ); return false;">RDBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a><span class="MCTextPopupBody" style="display: none; ">Relational Database Management System</span></span> is supported by a huge number of applications
+and components and a large amount of human resources experienced in the
+technology.</p>
+        <p>However, <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../product_philosophy/oodbms.htm">OODBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> has some valuable advantages, which can't be
+underestimated:</p>
+        <ul>
+            <li value="1">native Object Oriented language support (no
+object-relational impedance mismatch);</li>
+            <li value="2">native complex object structures and hierarchies
+support;</li>
+            <li value="3">easy refactoring and product evolution;</li>
+            <li value="4">zero-administration;</li>
+            <li value="5">continuous regression testing.</li>
+        </ul>
+        <p>Some of the most obvious usecases and advantages of OODBMS
+are listed below.</p><a name="Object Oriented Development"></a>
+        <h2>Object Oriented Development</h2>
+        <p>The fact that OODBMS technology is the perfect match for
+using in OO development environment is obvious from the very name. Though RDBMS
+has a wide support in tools and methods of using in OO environment there will
+always be an overhead of the translation from the object to relational world,
+commonly known as object-relational impedance mismatch.</p><a name="Embedded Applications"></a>
+        <h2>Embedded Applications</h2>
+        <p>Embedded device applications need a small-footprint
+zero-administration database, which makes a perfect match with an OODBMS. In
+addition, they usually need a quick response-time, which can be better achieved
+by a native OO technology, when no object-relational conversion is needed.</p><a name="Complex Object Structures And Hierarchies"></a>
+        <h2>Complex Object Structures And Hierarchies</h2>
+        <p>In applications having to deal with deep object structures
+(tree or graph), OODBMS offers a much easier native way to store them. Trees or
+graphs cannot be easily translated to RDBMS structure, so that the application
+has to deal with often complex conversion algorithms, which are difficult to
+maintain and refactor. On the other hand, OODBMS can store these structures
+transparently without any additional coding.</p>
+        <p>The same is true for difficult inter-objects relationships.
+In RDBMS they are realized with foreign keys. In some cases, you will
+need to
+fetch object by object until you will reach the final relation. In
+OODBMS all
+you need is to specify an
+<a href="../../../object_lifecycle/activation.htm">activation depth</a> or use
+<a href="../../../object_lifecycle/activation/transparent_activation_framework.htm">transparent
+activation</a> to reach all the related objects through the top-object
+fields.</p>
+        <p>From the said above you can conclude that the applications
+using objects with collection members (one-to-many relationships) will also
+benefit from OODBMS technology.</p><a name="Refactoring And Schema Evolution"></a>
+        <h2>Refactoring And Schema Evolution</h2>
+        <p>Most applications evolve as the time goes. It means that
+their class and data structure (schema) can change. In applications using
+relational databases schema evolution is quite work-consuming process: the
+schema must be changed, the class structure must be changed and the query
+collection must be changed too. In OODBMS applications, only class structure is
+a subject of change and the process can be highly automated by using modern
+refactoring techniques available from IDEs.</p><a name="Agile Development"></a>
+        <h2>Agile Development</h2>
+        <p>OODBMS makes it possible to implement agile development
+process in your team:</p>
+        <ul>
+            <li value="1">continuous
+     refactoring; </li>
+            <li value="2">agile
+     modeling; </li>
+            <li value="3">continuous
+     regression testing; </li>
+            <li value="4">configuration
+     management; </li>
+            <li value="5">developer
+     "sandboxes".</li>
+        </ul>
+        <p>The
+use of RDBMS technology complicates the adoption of these techniques due to the
+technical impedance mismatch, the cultural impedance mismatch, and the current
+lack of tool support. </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

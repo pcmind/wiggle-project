@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|IDs And UUIDs" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Unique Universal IDs	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/ids_and_uuids/unique_universal_ids.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../ids_and_uuids.htm">IDs And UUIDs</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Unique Universal IDs</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Unique Universal IDs</h1>
+        <p>For long-term external references and to identify an object even after it has been copied or moved to another <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText>, db4o supplies Unique Universal IDs (UUIDs).</p>
+        <p>Every newly created db4o database generates a signature object. It is stored as an instance of Db4oDatabase in your database file.</p>
+        <p>This signature is linked to all newly created objects (if <a href="#" class="glossaryTerm_0">UUID</a> generation is enabled) as the "signature part" of the UUID.</p>
+        <p>Further to that db4o creates a timestamp for every new object and uses an internal counter to make sure that timestamps are unique. This is called the "long part" of the UUID.</p>
+        <p>The long part is indexed to make the search fast. If two objects with an identical long parts are found, the signature parts are compared also.</p>
+        <p>The long part of the UUID can also be used to find out when an object was created. You can use </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>com.db4o.foundation.TimeStampIdGenerator#idToMilliseconds()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>to get object creation time in milliseconds.</p>
+        <p>UUIDs are guaranteed to be unique, if the signature of your db4o database is unique.</p>
+        <p>Normally any database has a unique signature unless its file is copied. The original and copied database files are identical, so they have the same signatures. If such files are used in replication, the process will end up with exceptions. What is the solution then?</p>
+        <p>Signature of a database file can be changed using</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>LocalObjectContainer#generateNewIdentity</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />method. 
+<p MadCap:conditions="Primary.Java,Primary.All languages"><pre class="prettyprint" xml:space="preserve">UUIDExample.java: testChangeIdentity
+private static void testChangeIdentity()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    Db4oDatabase db;
+    byte[] oldSignature;
+    byte[] newSignature;
+    try  {
+      db = container.ext().identity();
+      oldSignature = db.getSignature();
+      System.out.println("oldSignature: "
+          + printSignature(oldSignature));
+      ((LocalObjectContainer) container).generateNewIdentity();
+    } finally  {
+      container.close();
+    }
+    container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      db = container.ext().identity();
+      newSignature = db.getSignature();
+      System.out.println("newSignature: "
+          + printSignature(newSignature));
+    } finally  {
+      container.close();
+    }
+
+    boolean same = true;
+
+    for (int i = 0; i &lt; oldSignature.length; i++)  {
+      if (oldSignature[i] != newSignature[i])  {
+        same = false;
+      }
+    }
+
+    if (same)  {
+      System.out.println("Database signatures are identical");
+    } else  {
+      System.out.println("Database signatures are different");
+    }
+  }</pre></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>UUIDs are not generated by default, since they occupy extra space in the database file and produce performance overhead for maintaining their index. UUIDs can be turned on globally or for individual classes:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: <code>configuration.generateUUIDs(ConfigScope.GLOBALLY)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>- turns on UUID generation for all classes in a database. </p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: <code>configuration.objectClass(Foo.class).generateUUIDs(true)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>- turns on UUID generation for a specific class.</p><p>You can get the UUID value for an object using the following methods:
+</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: </p><p><code>ExtObjectContainer#getObjectInfo(Object) 
+ObjectInfo#getUUID() </code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>To get the object from the database, knowing its UUID, use: </p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: </p><p><code>ExtObjectContainer#getByUUID(Db4oUUID)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>The following example shows the usage of UUID: </p><p MadCap:conditions="Primary.Java,Primary.All languages"><pre class="prettyprint" xml:space="preserve">UUIDExample.java: setObjects
+private static void setObjects()  {
+    new File(DB4O_FILE_NAME).delete();
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.objectClass(Pilot.class).generateUUIDs(true);
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      Car car = new Car("BMW", new Pilot("Rubens Barrichello"));
+      container.store(car);
+    } finally  {
+      container.close();
+    }
+  }</pre><p></p><p MadCap:conditions="Global.Primary:java" /></p><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p MadCap:conditions="Primary.Java,Primary.All languages"><pre class="prettyprint" xml:space="preserve">UUIDExample.java: testGenerateUUID
+private static void testGenerateUUID()  {
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      Query query = container.query();
+      query.constrain(Car.class);
+      ObjectSet result = query.execute();
+      Car car = (Car) result.queryByExample(0);
+      ObjectInfo carInfo = container.ext().getObjectInfo(car);
+      Db4oUUID carUUID = carInfo.getUUID();
+      System.out
+          .println("UUID for Car class are not generated:");
+      System.out.println("Car UUID: " + carUUID);
+
+      Pilot pilot = car.getPilot();
+      ObjectInfo pilotInfo = container.ext().getObjectInfo(
+          pilot);
+      Db4oUUID pilotUUID = pilotInfo.getUUID();
+      System.out.println("UUID for Pilot:");
+      System.out.println("Pilot UUID: " + pilotUUID);
+      System.out.println("long part: "
+          + pilotUUID.getLongPart() + "; signature: "
+          + printSignature(pilotUUID.getSignaturePart()));
+      long ms = TimeStampIdGenerator.idToMilliseconds(pilotUUID
+          .getLongPart());
+      System.out.println("Pilot object was created: "
+          + (new Date(ms)).toString());
+      Pilot pilotReturned = (Pilot) container.ext().getByUUID(
+          pilotUUID);
+      System.out.println("Pilot from UUID: " + pilotReturned);
+    } finally  {
+      container.close();
+    }
+  }</pre></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>Sometimes you can find out that you need UUIDs only when the database is already created and has some data in it. What can you do in that case?</p><p>Fortunately enabling replication for existing data files is a very simple process: </p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java: </p><p><code>configuration.objectClass(Task.class).enableReplication(true)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>After that you will just need to use the old defragment tool from tools package supplied
+with the distribution before version 6.0 (source code only) to enable replication.</p><p>You can use UUID for replication and as a reference to a specific object instance from an external application or data store.</p><p MadCap:conditions="Primary.Online">Download example code:</p><p MadCap:conditions="Primary.Online"><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="uuidsjava.zip">Java </a></MadCap:conditionalText></p><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

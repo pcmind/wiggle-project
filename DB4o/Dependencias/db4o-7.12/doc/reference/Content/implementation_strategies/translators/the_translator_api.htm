@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Translators" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>The Translator API	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/translators/the_translator_api.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../translators.htm">Translators</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">The Translator API</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>The Translator API</h1>
+        <p>So how do we get our object into the database, now that everything seems to fail? Db4o provides a way to specify a custom way of storing and retrieving objects through the ObjectTranslator and ObjectConstructor interfaces.</p><a name="ObjectTranslator"></a>
+        <h2>ObjectTranslator</h2>
+        <p>The ObjectTranslator API looks like this:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>public Object onStore(ObjectContainer container,Object applicationObject);</code>
+            </p>
+            <p><code>public void onActivate(ObjectContainer container,Object applicationObject,Object storedObject);</code>
+            </p>
+            <p><code>public Class storedClass()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>The usage is quite simple: When a translator is configured for a class, db4o will call its onStore method with a reference to the database and the instance to be stored as a parameter and will store the object returned. This object's type has to be primitive from a db4o point of view and it has to match the type specification returned by storedClass().</p>
+        <p>On retrieval, db4o will create a blank object of the target class (using the configured instantiation method) and then pass it on to onActivate() along with the stored object to be set up accordingly.
+</p><a name="ObjectConstructor"></a>
+        <h2>ObjectConstructor</h2>
+        <p>However, this will only work if the application object's class provides sufficient setters to recreate its state from the information contained in the stored object, which is not the case for our example class.</p>
+        <p>For these cases db4o provides an extension to the ObjectTranslator interface, ObjectConstructor, which declares one additional method:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>public Object onInstantiate(ObjectContainer container,Object storedObject);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>If db4o detects a configured translator to be an ObjectConstructor implementation, it will pass the stored class instance to the onInstantiate() method and use the result as a blank application object to be processed by onActivate().</p>
+        <p>Note that, while in general configured translators are applied to subclasses, too, ObjectConstructor application object instantiation will not be used for subclasses (which wouldn't make much sense, anyway), so ObjectConstructors have to be configured for the concrete classes.
+</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p><a href="java_translator_implementation.htm">Java Translator Implementation</a> provides a <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../translators.htm">Translator<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> usage example for Java platform.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>.NET Translator Implementation provides a Translator usage example for .NET platform.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

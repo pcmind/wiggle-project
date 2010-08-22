@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Detailed Example	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_lifecycle/transparent_persistence/detailed_example.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Detailed Example</h1>
+        <p>Let's look at a primitive example, demonstrating manual implementation
+of Activatable/IActivatable interface for <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../transparent_persistence.htm">TP<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>. We will use a class similar to
+the <a href="../activation/transparent_activation_framework/detailed_example.htm">one</a> used in <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../activation/transparent_activation_framework.htm">Transparent Activation<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> chapters.</p>
+        <p MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">SensorPanel.java
+/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.tpexample;
+
+import com.db4o.activation.*;
+import com.db4o.ta.*;
+
+public class SensorPanel implements Activatable  {
+
+  private Object _sensor;
+
+  private SensorPanel _next;
+
+  /**//*activator registered for this class*/
+  transient Activator _activator;
+  
+  public SensorPanel()  {
+    // default constructor for instantiation
+  }
+  // end SensorPanelTA
+
+  public SensorPanel(int value)  {
+    _sensor = new Integer(value);
+  }
+  // end SensorPanelTA
+
+  /**//*Bind the class to the specified object container, create the activator*/
+  public void bind(Activator activator)  {
+      if (_activator == activator)  {
+        return;
+      }
+      if (activator != null &amp;&amp; _activator != null)  {
+            throw new IllegalStateException();
+        }
+    _activator = activator;
+  }
+  // end bind
+
+  /**//*Call the registered activator to activate the next level,
+   * the activator remembers the objects that were already 
+   * activated and won't activate them twice. 
+   */
+  public void activate(ActivationPurpose purpose)  {
+    if (_activator == null)
+      return;
+    _activator.activate(purpose);
+  }
+  // end activate
+  
+  public SensorPanel getNext()  {
+    /**//*activate direct members*/
+    activate(ActivationPurpose.READ);
+    return _next;
+  }
+  // end getNext
+  
+  public Object getSensor()  {
+    /**//*activate direct members*/
+    activate(ActivationPurpose.READ);
+    return _sensor;
+  }
+  // end getSensor
+  
+  public void setSensor(Object sensor)  {
+    /**//*activate for persistence*/
+    activate(ActivationPurpose.WRITE);
+    _sensor = sensor;
+  }
+  // end setSensor
+  
+  public SensorPanel createList(int length)  {
+    return createList(length, 1);
+  }
+  // end createList
+
+  public SensorPanel createList(int length, int first)  {
+    int val = first;
+    SensorPanel root = newElement(first);
+    SensorPanel list = root;
+    while (--length &gt; 0)  {
+      list._next = newElement(++val);
+      list = list._next;
+    }
+    return root;
+  }
+  // end createList
+
+  protected SensorPanel newElement(int value)  {
+    return new SensorPanel(value);
+  }
+  // end newElement
+
+  public String toString()  {
+    return "Sensor #" + getSensor();
+  }
+  // end toString
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Note, that the only place where we can modify SensorPanel members
+is <code>setSensor</code> method/<code>Sensor</code> property, and that is
+where <code>activate</code> method is added. </p>
+        <p>Now we will only need to add Transparent Activation support:</p>
+        <p MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">TPExample.java: configureTA
+private static Configuration configureTA()  {
+    Configuration configuration = Db4o.newConfiguration();
+    // add TA support
+    configuration.add(new TransparentActivationSupport());
+    return configuration;
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Initial storing of the objects is done as usual with a
+single <code>store</code> call:</p>
+        <p MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">TPExample.java: storeSensorPanel
+private static void storeSensorPanel()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = database(Db4o.newConfiguration());
+    if (container != null)  {
+      try  {
+        // create a linked list with length 10
+        SensorPanel list = new SensorPanel().createList(10);
+        container.store(list);
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Now we can test how <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../transparent_persistence.htm">Transparent Persistence<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> helped us to
+keep the code simple. Let's select all elements from the linked SensorPanel
+list, modify them and store. As you remember default update depth is one, so
+without TP, we would have to store each member of the linked list (SensorPanel)
+separately. With TP enabled there is absolutely nothing to do: commit call will
+find all activatable objects and store those that were modified.</p>
+        <p MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">TPExample.java: testTransparentPersistence
+private static void testTransparentPersistence()  {
+    storeSensorPanel();
+    Configuration configuration = configureTA();
+
+    ObjectContainer container = database(configuration);
+    if (container != null)  {
+      try  {
+        ObjectSet result = container.queryByExample(new SensorPanel(1));
+        listResult(result);
+        SensorPanel sensor = null;
+        if (result.size() &gt; 0)  {
+          System.out.println("Before modification: ");
+          sensor = (SensorPanel) result.queryByExample(0);
+          // the object is a linked list, so each call to next()
+          // will need to activate a new object
+          SensorPanel next = sensor.getNext();
+          while (next != null)  {
+            System.out.println(next);
+            // modify the next sensor
+            next.setSensor(new Integer(10 + (Integer)next.getSensor()));
+            next = next.getNext();
+          }
+          // Explicit commit stores and commits the changes at any time
+                    container.commit();
+        }
+      } finally  {
+        // If there are unsaved changes to activatable objects, they 
+                // will be implicitly saved and committed when the database 
+                // is closed
+        closeDatabase();
+      }
+    }
+    // reopen the database and check the modifications
+    container = database(configuration);
+    if (container != null)  {
+      try  {
+        ObjectSet result = container.queryByExample(new SensorPanel(1));
+        listResult(result);
+        SensorPanel sensor = null;
+        if (result.size() &gt; 0)  {
+          System.out.println("After modification: ");
+          sensor = (SensorPanel) result.queryByExample(0);
+          SensorPanel next = sensor.getNext();
+          while (next != null)  {
+            System.out.println(next);
+            next = next.getNext();
+          }
+        }
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>That's all. The benefits that we've got:</p>
+        <ul class="unIndentedList">
+            <li value="1">clean and friendly to refactorings code;</li>
+            <li value="2">performance benefit: only modified objects are
+stored;</li>
+            <li value="3">hassle-free development.</li>
+        </ul>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="tpexamplejava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

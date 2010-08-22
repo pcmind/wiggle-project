@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="db4o Testing Framework" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Db4ounit Methods	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#db4o_testing_framework/db4ounit_methods.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../db4o_testing_framework.htm">db4o Testing Framework</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">db4ounit Methods</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Db4ounit Methods</h1>
+        <p>Let's
+look through the basic API , which will help you to build your own test. This
+document is not a complete API reference and its intention is to give you a
+general idea of the methods usage and availability.</p><a name="AbstractDb4oTestCase"></a>
+        <h2>AbstractDb4oTestCase</h2>
+        <p>AbstractDb4oTestCase is a base class for creating test
+cases.</p>
+        <p>private transient Db4oFixture _fixture; - determines an
+environment for the test execution and gives an access to the test database.
+The environment can be local (derived from AbstractSoloDb4oFixture) or
+client/server (AbstractClientServerDb4oFixture). </p>
+        <p>You can always access the fixture from your test class using</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>public void fixture(Db4oFixture fixture)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" /><a name="Methods for working with a database:"></a>
+        <h3>Methods for working with a database:</h3>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public ExtObjectContainer db()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Returns an instance of object container for the current
+environment.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">Java:
+
+<p><code>protected void reopen() throws Exception</code></p></p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This function will close the database and open it again. It
+also performs an implicit commit on close.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected Reflector reflector()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Returns current reflector.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:
+</p>
+            <p><code>protected <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../Basic_Concepts/transaction.htm">Transaction<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> trans()</code>
+            </p>
+            <p><code>protected Transaction systemTrans()</code>
+            </p>
+            <p><code>protected Transaction newTransaction()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Methods to get transaction object for the current environment.</p><a name="Various methods to work with persistent objects:"></a>
+        <h3>Various methods to work with persistent objects:</h3>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected Query newQuery()</code>
+            </p>
+            <p><code>protected Query newQuery(Class clazz)</code>
+            </p>
+            <p><code>protected Query newQuery(Transaction transaction, Class
+clazz)</code>
+            </p>
+            <p><code>protected Query newQuery(Transaction transaction)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Create a new query object.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected Object retrieveOnlyInstance(Class clazz)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Checks if only one object of a class is stored in the
+database</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected int countOccurences(Class clazz)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Returns the amount of objects of the specified class in the
+database.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void foreach(Class clazz, Visitor4 visitor)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method goes through the ObjectSet of the specified
+class objects in the database calling Visitor4.visit() method. Visitor4 is an
+interface specifying a visit method:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void visit(Object obj);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void deleteAll(Class clazz)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Deletes all the instances of the specified class in the
+database.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected ReflectClass reflectClass(Class clazz)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p>Returns a ReflectClass instance for the specified class.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void indexField(Configuration config,Class clazz,
+String fieldName)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Adds field index into specified configuration.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">Java:
+<p><code>public final void setUp() throws Exception</code></p></p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method:</p>
+        <ul>
+            <li value="1">deletes
+     the used database;</li>
+            <li value="2">configures
+     and opens a new one (see Configure method). </li>
+            <li value="3">Calls
+     db4oSetupBeforeStore</li>
+            <li value="4">Calls
+     store()</li>
+            <li value="5">Commits
+     and reopens the database</li>
+            <li value="6">Calls
+     db4oSetupAfterStore</li>
+        </ul>
+        <p>More details about the mentioned above methods:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void configure(Configuration config)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Use this method to create your custom configuration for a
+test. Config parameter is the current default test configuration, which can be
+modified.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void db4oSetupBeforeStore() throws Exception</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method is a placeholder for any custom setup actions
+that need to be taken before filling up the database with objects.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void store() throws Exception {}</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method is supplied for creating and storing the
+objects, which you are going to use for your test.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>protected void db4oSetupAfterStore() throws Exception</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method is a placeholder for any custom setup actions
+that need to be taken after the database is filled up with objects.</p><a name="Methods for running tests:"></a>
+        <h3>Methods for running tests:</h3>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public int runSoloAndClientServer()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Will run the test in both modes</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public int runSolo()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Only local mode.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:
+</p>
+            <p><code>public int runClientServer()</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" /><a name="Db4ounit.Assert"></a>
+        <h2>Db4ounit.Assert</h2>
+        <p>Db4ounit.Assert
+class - provides a variety of methods for controlling code execution. Some of
+the methods are presented below. For more information please refer to the
+source code.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public
+static void expect(Class exception, CodeBlock block)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method
+runs a specified method (block parameter) and throws an exception if the block
+runs without any exception.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public
+static void isTrue(boolean condition)</code>
+            </p>
+            <p><code>public
+static void isTrue(boolean condition, String msg)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method
+checks the condition and throws an exception if the condition is false. Msg
+parameter can be used to customize exception message.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public
+static void areEqual(Object expected, Object actual)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Checks if
+the supplied parameters are equal and throws an exception otherwise.</p>
+        <p>Similar methods are provided for null, lesser, greater and
+other checking, please refer to Assert class code for full information.</p><a name="FrameworkTestCase"></a>
+        <h2>FrameworkTestCase</h2>
+        <p>FrameworkTestCase class provides methods to run your test
+suite and check if its results.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public static void runTestAndExpect(Test test,int
+expFailures)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>This method will run the test specified and throw an
+exception if the number of expected failures (expFailures parameter) is not
+equal to the number of experienced failures.</p>
+        <p>For more information please refer to the source code of FrameworkTestCase class.</p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

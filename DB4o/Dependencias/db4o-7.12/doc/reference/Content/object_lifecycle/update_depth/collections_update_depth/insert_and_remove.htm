@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Update Depth|Collections Update Depth" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Insert And Remove	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#object_lifecycle/update_depth/collections_update_depth/insert_and_remove.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../update_depth.htm">Update Depth</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../collections_update_depth.htm">Collections Update Depth</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Insert And Remove</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Insert And Remove</h1>
+        <p>When an object is inserted or removed from the list, only
+the list object needs to be updated, the objects in the list are not going to
+be changed. That means that for the object from the <a href="../collections_update_depth.htm">previous topic</a> we will need to set update depth = 1.</p>
+        <p>Let's fill up the database with 2 long lists of objects:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ListOperationsExample.java: fillUpDb
+private static void fillUpDb()
+         {
+            int listCount = 2;
+            int dataCount = 50000;
+            long elapsedTime = 0;
+            new File(DBFILE).delete();
+            ObjectContainer db = Db4o.openFile(DBFILE);
+            try
+             {
+              long t1 = System.currentTimeMillis();
+
+                for (int i = 0; i &lt; listCount; i++)
+                 {
+                    ListObject lo = new ListObject();
+                    lo.setName("list" + String.format("%3d", i));
+                    for (int j = 0; j &lt; dataCount; j++)
+                     {
+                        DataObject dataObject = new DataObject();
+                        dataObject.setName( "data" + String.format("%5d", j));
+                        dataObject.setData( System.currentTimeMillis() 
++ " ---- Data Object " + String.format("%5d", j));
+                        lo.getData().add(dataObject);
+                    }
+                    db.store(lo);
+                }
+                long t2 = System.currentTimeMillis();
+                elapsedTime = t2 - t1;
+            }
+            finally
+             {
+                db.close();
+            }
+            System.out.println("Completed " + listCount + " lists of " 
++ dataCount + " objects each.");
+            System.out.println("Elapsed time: " + elapsedTime + " ms.");
+        }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>We will remove an object from one list and insert it into
+another:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ListOperationsExample.java: removeInsert
+private static void removeInsert()
+         {
+            ObjectContainer db = Db4o.openFile(DBFILE);
+            long timeElapsed = 0;
+            try
+             {
+                // set activation depth to 1 for the quickest execution
+                db.ext().configure().updateDepth(1);
+                List&lt;ListObject&gt; result = db.&lt;ListObject&gt;query(ListObject.class);
+                if (result.size() == 2)
+                 {
+                  // retrieve 2 ListObjects
+                    ListObject lo1 = result.queryByExample(0);
+                    ListObject lo2 = result.queryByExample(1);
+                    DataObject dataObject = lo1.getData().queryByExample(0);
+                    // move the first object from the first
+                    // ListObject to the second ListObject
+                    lo1.getData().remove(dataObject);
+                    lo2.getData().add(dataObject);
+
+                    System.out.println("Removed from the first list, count is " 
++ lo1.getData().size());
+                    System.out.println("Added to the second list, count is " 
++ lo2.getData().size());
+                    long t1 = System.currentTimeMillis();
+                    // save ListObjects. UpdateDepth = 1 will ensure that 
+                    // the DataObject list is saved as well
+                    db.store(lo1);
+                    db.store(lo2);
+                    db.commit();
+                    long t2 = System.currentTimeMillis();
+                    timeElapsed = t2 - t1;
+                }
+            }
+            finally
+             {
+                db.close();
+            }
+            System.out.println("Storing took: " + timeElapsed + " ms.");
+        }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Remember, if an object is removed from the list and is not
+going to be used any more, it should be deleted manually:</p>
+        <p><code>db.Delete(dataObject)</code>
+        </p>
+        <p>Let's check if the results are correct:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ListOperationsExample.java: checkResults
+private static void checkResults()
+         {
+            ObjectContainer db = Db4o.openFile(DBFILE);
+            try
+             {
+                List&lt;ListObject&gt; result = db.&lt;ListObject&gt;query(ListObject.class);
+                if (result.size() &gt; 0)
+                 {
+                  // activation depth should be enough to activate 
+                  // ListObject, DataObject and its list members
+                    int activationDepth = 3;
+                    db.ext().configure().activationDepth(activationDepth);
+                    System.out.println("Result count was " + 
+result.size()+ " looping with activation depth" +  activationDepth);
+                    for (int i = 0; i &lt; result.size(); i++) {
+                      ListObject lo = (ListObject)result.queryByExample(i);
+                        System.out.println("ListObj " + lo.getName() + 
+" has " + ((lo.getData() == null) ? "&lt;null&gt;" : lo.getData().size()) +" objects");
+                        System.out.println((lo.getData() != null &amp;&amp; 
+lo.getData().size() &gt; 0) ? lo.getData().queryByExample(0).toString() : "&lt;null&gt;" + "  at index 0");
+                        System.out.println();
+                    }
+                }
+            }
+            finally
+             {
+                db.close();
+            }
+        }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>You will see that insert/remove operation takes much less time with the correct update depth setting. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="../listoperationsjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

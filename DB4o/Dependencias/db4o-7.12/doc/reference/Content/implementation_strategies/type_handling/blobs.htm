@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Type Handling" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Blobs	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/type_handling/blobs.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../type_handling.htm">Type Handling</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Blobs	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Blobs</h1>
+        <P>In some cases user has to deal with large binary objects (BLOBs) such as images, video, music, which should be stored in a structured way, and retrieved/queried easily. There are several challenges associated with this task:</P>
+        <UL>
+            <LI value="1">storage location;</LI>
+            <LI value="2">loading into RAM;</LI>
+            <LI value="3">querying interface;</LI>
+            <LI value="4">objects' modification;</LI>
+            <LI value="5">information backup;</LI>
+            <LI value="6">client/server processing.</LI>
+        </UL>
+        <P>Db4o provides you with a flexibility of using 2 different solutions for this case:</P>
+        <OL>
+            <LI value="1">Blob (Java package: com.db4o.types.Blob, .NET namespace: Db4oTypes.IBlob)</LI>
+            <LI value="2">byte[] arrays stored inside the database file</LI>
+        </OL>
+        <P>These two solutions' main features in comparison are represented below:</P><a name="Blob"></a>
+        <H2>Blob</H2>
+        <OL>
+            <LI value="1">every Blob gets it's own file</LI>
+            <LI value="2"><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../client-server.htm">C/S<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> communication runs asynchronous in separate thread </LI>
+            <LI value="3">special code is necessary to store and load </LI>
+            <LI value="4">no concerns about activation depth </LI>
+        </OL><a name="byte[] array"></a>
+        <H2>byte[] array</H2>
+        <OL>
+            <LI value="1">data in the same file </LI>
+            <LI value="2">C/S communication runs in the normal communication thread </LI>
+            <LI value="3">transparent handling without special concerns </LI>
+            <LI value="4">control over activation depth may be necessary</LI>
+        </OL>
+        <P>Storing data in a byte[] array works just as storing usual objects, but this method is not always applicable/desirable. First of all, the size of the db4o file can grow over the limit (256 GB) due to the BLOB data added. Secondly, object activation and client/server transferring logic can be an additional load for your application.</P>
+        <P> More Reading:<ul><li value="1"><p><a href="blobs/db4o_blob_implementation.htm">Db4o Blob Implementation</a></p></li></ul></P>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

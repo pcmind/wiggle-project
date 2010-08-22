@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CatapultAliasFile conditions="Primary.Print" DefaultSkinName="RedVersant">
+    <Map Name="First" Link="Basic_Concepts.htm" ResolvedId="1" />
+    <Map Name="Second" Link="Basic_Concepts/acid_model.htm" ResolvedId="1000" />
+</CatapultAliasFile>

@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Client-Server|Semaphores" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Controlling Login Information	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#client-server/semaphores/controlling_login_information.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../client-server.htm">Client-Server</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../semaphores.htm">Semaphores</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Controlling Login Information</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Controlling Login Information</h1>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ConnectedUser.java
+/** Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.semaphores;
+
+import java.util.*;
+import com.db4o.*;
+import com.db4o.config.*;
+import com.db4o.ext.*;
+import com.db4o.query.*;
+
+/** *//**
+ * This class demonstrates how semaphores can be used to rule out race
+ * conditions when providing exact and up-to-date information about
+ * all connected clients on a server. The class also can be used to
+ * make sure that only one login is possible with a give user name and
+ * ipAddress combination.
+ */
+public class ConnectedUser  {
+  static final String SEMAPHORE_CONNECTED = "ConnectedUser_";
+  static final String SEMAPHORE_LOCK_ACCESS = "ConnectedUser_Lock_";
+
+  static final int TIMEOUT = 10000; // concurrent access timeout
+
+  // 10 seconds
+
+  String userName;
+
+  String ipAddress;
+
+  public ConnectedUser(String userName, String ipAddress)  {
+    this.userName = userName;
+    this.ipAddress = ipAddress;
+  }
+
+  // make sure to call this on the server before opening the
+  // database
+  // to improve querying speed
+  public static void configure()  {
+    ObjectClass objectClass = Db4o.configure().objectClass(
+        ConnectedUser.class);
+    objectClass.objectField("userName").indexed(true);
+    objectClass.objectField("ipAddress").indexed(true);
+  }
+
+  // call this on the client to ensure to have a ConnectedUser
+  // record
+  // in the database file and the semaphore set
+  public static void login(ObjectContainer client, String userName,
+      String ipAddress)  {
+    if (!client.ext()
+        .setSemaphore(SEMAPHORE_LOCK_ACCESS, TIMEOUT))  {
+      throw new RuntimeException(
+          "Timeout trying to get access to ConnectedUser lock");
+    }
+    Query q = client.query();
+    q.constrain(ConnectedUser.class);
+    q.descend("userName").constrain(userName);
+    q.descend("ipAddress").constrain(ipAddress);
+    if (q.execute().size() == 0)  {
+      client.store(new ConnectedUser(userName, ipAddress));
+      client.commit();
+    }
+    String connectedSemaphoreName = SEMAPHORE_CONNECTED
+        + userName + ipAddress;
+    boolean unique = client.ext().setSemaphore(
+        connectedSemaphoreName, 0);
+    client.ext().releaseSemaphore(SEMAPHORE_LOCK_ACCESS);
+    if (!unique)  {
+      throw new RuntimeException(
+          "Two clients with same userName and ipAddress");
+    }
+  }
+
+  // here is your list of all connected users, callable on the
+  // server
+  public static List connectedUsers(ObjectServer server)  {
+    ExtObjectContainer serverObjectContainer = server.ext()
+        .objectContainer().ext();
+    if (serverObjectContainer.setSemaphore(SEMAPHORE_LOCK_ACCESS,
+        TIMEOUT))  {
+      throw new RuntimeException(
+          "Timeout trying to get access to ConnectedUser lock");
+    }
+    List list = new ArrayList();
+    Query q = serverObjectContainer.query();
+    q.constrain(ConnectedUser.class);
+    ObjectSet objectSet = q.execute();
+    while (objectSet.hasNext())  {
+      ConnectedUser connectedUser = (ConnectedUser) objectSet
+          .next();
+      String connectedSemaphoreName = SEMAPHORE_CONNECTED
+          + connectedUser.userName
+          + connectedUser.ipAddress;
+      if (serverObjectContainer.setSemaphore(
+          connectedSemaphoreName, TIMEOUT))  {
+        serverObjectContainer.delete(connectedUser);
+      } else  {
+        list.add(connectedUser);
+      }
+    }
+    serverObjectContainer.commit();
+    serverObjectContainer.releaseSemaphore(SEMAPHORE_LOCK_ACCESS);
+    return list;
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="semaphoressemaphoresjava.zip">Java </a>
+        </MadCap:conditionalText>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Enhancement Tools" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Simplest Enhancement Script	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/enhancement_tools/enhancement_for_java/simplest_enhancement_script.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../enhancement_tools.htm">Enhancement Tools</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Simplest Enhancement Script</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Simplest Enhancement Script</h1>
+        <p><a name="kanchor64"></a>If you are
+not interested in writing complicated ant build scripts for your project, but
+still need to use enhancement, we've created a simplest enhance script that can
+do the job for any java project with only minor changes or without any changes
+at all. Here is the script:</p>
+        <pre class="prettyprint" xml:space="preserve">Build.Xml
+&lt;?xml version="1.0"?&gt;
+&lt;project name="db4o enhance project" default="enhance" basedir="."&gt;
+  &lt;path id="project.classpath"&gt;
+    &lt;pathelement path="${basedir}/bin" /&gt;
+    &lt;fileset dir="lib"&gt;
+      &lt;include name="**/*.jar" /&gt;
+    &lt;/fileset&gt;
+  &lt;/path&gt;
+  &lt;taskdef name="db4o-enhance" 
+classname="com.db4o.enhance.Db4oEnhancerAntTask" 
+classpathref="project.classpath" /&gt;
+  &lt;target name="enhance"&gt;
+    &lt;db4o-enhance classtargetdir="${basedir}/bin" 
+jartargetdir="${basedir}/lib" nq="true" ta="true" 
+collections="true"&gt;
+      &lt;classpath refid="project.classpath" /&gt;
+      &lt;sources dir="${basedir}/bin" /&gt;
+      &lt;jars dir="${basedir}/lib"&gt;
+        &lt;include name="*.jar" /&gt;
+        &lt;exclude name="db4o-*.jar" /&gt;
+        &lt;exclude name="ant.jar" /&gt;
+        &lt;exclude name="bloat-1.0.jar" /&gt;
+      &lt;/jars&gt;
+    &lt;/db4o-enhance&gt;
+  &lt;/target&gt;
+&lt;/project&gt;</pre>
+        <p>In order to
+use it - just put it in your project's folder. You will also need to put
+db4o-<span class="PrimaryCurrentVersion">X.XX</span>-all-java5.jar (it contains all the required jars) into your lib folder.
+If your project uses non-standard Java layout (web application, maven
+application etc), you will have to correct the paths to bin and lib folders in
+the build.xml.</p>
+        <p>This
+build.xml file includes <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../object_lifecycle/activation/transparent_activation_framework.htm">TA<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>/<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../object_lifecycle/transparent_persistence.htm">TP<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> enhancement (normal and collections) and <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>optimization. These are the default options. For a more detailed description of
+Ant instrumentation the following options can be used:</p>
+        <p><b>nq</b>: switch for
+native query optimization enhancement</p>
+        <p><b>ta</b>: switch for
+transparent activation/persistence enhancement</p>
+        <p><b>collections</b>: switch
+for enhancement of platform collections for transparent activation/persistence
+(only effective if ta is switched on)</p>
+        <p>In order to
+run the enhancement you can just type "ant" in the command line in your project's
+directory. </p>
+        <p>You can
+also integrate this build in the build process in your IDE. If you are using
+Eclipse follow these steps:</p>
+        <ul>
+            <li value="1">Right-click the project in the Package Explorer
+and select "Properties"</li>
+            <li value="2">Select "Builders" in the left pane</li>
+            <li value="3">Add new builder after the default Java builder,
+call it "Enhancement"</li>
+            <li value="4">Select the build.xml file on the "Main" tab of
+the new builder properties</li>
+        </ul>
+        <p>Now enhancement will be run after the normal
+compilation (you may need to clean and rebuild the project to see the effect).</p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

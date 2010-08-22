@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Configuration	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#tuning/configuration.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Configuration	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Configuration</h1>
+        <p>db4o provides a wide range of configuration methods to request special behaviour. </p>
+        <p>For a complete list of all available methods see the following interfaces:</p>
+        <ul>
+            <li value="1"><a href="configuration/common_configuration.htm">Common Configuration</a>
+            </li>
+            <li value="2"><a href="configuration/embedded_configuration.htm">Embedded Configuration</a>
+            </li>
+            <li value="3"><a href="configuration/client_configuration.htm">Client Configuration</a>
+            </li>
+            <li value="4"><a href="configuration/server_configuration.htm">Server Configuration</a>
+            </li>
+            <li value="5"><a href="configuration/objectclass_configuration.htm">ObjectClass</a>
+            </li>
+            <li value="6"><a href="configuration/objectfield_configuration.htm">ObjectField</a>
+            </li>
+            <li value="7"><a href="configuration/cache_configuration.htm">Cache Configuration</a>
+            </li>
+            <li value="8"><a href="configuration/file_configuration.htm">File Configuration</a>
+            </li>
+            <li value="9"><a href="configuration/configuration_item.htm">Configuration Item</a>
+            </li>
+        </ul>The following paragraphs contain some useful hints around using configuration calls.
+<a name="Working With Configuration"></a><h2>Working With Configuration </h2><p>Configuration can be obtained for embedded and client-server modes:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();</code></p><p><code>ServerConfiguration serverConfiguration = Db4oClientServer.newServerConfiguration();</code></p><p><code>ClientConfiguration clientConfiguration = Db4oClientServer.newClientConfiguration();</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>To apply the configuration to an ObjectContainer/Client/Server use one of the following methods:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>Db4oEmbedded.openFile(configuration, databaseFileName)</code></p><p><code>Db4oClientServer.openServer(serverConfiguration, databaseFileName, port)</code></p><p><code>Db4oClientServer.openClient(clientConfiguration, hostName, port, user, password)</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>Note, that the same configuration object can't be re-used in more than one object container. If you need to open several object containers with the same set of configuration settings, it is recommended to create a method, which will return a new configuration instance on request:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>private Configuration configure(){</code></p><p><code>    EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();</code></p><p><code>    config.callbacks(false);</code></p><p><code>    ...</code></p><p><code>    return config;</code></p><p><code>}</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>Configuration settings are <b>not</b> stored in db4o database files. Accordingly you will need to pass the same configuration set <b>every time</b> you open an ObjectContainer/Client/Server.  For using db4o in client/server mode it is recommended to use the same configuration on the server and on the client. To set this up nicely it makes sense to create one application class with one method that returns the required configuration and to deploy this class both to the server and to all clients.   </p><p>Client/Server specific configuration calls reside in ClientConfiguration and ServerConfiguration interfaces (.NET conventional name IClientConfiguration and IServerConfiguration).  </p>For db4o versions before 6.0 the above-mentioned method of working with the configuration was not available. Instead, you could use:
+<ul><li value="1">global db4o configuration context;</li><li value="2">object container instance configuration.</li></ul><p>These methods are still available, however their usage is not advised due to their limitations. Using new configuration methods with the old ones can be harmful. </p><a name="Global Configuration"></a><h3>Global Configuration</h3><p>Global configuration can be set using:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>Db4o.configure()</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>Starting from version 6.0 you can obtain a clone of the global configuration:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>Configuration configuration = Db4o.cloneConfiguration()</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>When an ObjectContainer/ObjectServer is opened, the global configuration context is cloned and copied into the newly opened ObjectContainer/ObjectServer. Subsequent calls against the global context with Db4o.configure() have no effect on open ObjectContainers/ObjectServers.</p><p> Global configuration has a number of disadvantages:</p><ul><li value="1">the settings apply to all the object containers in the current VM/runtime</li><li value="2">the settings can't be reset.</li></ul><p></p><a name="Object Container Configuration"></a><h3>Object Container Configuration</h3><p>Object Container instance configuration can be used for an open ObjectContainer/Client/Server:</p><p MadCap:conditions="Primary.Java,Primary.All languages"><p>Java:</p><p><code>objectContainer.ext().configure() </code><code>objectServer.ext().configure()</code></p></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:net" /><p>Closing the container will erase all the settings.</p><p>The obvious disadvantages are:</p><ul><li value="1">configuration can not be created before the container is opened;</li><li value="2"><p>some configuration methods effect the way the system works on opening an object container therefore have no influence on the open object container;</p></li><li value="3"><p>some configuration methods only effect the creation of a database;</p></li><li value="4">configuration settings will need to be repeated as many times as the new container gets opened. </li></ul><a name="Further Reading"></a><h2>Further Reading</h2><p>Some configuration switches are discussed in more detail in the following chapters:</p><ul><li value="1"><a href="performance_hints.htm">Performance Hints</a></li><li value="2"><a href="indexing.htm">Indexing</a></li><li value="3"><a href="../implementation_strategies/encryption.htm">Encryption</a></li></ul><script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

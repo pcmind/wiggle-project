@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Platform Specific Issues" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>db4o on Java Platforms	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#platform_specific_issues/db4o_on_java_platforms.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../platform_specific_issues.htm">Platform Specific Issues</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">db4o On Java Platforms</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor108"></a>db4o on Java Platforms</h1><a name="All Java"></a>
+        <h2>All Java</h2>
+        <ul>
+            <li value="1">root package is com.db4o</li>
+        </ul><a name="JDK1.1"></a>
+        <h2>JDK1.1</h2>
+        <p>The major limitations of db4o for JDK1.1:</p>
+        <ul>
+            <li value="1">
+                <p>no support for storing private fields (reflection in JDK 1.1 can only work on public fields) </p>
+            </li>
+        </ul>
+        <ul>
+            <li value="1">
+                <p>no support for JDK collections (java.util.list since JDK1.2) </p>
+            </li>
+        </ul>
+        <ul>
+            <li value="1">
+                <p>no support for weak references</p>
+            </li>
+        </ul>db4o for Java 1.1 also goes without support for <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> Optimization. <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> optimization uses bytecode optimizer library Bloat (http://www.cs.purdue.edu/s3/projects/bloat/), which is not JDK1.1 compatible. 
+<a name="JDK1.2 - JDK 1.3"></a><h2>JDK1.2 - JDK 1.3 </h2><p>Java JDKs after version 1.1 are free of JDK1.1 limitations mentioned above. You can also use Native Query Optimization since JDK1.2.</p><p>The main limitation of JDK1.2 - 1.3 is the lack of file locking functionality. As it is necessary to lock the database file in use, db4o simulates locking files by using a timer thread that writes access time to the file. This can be quite slow.  </p><a name="JDK 1.4"></a><h2>JDK 1.4</h2><p>File locking functionality is available since JDK1.4. For the versions prior to JDK1.4 an expensive database locking simulation is used, which can considerably affect the performance. The file locking simulation can be switched off to improve the performance on versions prior to JDK1.4, though this setting can potentially result in a corrupted database:
+
+</p><p><code>Db4o.configure().lockDatabaseFile(false)</code></p><p>Db4o can bypass the constructors declared for the class using platform-specific mechanisms. (For Java, this option is only available on JREs &gt;= 1.4.) This mode allows reinstantiating objects even when their class doesn't provide a suitable constructor. For more information see <a href="../object_lifecycle/object_construction.htm">Constructors chapter</a></p><p>If this option is available in the current runtime environment, it will be the default setting.</p><a name="JDK 1.5"></a><h2>JDK 1.5</h2><ul><li value="1">Generics support introduced in JDK1.5 makes db4o Native Query syntax much simpler: <code>List &lt;Pilot&gt; pilots = db.query(new Predicate &lt;Pilot&gt;
+() { public boolean match(Pilot pilot) { return pilot.getPoints() == 100;}});</code></li><li value="2">following JDK5 annotations db4o introduces its own annotations.</li><li value="3">you can use built-in enums</li><li value="4">db4o for JDK5 also has replication support.</li></ul><a name="Mobile Java editions"></a><h2>Mobile Java editions</h2><p>Currently db4o runs on J2ME dialects that support reflection, such as Personal Java, J2ME CDC and J2ME PersonalProfile. PersonalJava is closely equivalent to Java 1.1.8 regarding the libraries and features it contains (see JDK1.1 for the list of limitations). Use db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java1.1.jar with PersonalJava.</p><p>J2ME CDC and J2ME PersonalProfile are based on subsets of JDK1.3 or JDK1.4 depending on the version used.</p><p>J2ME CLDC and MIDP are not yet supported. Their support requires:</p><ul><li value="1">replacing reflection (not available in CLDC) with a build-time preprocessor</li></ul><ul><li value="1">providing RMS RecordStore based I/O</li></ul><a name="Which db4o Java version to use"></a><h2>Which db4o Java version to use?</h2><p>Db4o comes with several
+jars supporting different java versions. Together with the advanced features of
+higher Java versions db4o provides valuable improvements to its functionality
+(see the comparison above). </p><p>To get the best
+functionality you must use the highest db4o java version that your virtual
+machine supports:</p><p><table><tr><td><b>Java versions</b></td><td><b>Recommended db4o jar </b></td></tr><tr><td>JRE1.1</td><td>db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java1.1.jar</td></tr><tr><td>JRE1.2, JRE1.3, JRE1.4</td><td>db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java1.2.jar</td></tr><tr><td>JRE5, JRE6</td><td>db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java5.jar</td></tr></table></p><p>&#160;</p><p>When you use JRE1.4 you should use db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java1.2.jar with database locking
+simulation disabled:</p><p><code>configuration.file().lockDatabaseFile(false)</code></p><p>This will improve the performance dramatically,
+because JRE1.4 provides a built-in functionality to lock database files and the
+costly db4o database locking simulation is not needed.</p><script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

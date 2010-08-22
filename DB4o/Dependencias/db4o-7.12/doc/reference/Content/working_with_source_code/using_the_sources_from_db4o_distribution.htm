@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Working With Source Code" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Using The Sources From Db4o Distribution	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#working_with_source_code/using_the_sources_from_db4o_distribution.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../working_with_source_code.htm">Working With Source Code</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Using The Sources From db4o Distribution</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Using The Sources From Db4o Distribution</h1>
+        <p>The source code is available in /src folder in your db4o
+distribution. </p>
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>
+            <p MadCap:conditions="Primary.Java,Primary.All languages">
+            </p>
+            <p>In Java version the following projects are available:</p>
+            <p><b>bloat</b>
+            </p>
+            <p><a href="http://www.cs.purdue.edu/s3/projects/bloat/">Byte-code optimization library</a>
+            </p>
+            <p><b>db4o.instrumentation</b>
+            </p>
+            <p>Bytecode instrumentation layer on top of bloat </p>
+            <p><b>db4o_osgi</b>
+            </p>
+            <p>db4o <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../platform_specific_issues/database_for_osgi.htm">OSGI<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> bundle.</p>
+            <p><b>db4o_osgi_test</b>
+            </p>
+            <p>Tests for db4o OSGI bundle.</p>
+            <p><b>db4oj</b>
+            </p>
+            <p>db4o core.</p>
+            <p><b>db4oj.tests</b>
+            </p>
+            <p>collection of db4o regression tests.</p>
+            <p><b>db4ojdk1.2</b>
+            </p>
+            <p>db4o sources for JDK1.2-1.4</p>
+            <p><b>db4ojdk5</b>
+            </p>
+            <p>db4o sources for JDK 5-6</p><b>db4otaj</b>
+            <p><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../object_lifecycle/activation/transparent_activation_framework.htm">Transparent Activation<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> instrumentation library </p>
+            <p><b>db4otools</b>
+            </p>
+            <p>Bytecode instrumentation tools 
+</p>
+            <p><b>db4onqopt</b>
+            </p>
+            <p>db4o native query optimization library</p>
+            <p><b><a name="kanchor190"></a>db4ounit</b>
+            </p>
+            <p><a href="../db4o_testing_framework.htm">unit test framework</a> for db4o.  </p>
+            <p><b>db4ounit.extensions</b>
+            </p>
+            <p>Db4oUnit extensions for <a href="../db4o_testing_framework.htm">testing db4o</a>.  </p>
+            <p>We recommend <a href="http://www.eclipse.org/">Eclipse</a> to work with the sources. </p>
+            <p>First you will need to configure Java System Libraries.
+Having done that use the following steps to import the source project into the
+development environment:</p>
+            <ul>
+                <li value="1">open a workspace;</li>
+                <li value="2">select File/New/Java Project;</li>
+                <li value="3">type in a project name (for example "db4o");</li>
+                <li value="4">select "Create project from existing source" and browse to
+the src/db4oj folder in your installation (you may want to copy it to another
+location first);</li>
+                <li value="5">click "Next" and "Finish".</li>
+            </ul>
+            <p>
+            </p>
+            <p MadCap:conditions="Global.Primary:java" />
+        </p>
+        <p>Further reading:</p>
+        <p><a href="db4o_directory_structure.htm">Db4o Directory Structure</a>
+        </p>
+        <p MadCap:conditions="Primary.Java"><a href="building_java_version.htm">Building Java Version</a>
+        </p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

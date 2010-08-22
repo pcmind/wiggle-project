@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: Foca
+Implementation-URL: http://www.h2database.com
+Implementation-Version: 2.0
+Build-Jdk: 1.5
+Created-By: Pedro
+Class-Path: ./Dependencias/db4o-7.12/lib/*

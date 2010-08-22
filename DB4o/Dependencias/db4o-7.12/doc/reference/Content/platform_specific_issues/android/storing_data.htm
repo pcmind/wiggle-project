@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Platform Specific Issues|Android" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Storing Data	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#platform_specific_issues/android/storing_data.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../platform_specific_issues.htm">Platform Specific Issues</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../android.htm">Android</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Storing Data</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Storing Data</h1>
+        <p>"Store" button creates and stores 100 of car objects (each
+including a reference to Pilot object) to each database.</p>
+        <p>SQLite:</p>
+        <pre class="prettyprint" xml:space="preserve">SqlExample.java: fillUpDB
+public static void fillUpDB() throws Exception  {
+      close();
+      _context.deleteDatabase(DATABASE_NAME);
+        SQLiteDatabase db = database();
+        if (db != null) {
+          long startTime = System.currentTimeMillis();
+          for (int i=0; i&lt;100;i++) {
+          addCar(db,i);
+        }
+          logToConsole(startTime, "Stored 100 objects: ", false);
+          startTime = System.currentTimeMillis();
+    }
+    }</pre>
+        <pre class="prettyprint" xml:space="preserve">SqlExample.java: addCar
+private static void addCar(SQLiteDatabase db, int number)
+   {
+      ContentValues initialValues = new ContentValues();
+        
+      initialValues.put("id", number);
+      initialValues.put("name", "Tester");
+        initialValues.put("points", number);
+        db.insert(DB_TABLE_PILOT, null, initialValues);
+        
+        initialValues = new ContentValues();
+        
+      initialValues.put("model", "BMW");
+        initialValues.put("pilot", number);
+        db.insert(DB_TABLE_CAR, null, initialValues);
+  }</pre>
+        <p>db4o:</p>
+        <pre class="prettyprint" xml:space="preserve">Db4oExample.java: fillUpDB
+public static void fillUpDB() throws Exception  {
+      close();
+        new File(db4oDBFullPath()).delete();
+        ObjectContainer container=database();
+        if (container != null) {
+          long startTime = System.currentTimeMillis();
+          for (int i=0; i&lt;100;i++) {
+          addCar(container,i);
+        }
+          logToConsole(startTime, "Stored 100 objects: ", false);
+          startTime = System.currentTimeMillis();
+          container.commit();
+          logToConsole(startTime, "Committed: ", true);
+    }
+    }</pre>
+        <pre class="prettyprint" xml:space="preserve">Db4oExample.java: addCar
+private static void addCar(ObjectContainer container, int points)
+   {
+    Car car = new Car("BMW");
+    car.setPilot(new Pilot("Tester", points));
+    container.store(car);
+  }</pre>
+        <p>You can see that db4o handles adding objects to the database in a much more elegant way - #set(object) method is enough. In SQLite case it is much more difficult as you mush store different objects into different tables. Some of the additional work that SQLite developer will have to do is not visible in this example, i.e:</p>
+        <ul>
+            <li value="1">the developer will have to ensure that the sequence of insert commands starts from children objects and goes up to the parent (this can be a really difficult task for relational models including lots of foreign key dependencies);</li>
+            <li value="2">in most cases the data for insertion will come from business objects, which will mean that the object model will have to be transferred to relational model. </li>
+        </ul>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="dbcomparerefjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

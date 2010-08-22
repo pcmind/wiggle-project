@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Isolated Storage IO Adapter	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#platform_specific_issues/isolated_storage/isolated_storage_io_adapter.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Isolated Storage IO Adapter</h1>
+        <p>In order to access <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../isolated_storage.htm">Isolated Storage<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> you must use <code>IsolatedStorageFileStream</code>,
+which is a class derived from <code>FileStream</code>. db4o by default uses
+
+<a href="../../implementation_strategies/storage/cachingstorage.htm">CachingStorage</a> (depending on
+version), which under the hood are using <code>FileStream</code> to read and
+write db4o database file. As <code>IsolatedStorageFileStream</code> provides
+the same interface as <code>FileStream</code> we can use it with a custom IO
+adapter to make db4o store its data in the Isolated Storage.</p>
+        <p>To start with let's take
+<code>Db4objects.Db4o.IO.RandomAccessFileAdapter</code> and <code><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../sharpen.htm">Sharpen<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>.IO.RandomAccessFile</code> from db4o
+source code and modify them to meet our needs. Basicly, we must change all
+occurences of <code>FileStream</code> to
+<code>IsolatedStorageFileStream</code>, and modify file system function like
+create or delete to use Isolated Storage semantics.</p>
+        <p>First of all let's
+create new classes: <code>Db4oIsolatedStorageFile</code> and
+<code>IsolatedStorageFileAdapter</code>, and copy the contents of
+<code>RandomAccessFile</code> and <code>RandomAccessFileAdapter</code>accordingly into them.</p>
+        <p>The constructor for
+the new <code>Db4oIsolatedStorageFile</code> needs to be changed like
+this:</p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The rest of <code>Db4oIsolatedStorageFile</code> copies the
+syntax of the <code>RandomAccessFile</code>. The result of the modification can be reviewed
+here: <a href="db4oisolatedstoragefile.htm">Db4oIsolatedStorageFile</a>.</p>
+        <p>In the IsolatedStorageFileAdapter we will need to make the
+following changes:</p>
+        <ul>
+            <li value="1">change
+     the references of RandomAccessFile to Db4oIsolatedStorage file
+     (constructor and Open method);</li>
+            <li value="2">remove
+     LockFile and UnlockFile method calls (constructor and Close method);</li>
+            <li value="3">remove
+     the call to translate file path to canonical path from the constructor;</li>
+            <li value="4">modify
+     Delete and Exists methods to use the Isolated Storage instead of file
+     system.</li>
+        </ul>
+        <p>The result of the
+modification can be reviewed here: <a href="isolatedstoragefileadapter.htm">IsolatedStorageFileAdapter</a>.</p>
+        <p>The
+<a href="isolated_storage_example.htm">next topic</a> will show a small example of db4o
+usage over isolated storage.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Db4oTool	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/enhancement_tools/enhancement_for_.net/db4otool.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor203"></a>Db4oTool</h1>
+        <p>Db4oTool.exe utility is distributed together with db4o .NET version and can be used for <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> optimization and <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../object_lifecycle/activation/transparent_activation_framework.htm">Transparent Activation<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> Instrumentation.</p>
+        <p>The main use-cases for Db4oTool are:</p>
+        <ol>
+            <li value="1">Optimization of NQ at build time. This will improve Native Query performance by cutting of query analyzing time during execution.</li>
+            <li value="2">Optimizing delegate NQ syntax on CF2.0. This optimization can only be done by Db4oTool as CompactFramework 2.0 API does not expose any of the delegate metadata needed for the optimization process.</li>
+            <li value="3"><a href="../../../object_lifecycle/activation/transparent_activation_framework.htm">Transparent Activation</a> instrumentation. This will enable you to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../object_lifecycle/activation/transparent_activation_framework.htm">TA<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> without modifying your classes or to use TA on third-party classes.</li>
+            <li value="4"><a href="../../../object_lifecycle/transparent_persistence.htm">Transparent Persistence</a> instrumentation. This will enable you to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../object_lifecycle/transparent_persistence.htm">TP<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> without
+modifying your classes or to use TP on third-party classes. TP implicitly includes TA instrumentation for the same classes. </li>
+        </ol>
+        <p>If you use Db4oTool for use-cases 1 and 2 you will be able to distribute your application without Db4objects.Db4o.NativeQueries.dll (the assembly where the Native Query runtime optimizer lives).</p>
+        <p>More Reading:<ul><li value="1"><p><a href="db4otool/db4otool_usage.htm">Db4oTool Usage</a></p></li><li value="2"><p><a href="db4otool/including_db4otool_in_the_build.htm">Including Db4oTool In The Build</a></p></li></ul></p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

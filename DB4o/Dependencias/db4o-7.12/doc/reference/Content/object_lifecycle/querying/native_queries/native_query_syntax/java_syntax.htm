@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Querying|Native Queries|Native Query Syntax" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Java Syntax	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../../index_CSH.html#object_lifecycle/querying/native_queries/native_query_syntax/java_syntax.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../../querying.htm">Querying</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../native_queries.htm">Native Queries</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Java Syntax</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Java Syntax</h1>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <ol>
+                <li value="1">The following example shows how to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> to
+retrieve all the objects of the specified type. This syntax can be used with or
+without generics.
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax1
+private static void querySyntax1()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(Pilot.class);
+        container.ext().configure().freespace();
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+                <li value="2">In this example an anonymous predicate class is used to
+specify the query parameter:
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax2
+private static void querySyntax2()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(new Predicate&lt;Pilot&gt;()  {
+          public boolean match(Pilot pilot)  {
+            // each Pilot is included in the result
+            return true;
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+                <li value="3">This example shows how to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> to sort the query
+results; anonymous predicate and anonymous comparator are used:
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax3
+private static void querySyntax3()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(new Predicate&lt;Pilot&gt;()  {
+          public boolean match(Pilot pilot)  {
+            // each Pilot is included in the result
+            return true;
+          }
+        }, new Comparator&lt;Pilot&gt;()  {
+          public int compare(Pilot pilot1, Pilot pilot2)  {
+            return pilot1.getPoints() - pilot2.getPoints();
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+                <li value="4">The following example shows a Native Query using external
+comparator and predicate. This can be useful when comparator and predicate are
+widely used and logically do not belong to the querying class:
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: PilotPredicate
+private static class PilotPredicate extends Predicate&lt;Pilot&gt;  {
+    public boolean match(Pilot pilot)  {
+      // each Pilot is included in the result
+      return true;
+    }
+  }</pre><pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: PilotComparator
+private static class PilotComparator implements Comparator&lt;Pilot&gt;  {
+    public int compare(Pilot pilot1, Pilot pilot2)  {
+      return pilot1.getPoints() - pilot2.getPoints();
+    }
+  }</pre><pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax4
+private static void querySyntax4()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(new PilotPredicate(),
+            new PilotComparator());
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+                <li value="5">In Java versions without generics syntax is similar:
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax5
+private static void querySyntax5()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List result = container.query(new Predicate()  {
+          public boolean match(Object obj)  {
+            // each Pilot is included in the result
+            if (obj instanceof Pilot)  {
+              return true;
+            }
+            return false;
+          }
+        }, new Comparator()  {
+          public int compare(Object object1, Object object2)  {
+            return ((Pilot) object1).getPoints()
+                - ((Pilot) object2).getPoints();
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+                <li value="6">For Java versions that do not provide Comparator
+interface (&lt;JDK1.2) db4o provides QueryComparator interface with the same
+functionality:
+
+<pre class="prettyprint" xml:space="preserve">NQSyntaxExamples.java: querySyntax6
+private static void querySyntax6()  {
+    // this example will only work with java versions without
+    // generics support
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List result = container.query(new Predicate()  {
+          public boolean match(Object obj)  {
+            // each Pilot is included in the result
+            if (obj instanceof Pilot)  {
+              return true;
+            }
+            return false;
+          }
+        }, new QueryComparator()  {
+          public int compare(Object pilot1, Object pilot2)  {
+            return ((Pilot) pilot1).getPoints()
+                - ((Pilot) pilot2).getPoints();
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre></li>
+            </ol>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="nqsyntaxjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

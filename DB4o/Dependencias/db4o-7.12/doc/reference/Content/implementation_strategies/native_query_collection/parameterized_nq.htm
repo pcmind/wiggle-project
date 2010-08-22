@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Native Query Collection" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Parameterized NQ	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/native_query_collection/parameterized_nq.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../native_query_collection.htm">Native Query Collection</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Parameterized NQ</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Parameterized NQ</h1>
+        <p>The following examples show how to pass parameters to the <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> predicate. <a href="store_pilots.htm">Store Pilots</a> function is used to fill in the database. </p><a name="GetTestPilots"></a>
+        <h2>GetTestPilots</h2>
+        <p>Using predicate constructor to specify the querying parameter. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ParameterizedExamples.java: getTestPilots
+private static void getTestPilots()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(new PilotNamePredicate(
+            "Test"));
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">ParameterizedExamples.java: PilotNamePredicate
+private static class PilotNamePredicate extends Predicate&lt;Pilot&gt;  {
+    private String startsWith;
+
+    public PilotNamePredicate(String startsWith)  {
+      this.startsWith = startsWith;
+    }
+
+    public boolean match(Pilot pilot)  {
+      return pilot.getName().startsWith(startsWith);
+    }
+  }</pre>
+            <p>
+            </p>
+            <p MadCap:conditions="Global.Primary:java" />
+        </p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="GetProfessionalPilots"></a>
+        <h2>GetProfessionalPilots</h2>
+        <p>Using a function to process the <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ParameterizedExamples.java: getProfessionalPilots
+private static void getProfessionalPilots()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = byNameBeginning("Professional");
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">ParameterizedExamples.java: byNameBeginning
+private static List&lt;Pilot&gt; byNameBeginning(final String startsWith)  {
+    return database().query(new Predicate&lt;Pilot&gt;()  {
+      public boolean match(Pilot pilot)  {
+        return pilot.getName().startsWith(startsWith);
+      }
+    });
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages"><a name="Querying Class Hierarchy"></a>
+            <h2>Querying Class Hierarchy</h2>
+            <p>The following
+example shows how to correctly implement parameterized NQ predicate for
+querying derived classes. </p>
+            <p>Let's use
+the class hierarchy as defined in <a href="persistent_classes.htm">Persistent Classes</a>.</p>
+            <p>PersonNamePredicate
+will be used for querying classes derived from Person:</p>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: PersonNamePredicate
+private static class PersonNamePredicate&lt;T extends Person&gt; extends
+      Predicate&lt;T&gt;  {
+    private String startsWith;
+
+    public PersonNamePredicate(String startsWith)  {
+      this.startsWith = startsWith;
+    }
+
+    public PersonNamePredicate(Class&lt;T&gt; clazz, String startsWith)  {
+      super(clazz);
+      this.startsWith = startsWith;
+    }
+
+    public boolean match(T candidate)  {
+      return candidate.getName().startsWith(startsWith);
+    }
+  }</pre>
+            <p>Let's
+save some Pilot and Trainee objects:</p>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: storePersons
+private static void storePersons()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        Trainee trainee;
+        // store OBJECT_COUNT pilots and trainees
+        for (int i = 0; i &lt; OBJECT_COUNT; i++)  {
+          trainee = new Trainee("Trainee #" + i, new Pilot(
+              "Professional Pilot #" + i, i));
+          container.store(trainee);
+        }
+        // store a new trainee with a "Training" pilot
+        trainee = new Trainee("Trainee #1", new Pilot(
+            "Training Pilot #1", 20));
+        container.store(trainee);
+        container.commit();
+      } catch (Db4oException ex)  {
+        System.out.println("Db4o Exception: " + ex.getMessage());
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+            <p>Now we
+have both Pilot and Trainee objects starting from "Train". What should we do to
+retrieve only Trainee objects?</p>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: getTrainees
+private static void getTrainees()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        // query for Trainee objects starting with "Train".
+        // Wrongly created predicate mixes Trainee and Pilot
+        // objects and creates a resultset based on only "Tr"
+        // criteria (class of an object is not considered)
+
+        testQuery(container, createPredicateWrong(Trainee.class,
+            "Train"));
+        // Correctly created result set returns only objects
+        // of the requested class
+        testQuery(container, createPredicateCorrect(Trainee.class,
+            "Train"));
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: testQuery
+private static void testQuery(ObjectContainer container,
+      Predicate&lt;Trainee&gt; predicate)  {
+    List&lt;Trainee&gt; result = container.query(predicate);
+    System.out.println(result.size());
+    try  {
+      for (Trainee trainee : result)  {
+        System.out.println(trainee);
+      }
+    } catch (Exception ex)  {
+      System.out.println(ex.toString());
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: createPredicateWrong
+private static &lt;T extends Person&gt; Predicate&lt;T&gt; createPredicateWrong(
+      Class&lt;T&gt; clazz, String startsWith)  {
+    return new PersonNamePredicate&lt;T&gt;(startsWith);
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">ComplexParameterizedExample.java: createPredicateCorrect
+private static &lt;T extends Person&gt; Predicate&lt;T&gt; createPredicateCorrect(
+      Class&lt;T&gt; clazz, String startsWith)  {
+    return new PersonNamePredicate&lt;T&gt;(clazz, startsWith);
+  }</pre>
+            <p>You can
+see that in order to get the correct results we need to supply our preicate
+class with the queried class, otherwise both Pilot and Trainee objects will be
+included in the result set.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="nqcollectionjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

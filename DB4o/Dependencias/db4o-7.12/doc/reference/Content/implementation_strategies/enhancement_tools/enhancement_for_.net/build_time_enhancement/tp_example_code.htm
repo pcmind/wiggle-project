@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>TP Example Code	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../../index_CSH.html#implementation_strategies/enhancement_tools/enhancement_for_.net/build_time_enhancement/tp_example_code.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>TP Example Code</h1>
+        <p>Let's
+look at <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../object_lifecycle/transparent_persistence.htm">Transparent Persistence<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> example. We will use <a href="sensorpanel.htm">SensorPanel</a> class from <a href="../../../../object_lifecycle.htm">Activation</a> example, which represents a simple linked list.</p>
+        <p>First of all we must configure the database to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../object_lifecycle/transparent_persistence.htm">TP<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>:</p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Now, we should explicitly store the objects that we want to be persistent:</p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>In order to test if TP actually works, we will select all the SensorPanel objects from the database, modify them and commit the transaction. If TP took place the objects will be modified in the database:</p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The code above is ready to accommodate TP, however TP is not possible now as SensorPanel does not implement IActivatable interface. In the <a href="example_enhancement.htm">following chapter</a> we will learn how to enable TP for the project classes in the build time. </p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <script type="text/javascript" src="../../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

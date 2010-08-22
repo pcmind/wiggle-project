@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Encryption" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Custom Encryption Adapters	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/encryption/custom_encryption_adapters.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../encryption.htm">Encryption</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Custom Encryption Adapters</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Custom Encryption Adapters</h1>
+        <p><a name="kanchor95"></a>db4o still provides a solution for high-security encryption by allowing any user to choose his own encryption mechanism that he thinks he needs. The db4o file IO mechanism is pluggable and any fixed-length encryption mechanism can be added. All that needs to be done is to write an IoAdapter plugin for db4o file IO.</p>
+        <p>This is a lot easier than it sounds. Simply:</p>
+        <ul>
+            <li value="1">take the sources of com.db4o.io.RandomAccessFileAdapter as an example  </li>
+            <li value="2">write your own IoAdapter implementation that delegates raw file access to another adapter using the GoF decorator pattern.  </li>
+            <li value="3"><a name="kanchor96"></a>Implement the #read() and #write() methods to encrypt and decrypt when bytes are being exchanged with the file  </li>
+            <li value="4">plug your adapter into db4o with the following method:
+</li>
+        </ul>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p><code>Java: Db4o.configure().io(new MyEncryptionAdapter()); </code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>However, you'll have to keep in mind that db4o will write partial updates. For example, it may write a full object and then only modify one field entry later on. Therefore it is not sufficient to en-/decrypt each access in isolation. You'll rather have to make up a tiling structure that defines the data chunks that have to be en-/decrypted together.</p>
+        <p><a name="kanchor97"></a>A community project containing an XTEA encryption IoAdapter implementation can be found here:</p>
+        <p><a href="http://developer.db4o.com/ProjectSpaces/view.aspx/XTEA">http://developer.db4o.com/Projects/html/projectspaces/xtea.html&#160;</a>
+        </p>
+        <p>Another method to inject encryption capabilities into db4o for instances of specific classes only is to implement and configure an en-/decrypting translator.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

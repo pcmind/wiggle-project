@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Platform Specific Issues|Android" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Deleting Data	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#platform_specific_issues/android/deleting_data.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../platform_specific_issues.htm">Platform Specific Issues</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../android.htm">Android</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Deleting Data</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Deleting Data</h1>
+        <p>The following methods will delete a car with a pilot having
+5 points from each database:</p>
+        <p>SQLite:</p>
+        <pre class="prettyprint" xml:space="preserve">SqlExample.java: deleteCar
+public static void deleteCar() {
+        SQLiteDatabase db = database();
+        if (db != null) {
+          long startTime = System.currentTimeMillis();
+          int count = db.delete(DB_TABLE_CAR, 
+"pilot in (select id from pilot where points = 5)", null);
+          if (count == 0) {
+            logToConsole(0, 
+"Car not found, refill the database to continue.", false);
+          } else  {
+            logToConsole(startTime, "Deleted selected object: ", false);
+          }
+      
+        }
+    }</pre>
+        <p>db4o:</p>
+        <p>(Select Car using <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>)</p>
+        <pre class="prettyprint" xml:space="preserve">Db4oExample.java: deleteCar
+public static void deleteCar() {
+        ObjectContainer container=database();
+        if (container != null) {
+          try  {
+            long startTime = System.currentTimeMillis();
+            ObjectSet result = container.query(new Predicate() {
+              public boolean match(Object object) {
+                if (object instanceof Car) {
+                  return ((Car)object).getPilot().getPoints() == 5;
+                }
+                return false;
+              }
+            });
+            Car car = (Car)result.next();
+            container.delete(car);
+            logToConsole(startTime, "Deleted selected object: ", false);
+      } catch (Exception e) {
+        logToConsole(0, "Car not found, refill the database to continue.", false);
+      }
+        }
+    }</pre>
+        <p>In this example db4o code looks much longer. But should we consider it a disadvantage? My opinion is - NO. Of course, SQLite seems to handle the whole operation in just one statement: db.delete(). But if you look attentively you will see that basically this statement just transfers all the difficult job to SQL: SQL statement should select a pilot with a given condition, then find a car. Using SQL can look shorter but it has a great disadvantage - it uses strings. So what will happen if the statement is wrong? You will never notice it till somebody in the running application will cause this statement to execute. Even then you might not see the reason immediately. The same applies to the schema changes - you may not even notice that you are using wrong tables and fields.</p>
+        <p>db4o helps to avoid all the above mentioned problems: query syntax is completely compile-checked and schema evolution will be spotted immediately by the compiler, so that you would not need to rely on code search and replace tools.  </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="dbcomparerefjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

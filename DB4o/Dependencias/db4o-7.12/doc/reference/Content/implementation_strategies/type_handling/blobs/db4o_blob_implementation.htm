@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Type Handling|Blobs" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Db4o Blob Implementation	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/type_handling/blobs/db4o_blob_implementation.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../type_handling.htm">Type Handling</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../blobs.htm">Blobs</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Db4o Blob Implementation</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor46"></a>Db4o Blob Implementation</h1>
+        <p>Built-in db4o Blob type helps you to get rid of the problems of byte[] array, though it has its own drawbacks. Pros and Cons for the points, mentioned above:</p>
+        <ol>
+            <li value="1">every Blob gets it's own file </li>
+            <p>+ main database file stays a lot smaller </p>
+            <p>+ backups are possible over individual files </p>
+            <p>+ the BLOBs are accessible without db4o</p>
+            <p>- multiple files need to be managed </p>
+            <li value="2"><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../client-server.htm">C/S<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> communication runs asynchronous in separate thread</li>
+            <p>+ asynchronous storage allows the main application thread to continue its work, while blobs are being stored </p>
+            <li value="3">special code is necessary to store and load</li>
+            <p>- it is more difficult to move objects between db4o database files</p>
+            <li value="4">no concerns about activation depth</li>
+            <p>+ big objects won't be loaded into memory as part of the activation process</p>
+        </ol>
+        <p>Let's look, how it works. </p>
+        <p>First, BLOB storage should be defined:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>Db4o.configure().setBlobPath(storageFolder);</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>where storageFolder is a String value representing local or server path to store BLOBs. If that value is not defined, db4o will use the default folder "blobs" in user directory.</p>
+        <p>We will use a modified Car class, which holds reference to the car photo:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">Car.java
+/** Copyright (C) 2004 - 2009 Versant Inc. http://www.db4o.com */
+package com.db4odoc.blobs;
+
+public class Car  {
+    private String model;
+    private CarImage img;
+    
+   
+    public Car(String model)  {
+        this.model=model;
+        img=new CarImage();
+        img.setFile(model+".jpg");
+    }
+  
+    public CarImage getImage()  {
+        return img;
+    }
+    
+    public String toString()  {
+        return model +"(" + img.getFile() + ")" ;
+    }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>CarImage is a wrapper to BLOB, representing the photo:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">CarImage.java
+/**//* Copyright (C) 2004 - 2009 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.blobs;
+
+import java.io.File;
+
+import com.db4o.ext.Status;
+import com.db4o.types.Blob;
+
+public class CarImage  {
+  Blob blob;
+  private String fileName = null;
+  private String inFolder = "blobs\\in\\";  
+  private String outFolder = "blobs\\out\\";
+  
+  public CarImage()  {
+    
+  }
+
+  public void setFile(String fileName) {
+      this.fileName = fileName;
+  }
+  
+  public String getFile() {
+    return fileName;
+  }
+  
+  public boolean readFile() throws java.io.IOException  {
+    blob.readFrom(new File(inFolder + fileName));
+    double status = blob.getStatus();
+    while(status &gt;  Status.COMPLETED) {
+      try  {
+        Thread.sleep(50);
+        status = blob.getStatus();
+      } catch (InterruptedException ex) {
+        System.out.println(ex.getMessage());
+      }
+    }
+        return (status == Status.COMPLETED);
+  }
+  
+  public boolean writeFile() throws java.io.IOException  {
+    blob.writeTo(new File(outFolder + fileName));
+    double status = blob.getStatus();
+    while(status &gt; Status.COMPLETED) {
+      try  {
+        Thread.sleep(50);
+        status = blob.getStatus();
+      } catch (InterruptedException ex) {
+        System.out.println(ex.getMessage());
+      }
+    }
+        return (status == Status.COMPLETED);
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>inFolder ( "blobs\in\") is used as a location of existing files, which are to be stored into db4o, and outFolder ( "blobs\out\") will be the place for images, retrieved from the database.</p>
+        <p>readFile method allows blob to be read from the specified location into db4o storage:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>Blob.readFrom( File )</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>As reading is done in a dedicated thread, you can use Blob#getStatus() in a loop to create a progress window.</p>
+        <p>The same applies to the write operation, which copies BLOB, stored with db4o, to the specified filesystem location. </p>
+        <p>Let's store some cars together with their images in our database:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">BlobExample.java: storeCars
+private static void storeCars()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4oEmbedded.openFile(Db4oEmbedded
+        .newConfiguration(), DB4O_FILE_NAME);
+    try  {
+      Car car1 = new Car("Ferrari");
+      container.store(car1);
+      storeImage(car1);
+      Car car2 = new Car("BMW");
+      container.store(car2);
+      storeImage(car2);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">BlobExample.java: storeImage
+private static void storeImage(Car car)  {
+    CarImage img = car.getImage();
+    try  {
+      img.readFile();
+    } catch (java.io.IOException ex)  {
+      System.out.println(ex.getMessage());
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>CarImage is stored in the database just like normal object, no BLOB data is transferred before explicit call (Blob#readFrom in CarImage#readFile method), which copies the images to the storageFolder.</p>
+        <p>Please, note, that CarImage reference should be stored to the database before uploading actual data, because the Blob field is only instantiated once the object is stored (otherwise you will get a null reference exception). To get the images back to the filesystem we can run a usual query:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">BlobExample.java: retrieveCars
+private static void retrieveCars()  {
+    ObjectContainer container = Db4oEmbedded.openFile(DB4O_FILE_NAME);
+    try  {
+      Query query = container.query();
+      query.constrain(Car.class);
+      List&lt;Car&gt; result = query.execute();
+      getImages(result);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>and get BLOB data using retrieved Car references:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">BlobExample.java: getImages
+private static void getImages(List&lt;Car&gt; result)  {
+    for (Car car: result) {
+      System.out.println(car);
+      CarImage img = car.getImage();
+      try  {
+        img.writeFile();
+      } catch (java.io.IOException ex)  {
+        System.out.print(ex.getMessage());
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Retrieved images are placed in CarImage.outFolder ("blobs\out"). </p>
+        <p>So query interface operates on references - no BLOB data is loaded into memory until explicit call (Blob#writeTo). This also means, that activationDepth does not affect Blob objects and best querying performance is achieved without additional coding.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="blobsjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

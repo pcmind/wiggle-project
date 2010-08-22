@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Enhancement Tools|Complex Example" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Build Time Enhancement	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../../index_CSH.html#implementation_strategies/enhancement_tools/enhancement_for_java/complex_example/build_time_enhancement.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../../enhancement_tools.htm">Enhancement Tools</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../complex_example.htm">Complex Example</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Build Time Enhancement</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Build Time Enhancement</h1>
+        <p>For build-time enhancement you will need to put the
+following jars into the lib folder of EnhancementExample project:</p>
+        <ul>
+            <li value="1">bloat-1.0.jar</li>
+            <li value="2">db4o-<span class="PrimaryCurrentVersion">X.XX</span>-classedit.jar</li>
+            <li value="3">db4o-<span class="PrimaryCurrentVersion">X.XX</span>-java5.jar</li>
+            <li value="4">db4o-<span class="PrimaryCurrentVersion">X.XX</span>-nqopt.jar</li>
+            <li value="5">db4o-<span class="PrimaryCurrentVersion">X.XX</span>-taj.jar</li>
+            <li value="6">db4o-<span class="PrimaryCurrentVersion">X.XX</span>-tools.jar</li>
+            <li value="7">pilot.jar</li>
+            <li value="8">tacustom.jar</li>
+        </ul>
+        <p>pilot.jar supplies Pilot and Id classes presented
+<a href="model_classes.htm">before</a></p>
+        <p><a name="kanchor61"></a>tacustom.jar  provides
+an annotation-based class filter. Using this jar we can mark the classes that
+should be enhanced with @Db4oPersistent annotation to filter them from the
+other classes.</p>
+        <p>You can use the following script to enhance your
+classes:</p>
+        <pre class="prettyprint" xml:space="preserve">build.xml
+&lt;?xml version="1.0"?&gt;
+
+&lt;!-- 
+  <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../object_lifecycle/activation/transparent_activation_framework.htm">TA<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> and <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> build time instrumentation sample.
+--&gt;
+
+&lt;project name="enhance_db4o" default="run-enhanced"&gt;
+
+&lt;!-- The classpath needed for the enhancement process, 
+including the application classpath --&gt;
+&lt;path id="db4o.enhance.path"&gt;
+  &lt;fileset dir="lib"&gt;
+    &lt;include name="**/*.jar"/&gt;
+  &lt;/fileset&gt;
+&lt;/path&gt;
+
+&lt;!-- Define enhancement tasks (from resource in db4otools.jar). --&gt;
+&lt;typedef
+  resource="instrumentation-def.properties"
+  classpathref="db4o.enhance.path"
+  loaderref="db4o.enhance.loader" /&gt;
+
+&lt;!-- A custom filter that selects classes with the @Db4oPersistent annotation --&gt;
+&lt;typedef
+  name="annotation-filter" 
+  classname="tacustom.AnnotationClassFilter"
+  classpathref="db4o.enhance.path"
+  loaderref="db4o.enhance.loader" /&gt;
+
+&lt;!-- Example for a regexp pattern for selecting classes to be instrumented. --&gt;
+&lt;regexp pattern="^enhancement\.model\." id="re.model.only" /&gt;
+
+
+
+&lt;target name="compile"&gt;
+  
+  &lt;mkdir dir="${basedir}/bin" /&gt;
+  &lt;delete dir="${basedir}/bin" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;
+  
+  &lt;javac srcdir="${basedir}/src" destdir="${basedir}/bin" source="1.5" target="1.5"&gt;
+    &lt;classpath refid="db4o.enhance.path" /&gt;
+  &lt;/javac&gt;
+
+&lt;/target&gt;
+
+
+&lt;target name="enhance" depends="compile"&gt;
+
+  &lt;!-- Prepare the target folders --&gt;
+  &lt;mkdir dir="${basedir}/enhanced-bin" /&gt;
+  &lt;delete dir="${basedir}/enhanced-bin" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;
+  &lt;mkdir dir="${basedir}/enhanced-lib" /&gt;
+  &lt;delete dir="${basedir}/enhanced-lib" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;           
+
+  &lt;db4o-instrument classTargetDir="${basedir}/enhanced-bin" 
+jarTargetDir="${basedir}/enhanced-lib"&gt;
+
+    &lt;classpath refid="db4o.enhance.path" /&gt;    
+    &lt;!-- Fileset for original class files to be instrumented --&gt;
+    &lt;sources dir="${basedir}/bin"&gt;
+      &lt;include name="enhancement/**/*.class" /&gt;
+    &lt;/sources&gt;
+    &lt;!-- Fileset for original jars to be instrumented --&gt;
+    &lt;jars dir="${basedir}/lib"&gt;
+      &lt;include name="pilot.jar" /&gt;
+    &lt;/jars&gt;
+    
+    &lt;!-- Instrument <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> predicates --&gt;
+    &lt;native-query-step /&gt;
+    
+                &lt;!-- Instrument TA field access. --&gt;
+    &lt;transparent-activation-step&gt;
+      &lt;!-- Instrument classes that are annotated as @Db4oPersistent. --&gt;
+      &lt;annotation-filter /&gt;
+      &lt;!-- Instrument classes from the specified paths only. --&gt;
+      &lt;regexp refid="re.model.only" /&gt;
+                  &lt;regexp pattern="^enhancement\.model\." /&gt;
+    &lt;/transparent-activation-step&gt;
+    
+  &lt;/db4o-instrument&gt;
+  
+&lt;/target&gt;
+
+
+&lt;target name="run-unenhanced" depends="compile"&gt;
+  
+  &lt;java classname="enhancement.EnhancerMain" failonerror="true"&gt;
+    &lt;classpath&gt;
+      &lt;pathelement location="${basedir}/bin" /&gt;
+      &lt;pathelement location="${basedir}/lib/pilot.jar" /&gt;
+      &lt;path refid="db4o.enhance.path" /&gt;
+    &lt;/classpath&gt;
+  &lt;/java&gt;
+  
+&lt;/target&gt;
+
+&lt;target name="run-enhanced" depends="enhance"&gt;
+  
+  &lt;java classname="enhancement.EnhancerMain" failonerror="true"&gt;
+    &lt;classpath&gt;
+      &lt;pathelement location="${basedir}/enhanced-bin" /&gt;
+      &lt;pathelement location="${basedir}/enhanced-lib/pilot.jar" /&gt;
+      &lt;path refid="db4o.enhance.path" /&gt;
+    &lt;/classpath&gt;
+  &lt;/java&gt;
+
+&lt;/target&gt;
+  
+
+&lt;/project&gt;</pre>The core part of this script is inside the <i>db4o-instrument</i> task, which is imported by the first typedef instruction. (The second typedef imports the custom annotation class filter.) The <i>classTargetDir</i> and <i>jarTargetDir</i><a name="kanchor62"></a> attributes specify the target folders where instrumented class files and instrumented jar files should be created, respectively.<p>The nested <i>classpath</i> is just a normal Ant path type and should cover the full application classpath. In the example, we are using one single classpath for task definition and application for convenience - in a real project, these are better kept separate, of course. The nested <i>sources</i> FileSet specifies the location of the class files  to be instrumented. Similarly, the <i>jars</i> FileSet specifies the location of jar files to be instrumented. Both are optional (providing neither <i>sources</i> nor <i>jars</i><a name="kanchor63"></a> doesn't make much sense, of course). If one is left out, the corresponding target folder attribute is not required, either.</p><p>The remaining nested arguments specify the instrumentation steps to be processed. For Native Query optimization, there is no further configuration - it will simply try to instrument all Predicate implementations. Transparent Activation instrumentation allows to specify more fine-grained filters to select the classes to be instrumented. This can be Ant regular expression types or arbitrary custom <i>ClassFilters</i>. These are OR-ed together and used to further constrain the implicit filter provided by the <i>sources</i>/<i>jars</i> FileSets. In the example, we are constraining TA instrumentation to classes that are either annotated with the <i>@Db4oPersistent</i> annotation, or whose fully qualified name matches the given regexes. 
+</p><p>After running the <i>enhance</i> target, the instrumented model classes should appear in the enhanced-bin folder, and an instrumented version of the pilot.jar should have been created in the enhanced-lib folder.</p><p>For rather straightforward projects you can alternatively use the <i>db4o-enhance</i> task variant that provides a default setting for joint NQ/TA instrumentation (but doesn't allow fine-grained configuration for the single instrumentation steps in return). This is demonstrated by the following build script for the same sample project. </p><pre class="prettyprint" xml:space="preserve">build-simple.xml
+&lt;?xml version="1.0"?&gt;
+
+&lt;!-- 
+  Simple TA and NQ build time instrumentation sample.
+
+  This version uses db4o-enhance instead of db4o-instrument. 
+db4o-enhance provides a default
+  configuration for NQ/TA instrumentation, 
+while db4o-instrument requires to configure
+  (and optionally fine-tune) the single instrumentation 
+steps. Other than that, the
+  configuration options for the two are identical.
+--&gt;
+
+&lt;project name="enhance_db4o" default="run-enhanced"&gt;
+
+&lt;!-- The classpath needed for the enhancement process, 
+including the application classpath --&gt;
+&lt;path id="db4o.enhance.path"&gt;
+  &lt;pathelement path="${basedir}" /&gt;
+  &lt;fileset dir="lib"&gt;
+    &lt;include name="**/*.jar"/&gt;
+  &lt;/fileset&gt;
+&lt;/path&gt;
+
+&lt;!-- Define enhancement tasks (from resource in db4otools.jar). --&gt;
+&lt;typedef
+  resource="instrumentation-def.properties"
+  classpathref="db4o.enhance.path" /&gt;
+
+
+&lt;target name="compile"&gt;
+  
+  &lt;mkdir dir="${basedir}/bin" /&gt;
+  &lt;delete dir="${basedir}/bin" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;
+  
+  &lt;javac srcdir="${basedir}/src" destdir="${basedir}/bin"&gt;
+    &lt;classpath refid="db4o.enhance.path" /&gt;
+  &lt;/javac&gt;
+  
+&lt;/target&gt;
+
+
+&lt;target name="enhance" depends="compile"&gt;
+
+  &lt;!-- Prepare the target folders --&gt;
+  &lt;mkdir dir="${basedir}/enhanced-bin" /&gt;
+  &lt;delete dir="${basedir}/enhanced-bin" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;
+  &lt;mkdir dir="${basedir}/enhanced-lib" /&gt;
+  &lt;delete dir="${basedir}/enhanced-lib" quiet = "true"&gt;
+    &lt;include name="**/*"/&gt;
+  &lt;/delete&gt;           
+
+  &lt;db4o-enhance classTargetDir="${basedir}/enhanced-bin" 
+jarTargetDir="${basedir}/enhanced-lib"&gt;
+
+    &lt;classpath refid="db4o.enhance.path" /&gt;    
+    &lt;!-- Fileset for original class files to be instrumented --&gt;
+    &lt;sources dir="${basedir}/bin" /&gt;
+    &lt;!-- Fileset for original jars to be instrumented --&gt;
+    &lt;jars dir="${basedir}/lib"&gt;
+      &lt;include name="pilot.jar" /&gt;
+    &lt;/jars&gt;
+    
+  &lt;/db4o-enhance&gt;
+  
+&lt;/target&gt;
+  
+
+&lt;target name="run-unenhanced" depends="compile"&gt;
+  
+  &lt;java classname="enhancement.EnhancerMain" failonerror="true"&gt;
+    &lt;classpath&gt;
+      &lt;pathelement location="${basedir}/bin" /&gt;
+      &lt;pathelement location="${basedir}/lib/pilot.jar" /&gt;
+      &lt;path refid="db4o.enhance.path" /&gt;
+    &lt;/classpath&gt;
+  &lt;/java&gt;
+  
+&lt;/target&gt;
+
+
+&lt;target name="run-enhanced" depends="enhance"&gt;
+  
+  &lt;java classname="enhancement.EnhancerMain" failonerror="true"&gt;
+    &lt;classpath&gt;
+      &lt;pathelement location="${basedir}/enhanced-bin" /&gt;
+      &lt;pathelement location="${basedir}/enhanced-lib/pilot.jar" /&gt;
+      &lt;path refid="db4o.enhance.path" /&gt;
+    &lt;/classpath&gt;
+  &lt;/java&gt;
+  
+&lt;/target&gt;
+
+
+&lt;/project&gt;</pre><p MadCap:conditions="Primary.Online">Download example code:</p><p MadCap:conditions="Primary.Online"><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="enhancementexamplejava.zip">Java </a></MadCap:conditionalText></p><script type="text/javascript" src="../../../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

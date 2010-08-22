@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Type Handling|Static Fields And Enums" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Usage of static fields	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/type_handling/static_fields_and_enums/usage_of_static_fields.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../type_handling.htm">Type Handling</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../static_fields_and_enums.htm">Static Fields And Enums</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Usage of Static Fields</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Usage of static fields</h1>
+        <p>As an object database db4o can take advantage of programming language specifics such as static modifier. Why and where should it be used?</p>
+        <p>Usually static fields are used to store enums and constants. Obviously these objects can be stored in application code only, keeping database file smaller and decreasing memory consumption at runtime. But it can be not the best option in the case when the constant (enum) value can be changed in application lifecycle: the references from all the database objects will have to be updated explicitly.</p>
+        <p>Db4o suggests another approach to keeping constant values. For a class </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">Car.java
+1/**//* Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+2
+3package com.db4odoc.staticfields;
+4
+5import java.awt.*;
+6
+7public class Car  {
+8  Color color;
+9}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>the color field can be set to Color enumeration value like that:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StaticFieldExample.java: setCar
+private static void setCar()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4o.openFile(DB4O_FILE_NAME);
+    try  {
+      Car car = new Car();
+      car.color = Color.GREEN;
+      container.store(car);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Now, when <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText> is reopened and the green car is retrieved from the database, the static instances in RAM will be associated with the previously persisted instances using #bind() under the hood. So that the following check is possible:</p>
+        <p><code>car.color == Color.GREEN</code>
+        </p>
+        <p>This also means that ,if Color.GREEN constant will get another internal value (RGB(0,255,10) instead of RGB(0,255,0) for instance), all the references from the database will be associated with the new value.</p>
+        <p>Static field values are associated with their persistent identities only once, when an <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText> is opened. After that they are not stored, unless the developer does it deliberately. Objects instantiation from the database does not create any more instances of static values.</p>
+        <p>Since each static field exists only once in the VM, there are no versioning, locking or multiuser access problems.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="staticfieldsjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

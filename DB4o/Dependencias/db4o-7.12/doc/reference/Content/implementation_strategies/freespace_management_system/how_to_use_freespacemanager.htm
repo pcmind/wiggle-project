@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Freespace Management System" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>How To Use FreeSpacemanager	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/freespace_management_system/how_to_use_freespacemanager.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../freespace_management_system.htm">Freespace Management System</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">How To Use FreeSpacemanager</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>How To Use FreespaceManager</h1>
+        <p>There are several configuration options that can help you to tune up your freespacemanager to achieve the best performance and reliability of your system. All methods should be called before opening database files.</p>
+        <p>Public interface FreespaceConfiguration provides methods to select freespace system ( <i>useIndexSystem() , useRamSystem()</i>) as described before. See API documentation for more information.</p>
+        <p>Another FreespaceConfiguration method</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>void discardSmallerThan(int byteCount) </code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>configures the minimum size of free space slots in the database file that are to be reused. FreespaceManager keeps 2 lists of all 'freed' space that can be reused (sorted by address and by size). In some cases (numerous updates, deletes) these lists can grow large, causing extra RAM consumption and performance loss for maintenance. With this method you can specify an upper bound for the byte slot size to discard from <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../freespace_management_system.htm">Freespace<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> manager list. It is not recommended to specify a value of byteCount &gt; 100 as freespace re-usage will become less efficient and the database file will grow faster. However, if defragment can be run frequently, it will also reclaim lost space and decrease the database file to the minimum size. Therefore byteCount may be set to bigger value.</p>
+        <p>By default byteCount = 0, which means that all 'freed' space is reused.</p>
+        <p>Another configuration setting that can be used with frequently defragmented systems</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>configuration.automaticShutDown(false);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Detailed description of this method can be found in <a href="../../tuning/performance_hints/no_shutdown_thread.htm">Tuning</a> part of the Reference documentation.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

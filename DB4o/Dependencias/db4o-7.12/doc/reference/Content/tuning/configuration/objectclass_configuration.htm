@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning|Configuration" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>ObjectClass Configuration	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#tuning/configuration/objectclass_configuration.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../configuration.htm">Configuration</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">ObjectClass Configuration</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor126"></a>ObjectClass Configuration</h1>
+        <p>
+            <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectClass</MadCap:conditionalText> provides an
+interface for class configuration.ObjectClass access is implemented in common configuration, thus it is accessible in embedded and client/server mode, both on the client and on the server. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>ObjectClass oc = configuration.objectClass(clazz);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>clazz parameter here can be one of
+the following:</p>
+        <ul>
+            <li value="1">a fully qualified classname as a
+String.</li>
+            <li value="2">a Class object.</li>
+            <li value="3">any other object to be used as a
+template.</li>
+        </ul>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+callConstructor(boolean flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>advises db4o to try instantiating
+objects of this class with/without calling constructors. For more information
+see <a href="../../object_lifecycle/object_construction.htm">Object Construction</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+cascadeOnActivate(boolean flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets cascaded activation behavior for
+this class. For more information see <a href="../../object_lifecycle/activation.htm">Activation</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+cascadeOnDelete(boolean flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets cascaded delete behavior for
+this class. For more information see <a href="../../object_lifecycle/delete_behavior.htm">Delete Behavior</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+cascadeOnUpdate(boolean flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets cascaded update behavior for
+this class. For more information see <a href="../../object_lifecycle/update_depth.htm">Update Depth</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+compare(ObjectAttribute attributeProvider);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>registers an attribute provider for
+special query behavior. </p>
+        <p>The query processor will compare the
+object returned by the attribute provider instead of the actual object, both
+for the constraint and the candidate persistent object. For more information see <a href="../../object_lifecycle/querying/custom_query_comparator.htm">Custom Query Comparator</a>. </p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+enableReplication(boolean setting);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>enable replication of the specified
+class. Must be called before databases are created or opened so that db4o will
+control versions and generate UUIDs for objects of this class, which is
+required for using replication. For more information see <a href="../../db4o_replication_system_drs.htm">db4o Replication System (dRS)</a></p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+generateUUIDs(boolean setting);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>generate UUIDs for stored objects of
+this class. For more information see
+<a href="../../implementation_strategies/ids_and_uuids/unique_universal_ids.htm">Unique Universal IDs</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+generateVersionNumbers(boolean setting);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>generate version numbers for stored
+objects of this class. For more information see <a href="../../db4o_replication_system_drs.htm">db4o Replication System (dRS)</a></p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:  </p>
+            <p><code>public void indexed(boolean
+flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>turns the class index on or off.</p>
+        <p>db4o maintains an index for each
+class to be able to deliver all instances of a class in a query. If the class
+index is never needed, it can be turned off with this method to improve the
+performance on creation and deletion of the class objects.</p>
+        <p>Common cases where a class index is
+not needed:</p>
+        <ul>
+            <li value="1">The application always works with
+subclasses or superclasses.</li>
+            <li value="2">There are convenient field indexes
+that will always find instances of a class.</li>
+            <li value="3">The application always works with
+IDs. </li>
+        </ul>
+        <p>For more information see <a href="../performance_hints/no_class_index.htm">No Class Index</a>. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+maximumActivationDepth (int depth);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets the maximum activation depth for
+this class to the desired value. For more information see
+<a href="../../object_lifecycle/activation.htm">Activation</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+minimumActivationDepth (int depth);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>sets the minimum activation depth to
+the desired value. For more information see
+<a href="../../object_lifecycle/activation.htm">Activation</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public ObjectField objectField
+(String fieldName);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>returns an ObjectField object to
+configure the specified field. For more information see
+<a href="objectfield_configuration.htm">ObjectField Configuration</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+persistStaticFieldValues();</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>turns on storing static field values
+for this class. For more information see
+<a href="../../implementation_strategies/type_handling/static_fields_and_enums.htm">Static Fields And Enums</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void readAs(Object
+clazz);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>creates a temporary mapping of a
+persistent class to a different class.</p>
+        <p>If the meta-information for this
+ObjectClass has been stored to the database file, it will be read from the
+database file as if it was representing the class specified by the clazz
+parameter passed to this method. </p>
+        <p>The clazz parameter can be any of the
+following:</p>
+        <ul>
+            <li value="1">a fully qualified classname as a
+String.</li>
+            <li value="2">a Class object.</li>
+            <li value="3">any other object to be used as a
+template.</li>
+        </ul>
+        <p>This method will be ignored if the
+database file already contains meta-information for clazz.</p>
+        <p>This method is deprecated, use <a href="../../implementation_strategies/aliases.htm">Aliases</a> instead. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void rename (String
+newName);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>renames a stored class. For more
+information see
+<a href="../../implementation_strategies/refactoring_and_schema_evolution.htm">Refactoring and Schema Evolution</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void
+storeTransientFields (boolean flag);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>allows to specify if transient fields
+are to be stored. The default for every class is <code>false</code>.</p>
+        <p>For more information see <a href="../selective_persistence/storing_transient_fields.htm">Storing Transient Fields</a>. </p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void translate
+(ObjectTranslator translator);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>registers a translator for this
+class. For more information see <a href="../../implementation_strategies/translators.htm">Translators</a>.</p>
+        <p>
+        </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>public void updateDepth (int
+depth);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>specifies the updateDepth for this
+class. For more information see <a href="../../object_lifecycle/update_depth.htm">Update Depth</a>.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

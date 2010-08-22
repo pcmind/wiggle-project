@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Typehandlers" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>TypeHandler Usages	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/typehandlers/typehandler_usages.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../typehandlers.htm">Typehandlers</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Typehandler Usages</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>TypeHandler Usages</h1>
+        <p>This chapter provides some of the typehandler examples,
+which can be used as a replacement of translators.</p><a name="Selective Field Persistence"></a>
+        <h2>Selective Field Persistence  </h2>
+        <p>In the first example we will look at the case, when we want
+to save only certain fields of a class. Suppose we have the following class:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">NotStorable.java
+/**Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+package com.db4odoc.typehandler.translators;
+
+public class NotStorable  {
+  private int id;
+
+  private String name;
+
+  private transient int length;
+
+  public NotStorable(int id, String name)  {
+    this.id = id;
+    this.name = name;
+    this.length = name.length();
+  }
+
+  public int getId()  {
+    return id;
+  }
+
+  public String getName()  {
+    return name;
+  }
+
+  public int getLength()  {
+    return length;
+  }
+
+  public String toString()  {
+    return id + "/" + name + ": " + length;
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>In this case we obviously do not want to store transient
+<code>length</code> field.  To achieve
+this we can write a new typehandler, which will store a duplicate of the class
+without the length field. To make the work easier, we will extend the default
+FirstClassObjectHandler.  First class
+means any persistent object that has its identity in the database.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">NotStorableTypehandler.java
+package com.db4odoc.typehandler.translators;
+
+import com.db4o.internal.handlers.*;
+import com.db4o.internal.marshall.*;
+import com.db4o.marshall.*;
+import com.db4o.typehandlers.*;
+
+public class NotStorableTypehandler extends FirstClassObjectHandler 
+implements TypeHandler4, FirstClassHandler,
+VariableLengthTypeHandler
+ {
+
+  private class Storable
+   {
+    private int id;
+    private String name;  
+  }
+  
+  public void write(WriteContext context, Object obj)  {
+    NotStorable item = (NotStorable)obj;
+    Storable storableItem = new Storable();
+    storableItem.id = item.getId();
+    storableItem.name = item.getName();
+    
+    context.writeObject(storableItem);
+    }
+
+    public Object read(ReadContext context)  {
+      UnmarshallingContext _context = (UnmarshallingContext) context;
+      NotStorable item = (NotStorable)_context.persistentObject();
+      Storable storableItem = (Storable)context.readObject();
+        item = new NotStorable(storableItem.id, storableItem.name);
+        return item;
+    }
+
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>You can see that in this case, we are just replacing
+NotStorable class with a duplicate class Storable and save it instead. </p>
+        <p>Let's test how it works. First we should create
+configuration to include the typehandler:</p>
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>And now test store and retrieve:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">TranslatorExample.java: tryStoreAndRetrieve
+private static void tryStoreAndRetrieve(Configuration configuration)  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      NotStorable notStorable = new NotStorable(42, "Test");
+      System.out.println("ORIGINAL: " + notStorable);
+      container.store(notStorable);
+    } catch (Exception exc)  {
+      System.out.println(exc.toString());
+      return;
+    } finally  {
+      container.close();
+    }
+    container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      ObjectSet result = container.queryByExample(NotStorable.class);
+      while (result.hasNext())  {
+        NotStorable notStorable = (NotStorable) result.next();
+        System.out.println("RETRIEVED: " + notStorable);
+      }
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>This works. However, this example has certain
+limitations:  the fields were in fact
+discarded and encapsulated into a Storable object. This means that we won't be
+able to query for fields or index on fields. </p><a name="Ignore Fields Persistence"></a>
+        <h2>Ignore Fields Persistence  </h2>
+        <p>In the next example we will use one of the db4o internal
+typehandlers, which allows to skip all the field information for certain
+objects. This can be useful to safe the database space when the object information
+is not required for future retrieval. Let's use the following classes:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">PersistentItem.java
+package com.db4odoc.typehandler.translators;
+
+public class PersistentItem  {
+  String id;
+  TransientItem item;
+  
+  public PersistentItem (String id, TransientItem item) {
+    this.id = id;
+    this.item = item;
+  }
+  
+  public String toString() {
+    return id + ": " + item.toString();
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Let's assume that TransientItem field information is not
+required to be stored in our application. We can save the database space then,
+by using IgnoreFieldsTypeHandler. The configuration will look like this:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">
+                <a name="kanchor54"></a>TranslatorExample.java: ignoreFieldsConfiguration
+private static Configuration ignoreFieldsConfiguration()  {
+    Configuration configuration = Db4o.newConfiguration();
+    // add a custom typehandler support
+        TypeHandlerPredicate predicate = new TypeHandlerPredicate()  {
+            public boolean match(ReflectClass classReflector)  {
+              GenericReflector reflector = new GenericReflector(
+                  null, new JdkReflector
+(Thread.currentThread().getContextClassLoader()));
+          ReflectClass claxx = reflector.forName(TransientItem.class.getName()); 
+          boolean res = claxx.equals(classReflector);  
+                return res;
+            }
+        };
+        
+        configuration.registerTypeHandler(predicate, 
+new IgnoreFieldsTypeHandler());
+        return configuration; 
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>We can check the result with the following code:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">TranslatorExample.java: ignoreFieldsTypehandlerExample
+private static void ignoreFieldsTypehandlerExample()  {
+    new File(DB4O_FILE_NAME).delete();
+    Configuration configuration = ignoreFieldsConfiguration();
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      PersistentItem persistentItem = 
+new PersistentItem("1", new TransientItem(11));
+      System.out.println("ORIGINAL: " + persistentItem);
+      container.store(persistentItem);
+    } catch (Exception exc)  {
+      System.out.println(exc.toString());
+      return;
+    } finally  {
+      container.close();
+    }
+    container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      Query query = container.query();
+      query.constrain(PersistentItem.class);
+      ObjectSet result = query.execute();
+      while (result.hasNext())  {
+        PersistentItem persistentItem = (PersistentItem) result.next();
+        System.out.println("RETRIEVED: " + persistentItem);
+      }
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="typehandlerjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

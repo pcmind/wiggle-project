@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning|Configuration" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Configuration Item	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#tuning/configuration/configuration_item.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../configuration.htm">Configuration</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Configuration Item</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Configuration Item</h1>
+        <p>ConfigurationItem/IConfigurationItem interface serves 2 purposes:</p>
+        <ul>
+            <li value="1">it can be used to encapsulate a batch of configuration settings</li>
+            <li value="2">it can be used for settings that should be applied to an open object container.</li>
+        </ul>
+        <p>Configuration items should be added to <a href="common_configuration.htm">Common Configuration</a> instance:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:</p>
+            <p><code>configuration.add(configurationItem);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>Below is the description of currently available implementations.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages"><a name="BigMathSupport"></a>
+            <h2>BigMathSupport</h2>
+            <p>Registers special typehandlers for BigInteger and BigDecimal support. Using BigMathSupport provides better performance and query support for the values of these types. However, using BigMathSupport only makes sense if you are planning to use BigInteger and/or BigDecimal types.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages"><a name="JavaSupport"></a>
+            <h2>JavaSupport</h2>
+            <p>Adds basic configuration settings that allow to access Java generated
+object container. Normally, additional <a href="../../implementation_strategies/aliases.htm">Alias</a> configuration will be required to
+query for specific classes.  </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" /><a name="PagedListSupport"></a>
+        <h2>PagedListSupport</h2>
+        <p>Configures support for paged collections.  </p><a name="TransparentActivationSupport"></a>
+        <h2>TransparentActivationSupport</h2>
+        <p>Adds transparent activation support for this session. For more information see <a href="../../object_lifecycle/activation/transparent_activation_framework.htm">Transparent Activation Framework</a>.  </p><a name="TransparentPersistenceSupport"></a>
+        <h2>TransparentPersistenceSupport</h2>
+        <p>Adds transparent persistence support for this session. For more
+information see
+<a href="../../object_lifecycle/transparent_persistence.htm">Transparent Persistence</a>. 
+ </p><a name="UniqueFieldValueConstraint"></a>
+        <h2>UniqueFieldValueConstraint </h2>
+        <p>Allows to set a class field to be unique in this database. For more information see <a href="../../implementation_strategies/unique_constraints.htm">Unique Constraints</a>. </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

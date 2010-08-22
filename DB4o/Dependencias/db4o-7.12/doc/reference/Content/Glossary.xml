@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Glossary" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../" MadCap:HelpSystemFileName="index.xml">
+    <head>
+        <link href="SkinSupport/MadCap.css" rel="stylesheet" type="text/css" />
+        <title>Glossary</title>
+        <link href="Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" type="text/css" />
+        <script src="SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body style="background-color: #fafafa;">
+        <div id="GlossaryBody">
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="Basic_Concepts/acid_model.htm" target="body">ACID</a>
+                    <a name="1252831434_anchor1">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/activation.htm" target="body">Activation</a>
+                    <a name="1252831434_anchor2">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/aliases.htm" target="body">Alias</a>
+                    <a name="1252831434_anchor3">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="platform_specific_issues/android.htm" target="body">Android</a>
+                    <a name="1252831434_anchor4">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/using_annotations.htm" target="body">Annotation</a>
+                    <a name="1252831434_anchor5">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/maintenance/backup.htm" target="body">Backup</a>
+                    <a name="1252831434_anchor6">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="client-server.htm" target="body">C/S</a>
+                    <a name="1252831434_anchor7">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/callbacks.htm" target="body">Callback</a>
+                    <a name="1252831434_anchor8">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="javascript:void(0);" class="GlossaryPageTerm" id="MCDropDownHotSpot_1252831434_0" onclick="FMCDropDown( this ); FMCScrollToVisible( window, this.parentNode.parentNode ); return false;">CF</a>
+                    <a name="1252831434_anchor9">
+                    </a>
+                </div>
+                <div class="GlossaryPageDefinition" id="MCDropDownBody_1252831434_0" style="display: none;">.NET Compact Framework</div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="client-server.htm" target="body">Client-Server</a>
+                    <a name="1252831434_anchor10">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="Basic_Concepts/concurrency_control_and_locking.htm" target="body">Concurrency Control</a>
+                    <a name="1252831434_anchor11">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/unique_constraints.htm" target="body">Constraints</a>
+                    <a name="1252831434_anchor12">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/object_construction.htm" target="body">Constructor</a>
+                    <a name="1252831434_anchor13">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="db4o_testing_framework.htm" target="body">db4oUnit</a>
+                    <a name="1252831434_anchor14">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/maintenance/defragment.htm" target="body">Defragment</a>
+                    <a name="1252831434_anchor15">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/delete_behavior/deleting_collections.htm" target="body">Delete Depth</a>
+                    <a name="1252831434_anchor16">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="db4o_replication_system_drs.htm" target="body">dRS</a>
+                    <a name="1252831434_anchor17">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/encryption.htm" target="body">Encryption</a>
+                    <a name="1252831434_anchor18">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/freespace_management_system.htm" target="body">Freespace</a>
+                    <a name="1252831434_anchor19">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/ids_and_uuids/internal_ids.htm" target="body">ID</a>
+                    <a name="1252831434_anchor20">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/ids_and_uuids/internal_ids.htm" target="body">Internal ID</a>
+                    <a name="1252831434_anchor21">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="javascript:void(0);" class="GlossaryPageTerm" id="MCDropDownHotSpot_1252831434_1" onclick="FMCDropDown( this ); FMCScrollToVisible( window, this.parentNode.parentNode ); return false;">MyTerm</a>
+                    <a name="1252831434_anchor22">
+                    </a>
+                </div>
+                <div class="GlossaryPageDefinition" id="MCDropDownBody_1252831434_1" style="display: none;">
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="Basic_Concepts/native_query_concepts.htm" target="body">Native Query</a>
+                    <a name="1252831434_anchor23">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="Basic_Concepts/native_query_concepts.htm" target="body">NQ</a>
+                    <a name="1252831434_anchor24">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/ids_and_uuids/internal_ids.htm" target="body">Object ID</a>
+                    <a name="1252831434_anchor25">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_manager_enterprise.htm" target="body">Object Manager</a>
+                    <a name="1252831434_anchor26">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="product_philosophy/oodbms.htm" target="body">ODBMS</a>
+                    <a name="1252831434_anchor27">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_manager_enterprise.htm" target="body">OME</a>
+                    <a name="1252831434_anchor28">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="product_philosophy/oodbms.htm" target="body">OODBMS</a>
+                    <a name="1252831434_anchor29">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="platform_specific_issues/database_for_osgi.htm" target="body">OSGi</a>
+                    <a name="1252831434_anchor30">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="platform_specific_issues/database_for_osgi.htm" target="body">OSGI</a>
+                    <a name="1252831434_anchor31">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/querying/query_by_example.htm" target="body">QbE</a>
+                    <a name="1252831434_anchor32">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/querying/query_by_example.htm" target="body">QBE</a>
+                    <a name="1252831434_anchor33">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="javascript:void(0);" class="GlossaryPageTerm" id="MCDropDownHotSpot_1252831434_2" onclick="FMCDropDown( this ); FMCScrollToVisible( window, this.parentNode.parentNode ); return false;">RDBMS</a>
+                    <a name="1252831434_anchor34">
+                    </a>
+                </div>
+                <div class="GlossaryPageDefinition" id="MCDropDownBody_1252831434_2" style="display: none;">Relational Database Management System</div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/refactoring_and_schema_evolution.htm" target="body">Refactoring</a>
+                    <a name="1252831434_anchor35">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/db4o_reflection_api.htm" target="body">Reflection</a>
+                    <a name="1252831434_anchor36">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/refactoring_and_schema_evolution.htm" target="body">Schema Evolution</a>
+                    <a name="1252831434_anchor37">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="client-server/semaphores.htm" target="body">Semaphores</a>
+                    <a name="1252831434_anchor38">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="platform_specific_issues/servlets.htm" target="body">Servlet</a>
+                    <a name="1252831434_anchor39">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="sharpen.htm" target="body">Sharpen</a>
+                    <a name="1252831434_anchor40">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/storage.htm" target="body">Storage</a>
+                    <a name="1252831434_anchor41">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="platform_specific_issues/symbian_os.htm" target="body">Symbian</a>
+                    <a name="1252831434_anchor42">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/activation/transparent_activation_framework.htm" target="body">TA</a>
+                    <a name="1252831434_anchor43">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/transparent_persistence.htm" target="body">TP</a>
+                    <a name="1252831434_anchor44">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="Basic_Concepts/transaction.htm" target="body">Transaction</a>
+                    <a name="1252831434_anchor45">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/translators.htm" target="body">Translator</a>
+                    <a name="1252831434_anchor46">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/activation/transparent_activation_framework.htm" target="body">Transparent Activation</a>
+                    <a name="1252831434_anchor47">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/transparent_persistence.htm" target="body">Transparent Persistence</a>
+                    <a name="1252831434_anchor48">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/typehandlers.htm" target="body">Typehandler</a>
+                    <a name="1252831434_anchor49">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/unique_constraints.htm" target="body">Unique Constraints</a>
+                    <a name="1252831434_anchor50">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="object_lifecycle/update_depth.htm" target="body">Update Depth</a>
+                    <a name="1252831434_anchor51">
+                    </a>
+                </div>
+            </div>
+            <div class="GlossaryPageEntry">
+                <div class="GlossaryPageTerm">
+                    <a href="implementation_strategies/ids_and_uuids/unique_universal_ids.htm" target="body">UUID</a>
+                    <a name="1252831434_anchor52">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <script type="text/javascript" src="SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Sharpen" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>How To Setup Sharpen	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#sharpen/how_to_setup_sharpen.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../sharpen.htm">Sharpen</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">How To Setup Sharpen</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>How To Setup Sharpen</h1>
+        <p>
+        </p>
+        <p>You can obtain sharpen source from db4o svn repository at:</p>
+        <p><a href="https://source.db4o.com/db4o/trunk/sharpen">https://source.db4o.com/db4o/trunk/sharpen</a>
+        </p>
+        <p>For the ease of use check-out sharpen projects:</p>
+        <p>sharpen.builder</p>
+        <p>sharpen.core</p>
+        <p>sharpen.ui</p>
+        <p>sharpen.ui.tests</p>
+        <p>into the same workspace as your java project, which you want
+to convert. (This is not required but the referencing will be easier to type
+and maintain). </p>
+        <p>You will need to install sharpen plugin and define sharpen
+tasks. <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../sharpen.htm">Sharpen<img style="border: none;margin-left: 5px;" src="../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> can be installed manually from within Eclipse:</p>
+        <ul>
+            <li value="1">Select and right click the freshly checked out projects in the "Package Explorer" and 
+choose "Export" from the context menu; 
+</li>
+            <li value="2">Expand the "Plug-in Development" folder and select "Deployable plug-ins and 
+fragments"; 
+</li>
+            <li value="3">Set "Destination" to the root folder of your eclipse installation and click 
+"Finish"; </li>
+        </ul>
+        <p>Alternatively you can use ant script to define sharpen installation
+task and sharpen conversion.  Add the
+following files to your java project folder:</p>
+        <p><b>sharpen.properties</b>
+        </p>
+        <p>    # eclipse workspace     dir.workspace=e:/db4o/trunk     <br /># java executable     file.jvm.jdk1.5=e:/Java/jdk1.6.0_02/bin/java.exe <br />    # Eclipse home directory     eclipse.home=e:/Eclipse     <br /># Eclipse startup jar     eclipse.startup.jar=${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar     <br /># Sandcastle can be used to convert javadoc to .NET xml comments <br />    # dir.lib.sandcastle=e:/sandcastle/     <br /># sharpen compile directory     dir.dist.classes.sharp=dist/sharpen     <br /># Eclipse plugins home     plugins.home=${eclipse.home}/plugins </p>
+        <p>Download <a href="how_to_setup_sharpen/sharpen.properties">sharpen.properties</a></p>
+        <p>(The paths should be updates to match your environment) 
+
+ </p>
+        <pre class="prettyprint" xml:space="preserve">
+            <a name="kanchor186"></a>Sharpen-Common.Xml
+&lt;project name="sharpen common"&gt;
+  &lt;property file="sharpen.properties" /&gt;
+
+  &lt;macrodef name="reset-dir"&gt;
+    &lt;attribute name="dir" /&gt;
+    &lt;sequential&gt;
+      &lt;delete dir="@{dir}" /&gt;
+      &lt;mkdir dir="@{dir}" /&gt;
+    &lt;/sequential&gt;
+  &lt;/macrodef&gt;
+
+  &lt;macrodef name="sharpen"&gt;
+    &lt;attribute name="workspace" /&gt;
+    &lt;attribute name="resource" /&gt;
+
+    &lt;element name="args" optional="yes" /&gt;
+
+    &lt;sequential&gt;
+      &lt;exec executable="${file.jvm.jdk1.5}" 
+failonerror="true" timeout="1800000"&gt;
+        &lt;arg value="-Xms256m" /&gt;
+        &lt;arg value="-Xmx512m" /&gt;
+        &lt;arg value="-cp" /&gt;
+        &lt;arg value="${eclipse.startup.jar}" /&gt;
+        &lt;arg value="org.eclipse.core.launcher.Main" /&gt;
+        &lt;arg value="-data" /&gt;
+        &lt;arg file="@{workspace}" /&gt;
+        &lt;arg value="-application" /&gt;
+        &lt;arg value="sharpen.core.application" /&gt;
+        &lt;arg value="-header" /&gt;
+        &lt;arg file="config/copyright_comment.txt" /&gt;
+        &lt;arg value="@{resource}" /&gt;
+
+        &lt;args /&gt;
+
+      &lt;/exec&gt;
+    &lt;/sequential&gt;
+  &lt;/macrodef&gt;
+
+  &lt;target name="install-sharpen-plugin"&gt;
+
+    &lt;property name="sharpen.core.dir" location="../sharpen.core" /&gt;
+    &lt;reset-dir dir="${dir.dist.classes.sharp}" /&gt;
+
+    &lt;echo&gt;${eclipse.home}/plugins&lt;/echo&gt;
+    &lt;javac fork="true" debug="true" target="1.5" source="1.5" 
+destdir="${dir.dist.classes.sharp}" srcdir="${sharpen.core.dir}/src" encoding="UTF-8"&gt;
+      &lt;classpath&gt;
+        &lt;fileset dir="${eclipse.home}/plugins"&gt;
+          &lt;include name="org.eclipse.osgi_*/osgi.jar" /&gt;
+          &lt;include name="org.eclipse.core.resources_*/resources.jar" /&gt;
+          &lt;include name="org.eclipse.core.runtime_*/runtime.jar" /&gt;
+          &lt;include name="org.eclipse.jdt.core_*/jdtcore.jar" /&gt;
+          &lt;!-- redundant entries: in newer eclipse installs those reside in jars --&gt;
+          &lt;include name="org.eclipse.osgi_*.jar" /&gt;
+          &lt;include name="org.eclipse.core.resources_*.jar" /&gt;
+          &lt;include name="org.eclipse.core.runtime_*.jar" /&gt;
+          &lt;include name="org.eclipse.jdt.core_*.jar" /&gt;
+          &lt;include name="org.eclipse.jdt.launching_*.jar" /&gt;
+          &lt;include name="org.eclipse.equinox.*.jar" /&gt;
+          &lt;include name="org.eclipse.core.jobs_*.jar" /&gt;
+        &lt;/fileset&gt;
+      &lt;/classpath&gt;
+    &lt;/javac&gt;
+
+    &lt;property name="plugin.dir" value="${plugins.home}/sharpen.core_1.0.0" /&gt;
+    &lt;reset-dir dir="${plugin.dir}" /&gt;
+    &lt;jar destfile="${plugin.dir}/sharpen.jar" basedir="${dir.dist.classes.sharp}" /&gt;
+    &lt;copy todir="${plugin.dir}" file="${sharpen.core.dir}/plugin.xml" /&gt;
+
+  &lt;/target&gt;
+
+
+&lt;/project&gt;</pre>
+        <p>Download<a href="how_to_setup_sharpen/sharpen.properties">&#160;</a><a href="how_to_setup_sharpen/sharpen-common.xml">sharpen-common.xml</a></p>
+        <p>Sharpen.properties file defines some common properties that
+are used to install sharpen and then to convert java to c# using sharpen.</p>
+        <p>In sharpen-common.xml we define install-sharpen-plugin
+target, which will install sharpen plugin. After the plugin is installed we can
+use sharpen task to convert java files. Sharpen task takes 2 arguments:</p>
+        <ul>
+            <li value="1">workspace
+     - defines the workspace where the conversion will take place</li>
+            <li value="2">resource
+     - defines the folder where java resources are located</li>
+        </ul>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online"><a href="example_conversion/sharpen.zip">Java </a>
+        </p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

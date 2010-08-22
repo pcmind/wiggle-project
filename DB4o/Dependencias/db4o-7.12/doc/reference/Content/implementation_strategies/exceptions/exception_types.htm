@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Exceptions" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Exception Types	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/exceptions/exception_types.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../exceptions.htm">Exceptions</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Exception Types</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor103"></a>Exception Types</h1>
+        <p>Using db4o you will have to deal with db4o-specific
+exceptions and system exceptions thrown
+directly out of db4o (like OutOfMemory error in Java or System.Exception in
+.NET).</p>
+        <p>Db4o-specific exceptions are Unchecked exceptions, which all
+inherit from a single root class Db4oException.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>In Java Unchecked exceptions are inherited from
+RuntimeExceptions class, while in .NET all exceptions are unchecked.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p>Db4o exceptions are chained; you can get the cause of the
+exception using:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>db4oException.getCause();</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>In order to see all db4o-specific exceptions you can examine
+the hierarchy of Db4oException class. Currently the following exceptions are
+available:</p>
+        <p><b>Db4oException </b>- db4o
+exception wrapper: exceptions occurring during internal processing will be
+proliferated to the client calling code encapsulated in an exception of this
+type.</p>
+        <p><b>BackupInProgressException</b> - an exception to be thrown when another process is already busy with the backup. </p>
+        <p><b>ConstraintViolationException
+</b>- base class for all
+constraint exceptions.</p>
+        <p><b>UniqueFieldValueConstraintViolationException</b> - an exception to be used to determine
+constraint violation on commit.</p>
+        <p><b>DatabaseClosedException</b> - an exception to be thrown when the database was closed or failed to open. </p>
+        <p><b>DatabaseFileLockedException</b> - this exception is thrown during any of db4o open calls if the database file is locked by another process. </p>
+        <p><b>DatabaseMaximumSizeReachedException</b> - this exception is thrown if the database size is bigger than possible. </p>
+        <p><b>DatabaseReadOnlyException</b> - an exception to be thrown when a write operation was attempted on a database in read-only mode.</p><b>GlobalOnlyConfigException</b> - this exception is thrown when a global-only configuration setting is attempted for the local configuration. <p><b>IncompatibleFileFormatException</b> - an exception to be thrown when an open operation is attempted on a file(database), which format is incompatible with the current version of db4o.</p><p><b>InvalidIDException</b> - an exception to be thrown when an <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> format supplied to #bind or #getById methods is incorrect. </p><p><b>InvalidPasswordException</b> - this exception is thrown when the password provided to access an encrypted database is not correct. </p><p><b>OldFormatException</b> - an exception to be thrown when an old file
+format was detected and the file could not be open.</p><p><b>ReflectException</b> - an exception to be thrown when a class can not be stored or instantiated by current db4o reflector. </p><p><b>ReplicationConflictException</b> - an exception to be thrown when a conflict
+occurs and no ReplicationEventListener is specified.</p><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Basic Concepts|Database Models|Object-Relational How To" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Identity And Primary Keys	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#Basic_Concepts/database_models/object-relational_how_to/identity_and_primary_keys.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../Basic_Concepts.htm">Basic Concepts</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../database_models.htm">Database Models</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../object-relational_how_to.htm">Object-Relational How To</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Identity And Primary Keys</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Identity And Primary Keys</h1>
+        <p>One of the most important concepts to understand working
+with a database system is the identification strategy. </p>
+        <p>In <span class="MCTextPopup"><a href="javascript:void(0);" class="MCTextPopupSpot" onclick="FMCTextPopup( event, this ); return false;">RDBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a><span class="MCTextPopupBody" style="display: none; ">Relational Database Management System</span></span> separate entities are distinguished with the help
+of primary keys. Effectively, objects are compared on their field contents and
+a constrain is used prohibiting 2 different rows in a table to have the same
+value in a column marked as a primary key. </p>
+        <p>In the object world, the concept is quite different - any
+object is unique, independently of the data it holds. For example:</p>
+        <p><code>class Car </code>
+        </p>
+        <p><code>   
+model</code>
+        </p>
+        <p><code>    year</code>
+        </p>
+        <p><code>car1 = new Car("BMW","1999") </code>
+        </p>
+        <p><code>car2 = new Car("BMW","1999") </code>
+        </p>
+        <p><code>car1</code> and <code>car2</code> objects consist of
+the same data, but they are not equal.</p>
+        <p>On the other hand we can create any amount of references to
+the object and they will all be equal:</p>
+        <p><code>car1 = new Car("BMW","1999") </code>
+        </p>
+        <p><code>car2 = car1</code>
+        </p>
+        <p><code>car3 = car1</code>
+        </p>
+        <p>In this example <code>car2</code> is equal to
+<code>car1</code> and <code>car3</code> and all these variables actually
+reference the same object.</p>
+        <p>Object database task is to ensure that independently of the
+way the object was accessed (by different queries or through different navigation
+access paths) the database must return a reference to the one single object.
+For a detailed explanation how it is achieved in db4o, please see <a href="../../object_identity/unique_identity_concept.htm">Unique identity concept</a>.</p>
+        <p>If you are moving from a relational database to db4o it is
+very important to understand db4o identity concept. Instead of tying objects to
+the database reference key you should use the objects, obtained from the
+database directly without additional worries about their identity.</p>
+        <p>Unfortunately, there still are some cases, when additional
+identification system is necessary. This can happen when an object must be
+referenced out of the application memory boundaries: objects referenced between
+sessions, objects passed to another application, partially connected applications
+etc. In these cases, you are encouraged to use db4o internal IDs or Unique
+Universal IDs (<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../implementation_strategies/ids_and_uuids/unique_universal_ids.htm">UUID<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>). Internal IDs are unique within one database file and do
+change after defragment. UUIDs are unique between all db4o databases and do not
+change. For more information see <a href="../../../implementation_strategies/ids_and_uuids.htm">IDs and UUIDs</a>.</p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

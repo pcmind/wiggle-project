@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Usage Pitfalls" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Reference Cache In Client-Server Mode	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#usage_pitfalls/reference_cache_in_client-server_mode.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../usage_pitfalls.htm">Usage Pitfalls</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Reference Cache In Client-Server Mode</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor153"></a>Reference Cache In Client-Server Mode</h1>Db4o uses object <a href="../Basic_Concepts/object_identity/weak_references.htm">reference
+cache</a> for easy access to persistent objects during one transaction. In
+client/server mode each client has its own reference cache, which helps to
+achieve good performance. However it gets complicated, when different clients
+work on the same object, as this object's cached value is used on each side. It
+means, that even when the operations go serially, the object's value won't be
+updated serially unless it is refreshed before each update.
+
+<p>The following example demonstrates this behaviour.</p><p MadCap:conditions="Primary.Java,Primary.All languages"><pre class="prettyprint" xml:space="preserve">InconsistentGraphExample.java: main
+public static void main(String[] args) throws IOException  {
+    new InconsistentGraphExample().run();
+  }</pre><pre class="prettyprint" xml:space="preserve">InconsistentGraphExample.java: run
+public void run() throws IOException, DatabaseFileLockedException  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectServer server = Db4o.openServer(DB4O_FILE_NAME, PORT);
+    try  {
+      server.grantAccess(USER, PASSWORD);
+
+      ObjectContainer client1 = server.openClient();
+      ObjectContainer client2 = server.openClient();
+
+      if (client1 != null &amp;&amp; client2 != null)  {
+        try  {
+          // wait for the operations to finish
+          waitForCompletion();
+
+          // save pilot with client1
+          Car client1Car = new Car("Ferrari", 2006, new Pilot(
+              "Schumacher"));
+          client1.store(client1Car);
+          client1.commit();
+          System.out.println("Client1 version initially: " + client1Car);
+          waitForCompletion();
+
+          // retrieve the same pilot with client2
+          Car client2Car = (Car) client2.query(Car.class).next();
+          System.out.println("Client2 version initially: " + client2Car);
+
+          // delete the pilot with client1
+          Pilot client1Pilot = (Pilot)client1.query(Pilot.class).next();
+          client1.delete(client1Pilot);
+          // modify the car, add and link a new pilot with client1
+          client1Car.setModel(2007);
+          client1Car.setPilot(new Pilot("Hakkinnen"));
+          client1.store(client1Car);
+          client1.commit();
+
+          waitForCompletion();
+          client1Car = (Car) client1.query(Car.class).next();
+          System.out.println("Client1 version after update: " + client1Car);
+
+
+          System.out.println();
+          System.out.println(
+"client2Car still holds the old object graph in its reference cache"); 
+          client2Car = (Car) client2.query(Car.class).next();
+          System.out.println("Client2 version after update: " + client2Car);
+          ObjectSet result = client2.query(Pilot.class);
+          System.out.println(
+"Though the new Pilot is retrieved by a new query: ");
+          listResult(result);
+
+          waitForCompletion();
+        } catch (Exception ex)  {
+          ex.printStackTrace();
+        } finally  {
+          closeClient(client1);
+          closeClient(client2);
+        }
+      }
+    } catch (Exception ex)  {
+      ex.printStackTrace();
+    } finally  {
+      server.close();
+    }
+  }</pre></p><p MadCap:conditions="Global.Primary:java" /><p MadCap:conditions="Global.Primary:cs" /><p MadCap:conditions="Global.Primary:vb" /><p>In order to make the objects consistent on each client you
+must refresh them from the server when they get updated. This can be done by
+using <a href="../implementation_strategies/callbacks/commit-time_callbacks/committed_event_example.htm">Committed
+Callbacks</a>.</p><p>Download example code:</p><p><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="_modeinconsistentjava.zip">Java</a></MadCap:conditionalText></p><script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

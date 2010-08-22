@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Querying	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_manager_enterprise/ome_for_visual_studio/querying.htm" style="">Open topic with navigation</a>
+        </p>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Querying</h1>
+        <p>It is easy
+to retrieve all of the Pilot instances from the database: just right-click the
+Pilot class in db4o Browser and select "Show All Objects". The list of the
+Pilot objects will be shown in the Query Result view:</p>
+        <p>
+            <img src="omn_result.jpg" />
+        </p>
+        <p>You can see
+object details in the detailed view below. Try to change any values and use
+Save button to persist the changes to the database. You can also use Delete
+button to delete objects from the database. For the objects containing field
+objects you will be prompted to use cascade on delete.</p>
+        <p>More
+complex queries can be done by using Query Builder view:</p>
+        <p>
+            <img src="omn_query.jpg" />
+        </p>
+        <p>Drag "_name"
+field from the Db4o Browser view into the Query Builder view, set condition "Contains",
+put a value "a" and run the query. You can return to the Built Query tab and
+modify the query later on again. For example: add "AND" operator, drag "_name"
+field, set Condition to "Starts With" and the value to "M". Re-run the query. </p>
+        <p>If you want
+only selected fields to be displayed in the query result, drag and drop fields
+to be displayed from Db4o Browser into "<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../implementation_strategies/using_attributes.htm">Attribute<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> List" window.</p>
+        <p>
+            <img src="omn_attr.jpg" />
+        </p>
+        <p>When the
+new query is created, the previous query is stored and can be selected from the
+history drop-down:</p>
+        <p>
+            <img src="omn_qhistory.jpg" />
+        </p>
+        <p>More
+sophisticated queries can be build by joining grouped constraints using "Add
+Group" button.</p>
+        <p>When you
+are done working with the database in <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../object_manager_enterprise.htm">OME<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>, you can close the connection by
+using Tools-&gt;<span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../object_manager_enterprise.htm">Object Manager<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> Enterprise-&gt; Disconnect menu command or by
+using the equivalent button on the toolbar. </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

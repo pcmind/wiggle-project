@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Activation|Transparent Activation Framework" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Detailed Example	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#object_lifecycle/activation/transparent_activation_framework/detailed_example.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../activation.htm">Activation</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../transparent_activation_framework.htm">Transparent Activation Framework</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Detailed Example</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Detailed Example</h1>
+        <p>Let's look at the manual <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../transparent_activation_framework.htm">Transparent Activation<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> implementation. This example will help you to understand how <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../transparent_activation_framework.htm">TA<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> is implemented under the hood. </p>
+        <p>We will take the example class from the <a href="../../activation.htm">Activation</a> chapter and modify it to enable TA:</p>
+        <ul>
+            <li value="1">implement <code>Activatable</code> interface (<code>bind</code> method)</li>
+            <li value="2">add <code>_activator</code> variable to keep the current activator;</li>
+            <li value="3">create <code>activate()</code> method;</li>
+            <li value="4">call <code>activate()</code> method each time field objects are required.</li>
+        </ul>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SensorPanelTA.java
+/** Copyright (C) 2004 - 2007 Versant Inc. http://www.db4o.com */
+
+package com.db4odoc.taexamples;
+
+import com.db4o.activation.*;
+import com.db4o.ta.*;
+
+public class SensorPanelTA /*must implement Activatable for TA*/implements Activatable  {
+
+  private Object _sensor;
+
+  private SensorPanelTA _next;
+
+  /**//*activator registered for this class*/
+  transient Activator _activator;
+  
+  public SensorPanelTA()  {
+    // default constructor for instantiation
+  }
+
+  public SensorPanelTA(int value)  {
+    _sensor = new Integer(value);
+  }
+
+  /**//*Bind the class to the specified object container, create the activator*/
+  public void bind(Activator activator)  {
+      if (_activator == activator)  {
+        return;
+      }
+      if (activator != null &amp;&amp; _activator != null)  {
+            throw new IllegalStateException();
+        }
+    _activator = activator;
+  }
+
+  /**//*Call the registered activator to activate the next level,
+   * the activator remembers the objects that were already 
+   * activated and won't activate them twice. 
+   */
+  public void activate(ActivationPurpose purpose)  {
+    if (_activator == null)
+      return;
+    _activator.activate(purpose);
+  }
+  
+  public SensorPanelTA getNext()  {
+    /**//*activate direct members*/
+    activate(ActivationPurpose.READ);
+    return _next;
+  }
+  
+  public Object getSensor()  {
+    /**//*activate direct members*/
+    activate(ActivationPurpose.READ);
+    return _sensor;
+  }
+  
+  public SensorPanelTA createList(int length)  {
+    return createList(length, 1);
+  }
+
+  public SensorPanelTA createList(int length, int first)  {
+    int val = first;
+    SensorPanelTA root = newElement(first);
+    SensorPanelTA list = root;
+    while (--length &gt; 0)  {
+      list._next = newElement(++val);
+      list = list._next;
+    }
+    return root;
+  }
+
+  protected SensorPanelTA newElement(int value)  {
+    return new SensorPanelTA(value);
+  }
+
+  public String toString()  {
+    return "Sensor #" + getSensor();
+  }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>As you can see from the example class we can call <code>activate()</code> to activate the field objects. However, transparent activation is currently not available directly on field variables, you will have to wrap them into methods.</p>
+        <p>Let's create a configuration for transparent activation:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">TAExample.java: configureTA
+private static Configuration configureTA()  {
+    Configuration configuration = Db4o.newConfiguration();
+    // add TA support
+    configuration.add(new TransparentActivationSupport());
+    // activate TA diagnostics to reveal the classes that are not TA-enabled.
+    activateDiagnostics(configuration);
+    return configuration;  
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>We can test TA using the configuration above:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">TAExample.java: storeSensorPanel
+private static void storeSensorPanel()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = database(Db4o.newConfiguration());
+    if (container != null)  {
+    try  {
+      // create a linked list with length 10
+      SensorPanelTA list = new SensorPanelTA().createList(10);
+      container.store(list);
+    } finally  {
+      closeDatabase();
+    }
+    }
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">TAExample.java: testActivation
+private static void testActivation()  {
+    storeSensorPanel();
+    Configuration configuration = configureTA();
+
+    ObjectContainer container = database(configuration);
+    if (container != null)  {
+    try  {
+      ObjectSet result = container.queryByExample(new SensorPanelTA(1));
+      listResult(result);
+      if (result.size() &gt; 0)  {
+        SensorPanelTA sensor = (SensorPanelTA) result.queryByExample(0);
+        // the object is a linked list, so each call to next()
+        // will need to activate a new object
+        SensorPanelTA next = sensor.getNext();
+        while (next != null)  {
+          System.out.println(next);
+          next = next.getNext();
+        }
+      }
+    } finally  {
+      closeDatabase();
+    }
+    } 
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="taexamplesjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

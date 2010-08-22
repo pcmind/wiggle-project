@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Activation" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Object-Specific Activation	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_lifecycle/activation/object-specific_activation.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../activation.htm">Activation</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Object-Specific Activation</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Object-Specific Activation</h1>
+        <p>You can tune up activation settings for specific classes with the following methods:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code><br />configuration.common().objectClass("yourClass")<br />.minimumActivationDepth(minimumDepth)</code></p>
+            <p><code>configuration.common().objectClass("yourClass")<br />.maximumActivationDepth(maximumDepth)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Cascading the activation depth to member fields, the depth value is reduced by one for the field. If the depth exceeds the maximumDepth specified for the class of the object, it is reduced to the maximumDepth. If the depth value is lower than the minimumDepth it is raised to the minimumDepth.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ActivationExample.java: testMaxActivate
+private static void testMaxActivate()  {
+    storeSensorPanel();
+    // note that the maximum is applied to the retrieved root object and
+    // limits activation
+    // further down the hierarchy
+    EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+    configuration.common().objectClass(SensorPanel.class)
+        .maximumActivationDepth(2);
+
+    ObjectContainer container = Db4oEmbedded.openFile(configuration,
+        DB4O_FILE_NAME);
+    try  {
+      System.out.println("Maximum activation depth = 2 (default = 5)");
+      ObjectSet&lt;SensorPanel&gt; result = container
+          .queryByExample(new SensorPanel(1));
+      listResult(result);
+      if (result.size() &gt; 0)  {
+        SensorPanel sensor = (SensorPanel) result.queryByExample(0);
+        SensorPanel next = sensor.next;
+        while (next != null)  {
+          System.out.println(next);
+          next = next.next;
+        }
+      }
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ActivationExample.java: testMinActivate
+private static void testMinActivate()  {
+    storeSensorPanel();
+    // note that the minimum applies for *all* instances in the hierarchy
+    // the system ensures that every instantiated List object will have it's
+    // members set to a depth of 1
+    EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+    configuration.common().objectClass(SensorPanel.class)
+        .minimumActivationDepth(1);
+    ObjectContainer container = Db4oEmbedded.openFile(configuration,
+        DB4O_FILE_NAME);
+    try  {
+      System.out.println("Minimum activation depth = 1");
+      ObjectSet&lt;SensorPanel&gt; result = container
+          .queryByExample(new SensorPanel(1));
+      listResult(result);
+      if (result.size() &gt; 0)  {
+        SensorPanel sensor = (SensorPanel) result.queryByExample(0);
+        SensorPanel next = sensor.next;
+        while (next != null)  {
+          System.out.println(next);
+          next = next.next;
+        }
+      }
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p><a name="kanchor36"></a>You can set up automatic activation for specific objects or fields: </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:  <code>configuration.common().objectClass("yourClass").cascadeOnActivate (bool)</code></p>
+            <p><code>configuration.common().objectClass("yourClass").objectField("field").cascadeOnActivate(bool)</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Cascade activation will retrieve the whole object graph, starting from the specified object(field). This setting can lead to increased memory consumption. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ActivationExample.java: testCascadeActivate
+private static void testCascadeActivate()  {
+    storeSensorPanel();
+    EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+    configuration.common().objectClass(SensorPanel.class)
+        .cascadeOnActivate(true);
+    ObjectContainer container = Db4oEmbedded.openFile(configuration,
+        DB4O_FILE_NAME);
+    try  {
+      System.out.println("Cascade activation");
+      ObjectSet&lt;SensorPanel&gt; result = container
+          .queryByExample(new SensorPanel(1));
+      listResult(result);
+      if (result.size() &gt; 0)  {
+        SensorPanel sensor = (SensorPanel) result.queryByExample(0);
+        SensorPanel next = sensor.next;
+        while (next != null)  {
+          System.out.println(next);
+          next = next.next;
+        }
+      }
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>An alternative to cascade activation can be manual activation of objects: </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>ObjectContainer#activate(object, activationDepth);</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Manual deactivation may be used to save memory: </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java:<code>ObjectContainer#deactivate(object, activationDepth);</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>These 2 methods give you an excellent control over object activation, but they obviously need more attention from the application side.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ActivationExample.java: testActivateDeactivate
+private static void testActivateDeactivate()  {
+    storeSensorPanel();
+    EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+    configuration.common().activationDepth(0);
+    ObjectContainer container = Db4oEmbedded.openFile(configuration,
+        DB4O_FILE_NAME);
+    try  {
+      System.out.println("Object container activation depth = 0");
+      ObjectSet&lt;SensorPanel&gt; result = container
+          .queryByExample(new SensorPanel(1));
+      System.out.println("Sensor1:");
+      listResult(result);
+      SensorPanel sensor1 = (SensorPanel) result.queryByExample(0);
+      testActivated(sensor1);
+
+      System.out.println("Sensor1 activated:");
+      container.activate(sensor1, 4);
+      testActivated(sensor1);
+
+      System.out.println("Sensor5 activated:");
+      result = container.queryByExample(new SensorPanel(5));
+      SensorPanel sensor5 = (SensorPanel) result.queryByExample(0);
+      container.activate(sensor5, 4);
+      listResult(result);
+      testActivated(sensor5);
+
+      System.out.println("Sensor1 deactivated:");
+      container.deactivate(sensor1, 5);
+      testActivated(sensor1);
+
+      // DANGER !!!.
+      // If you use deactivate with a higher value than 1
+      // make sure that you know whereto members might branch
+      // Deactivating list1 also deactivated list5
+      System.out.println("Sensor 5 AFTER DEACTIVATE OF Sensor1.");
+      testActivated(sensor5);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="activatingjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

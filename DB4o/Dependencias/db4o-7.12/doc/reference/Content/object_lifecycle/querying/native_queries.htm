@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Querying" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Native Queries	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_lifecycle/querying/native_queries.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../querying.htm">Querying</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Native Queries	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor27"></a>Native Queries</h1>
+        <p>Wouldn't it be nice to pose queries in the programming language that you are using? Wouldn't it be nice if all your query code was 100% typesafe, 100% compile-time checked and 100% refactorable? Wouldn't it be nice if the full power of object-orientation could be used by calling methods from within queries? All mentioned above is achievable by using Native Queries or LINQ (if you are developing in .NET3.5)</p>
+        <p>Native queries are the main db4o query interface and they are the recommended way to query databases from your application for all platforms except .NET3.5 where LINQ is preferrable. Because native queries simply use the semantics of your programming language, they are perfectly standardized and a safe choice for the future.</p>
+        <p>Native Queries are available for all platforms supported by db4o.</p><a name="Concept"></a>
+        <H2>Concept</H2>
+        <p>The concept of native queries is taken from the following two papers:</p>
+        <UL>
+            <LI value="1">
+                <A href="http://www.cs.utexas.edu/users/wcook/papers/NativeQueries/NativeQueries8-23-05.pdf">Cook/Rosenberger, Native Queries for Persistent Objects, A Design White Paper</A>
+            </LI>
+            <LI value="2">
+                <A href="http://www.cs.utexas.edu/~wcook/papers/SafeQuery05/SafeQueryFinal.pdf">Cook/Rai, Safe Query Objects: Statically Typed Objects as Remotely Executable Queries</A>
+            </LI>
+        </UL><a name="Principle"></a>
+        <H2>Principle</H2>
+        <p>Native Queries provide the ability to run one or more lines of code against all instances of a class. Native query expressions should return true to mark specific instances as part of the result set. db4o will attempt to <a href="../../tuning/native_query_optimization.htm">optimize native query</a> expressions and use <a href="soda_query/soda_query_engine.htm">internal query processor</a> to run them against indexes and without instantiating actual objects, where this is possible. </p><a name="Simple Example"></a>
+        <H2>Simple Example</H2>
+        <p>Let's look at how a simple native query will look like in some of the programming languages and dialects that db4o supports:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java5:</p>
+            <pre class="prettyprint" xml:space="preserve">NQExample.java: primitiveQuery
+private static void primitiveQuery(ObjectContainer container)  {
+    List&lt;Pilot&gt; pilots = container.query(new com.db4o.query.Predicate&lt;Pilot&gt;()  {
+      public boolean match(Pilot pilot)  {
+        return pilot.getPoints() == 100;
+      }
+    });
+  }</pre>
+            <p>Java1.2-1.4:</p>
+            <pre class="prettyprint" xml:space="preserve">PrimitiveExample.java: primitiveQuery
+public static void primitiveQuery(ObjectContainer db) {
+    List pilots = db.query(new Predicate()  {
+        public boolean match(Pilot pilot)  {
+            return pilot.getPoints() == 100;
+        }
+    });
+  }</pre>
+            <p>Java1.1:</p>
+            <pre class="prettyprint" xml:space="preserve">PrimitiveExample.java: primitiveQuery1
+public static void primitiveQuery1(ObjectContainer db) {
+    List pilots = db.query(new PilotHundredPoints());
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">PilotHundredPoints.java
+/** Copyright (C) 2004 - 2006 Versant Inc. http://www.db4o.com */
+import com.db4o.query.Predicate;
+
+public class PilotHundredPoints extends Predicate  {
+    public boolean match(Pilot pilot)  {
+        return pilot.getPoints() == 100;
+    }
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>A side note on the above syntax:</p>
+        <p>For all dialects without support for generics, Native Queries work by convention. A class that extends the Predicate class is expected to have a boolean #match() or #Match() method with one parameter to describe the class extent:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>boolean match(Pilot candidate);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>When using native queries, don't forget that modern integrated development environments (IDEs) can do all the typing work around the native query expression for you, if you use templates and autocompletion.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Here is how to configure a <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">Native Query<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> template with Eclipse 3.1:</p>
+            <p>From the menu, choose Window + Preferences + Java + Editor + Templates + New</p>
+            <p>As the name type "nq". Make sure that "java" is selected as the context on the right. Paste the following into the pattern field:</p>
+            <p><code>List &lt;${extent}&gt; list = db.query(new Predicate &lt;${extent}&gt; () {</code><code>    public boolean match(${extent} candidate){</code><code>        return true; </code><code>    }</code><code>}); </code>
+            </p>
+            <p>Now you can create a native query with three keys: n + q + Control-Space.</p>
+            <p>Similar features are available in most modern IDEs.</p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p>For more information see <a href="native_queries/native_query_syntax.htm">Native Query Syntax</a>.</p><a name="Advanced Example"></a>
+        <H2>Advanced Example</H2>
+        <p>For complex queries, the native syntax is very precise and quick to write. Let's compare to a SODA query that finds all pilots with a given name or a score within a given range:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">NQExample.java: storePilots
+private static void storePilots(ObjectContainer container)  {
+    container.store(new Pilot("Michael Schumacher", 100));
+    container.store(new Pilot("Rubens Barrichello", 99));
+  }</pre>
+            <pre class="prettyprint" xml:space="preserve">NQExample.java: retrieveComplexSODA
+private static void retrieveComplexSODA(ObjectContainer container)  {
+    Query query = container.query();
+    query.constrain(Pilot.class);
+    Query pointQuery = query.descend("points");
+    query.descend("name").constrain("Rubens Barrichello").or(
+        pointQuery.constrain(new Integer(99)).greater().and(
+            pointQuery.constrain(new Integer(199))
+                .smaller()));
+    ObjectSet result = query.execute();
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Here is how the same query will look like with native query syntax, fully accessible to autocompletion, refactoring and other IDE features, fully checked at compile time:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">NQExample.java: advancedQuery
+private static void advancedQuery(ObjectContainer container)  {
+    List&lt;Pilot&gt; result = container.query(new com.db4o.query.Predicate&lt;Pilot&gt;()  {
+      public boolean match(Pilot pilot)  {
+        return pilot.getPoints() &gt; 99
+            &amp;&amp; pilot.getPoints() &lt; 199
+            || pilot.getName().equals(
+                "Rubens Barrichello");
+      }
+    });
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" /><a name="Arbitrary Code"></a>
+        <H2>Arbitrary Code</H2>
+        <p>Basically that's all there is to know about native queries to be able to use them efficiently. In principle you can run arbitrary code as native queries, you just have to be very careful with side effects - especially those that might affect persistent objects.</p>
+        <p>Let's run an example that involves some more of the language features available.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">NQExample.java: retrieveArbitraryCodeNQ
+private static void retrieveArbitraryCodeNQ(
+      ObjectContainer container)  {
+    final int[] points =  { 1, 100 };
+    ObjectSet result = container.query(new com.db4o.query.Predicate&lt;Pilot&gt;()  {
+      public boolean match(Pilot pilot)  {
+        for (int i = 0; i &lt; points.length; i++)  {
+          if (pilot.getPoints() == points[i])  {
+            return true;
+          }
+        }
+        return pilot.getName().startsWith("Rubens");
+      }
+    });
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="Native Query Performance"></a>
+        <H2>Native Query Performance</H2>
+        <p>One drawback of native queries has to be pointed out: under the hood db4o tries to analyze native queries to convert them to SODA. This is not possible for all queries. For some queries it is very difficult to analyze the flowgraph. In this case db4o will have to instantiate some of the persistent objects to actually run the native query code. db4o will try to analyze parts of native query expressions to keep object instantiation to the minimum.</p>
+        <p>The development of the native query optimization processor will be an ongoing process in a close dialog with the db4o community. Feel free to contribute your results and your needs by providing feedback to our <A href="http://developer.db4o.com/forums">db4o forums</A>.</p>
+        <p>The current state of the query optimization process is detailed in the chapter on <a href="../../tuning/native_query_optimization.htm">Native Query Optimization</a></p>
+        <p>With the current implementation, all above examples will run optimized, except for the "Arbitrary Code" example - we are working on it. </p>
+        <p>Note:</p>
+        <UL>
+            <LI value="1">on Java Native Query optimization requires bloat.jar, db4o-nqopt.jar and db4o-instrumentation.jar to be present in the classpath;</LI>
+            <LI value="2">on .NET Native Query optimization requires a reference to Db4obects.Db4o.Instrumentation.dll and Db4objects.Db4o.NativeQueries.dll in your project. </LI>
+        </UL>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

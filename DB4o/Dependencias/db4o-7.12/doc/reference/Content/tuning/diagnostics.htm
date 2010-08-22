@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Tuning" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Diagnostics	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#tuning/diagnostics.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../tuning.htm">Tuning</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Diagnostics	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor148"></a>Diagnostics</h1>
+        <p>Db4o engine provides user with a special mechanism showing runtime diagnostics information. This functionality can become your guide to excellent performance and low memory consumption. 
+Diagnostics can be switched on in the configuration before opening the database file:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>configuration.diagnostic().addListener(new DiagnosticListener())</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:net" />
+        <p>where DiagnosticListener is a callback interface tracking diagnostic messages from different parts of the system:</p>
+        <p><code>public interface DiagnosticListener { 
+        public void onDiagnostic(Diagnostic d); 
+}</code>
+        </p>
+        <p>Db4o provides 2 different listeners:</p>
+        <ul>
+            <li value="1">DiagnosticToConsole (Java, prints diagnostic messages to the console);</li>
+            <li value="2">DiagnosticToTrace (.NET, prints diagnostic messages to the debug output window).</li>
+        </ul>
+        <p>Every diagnostic message is represented by it's own type, all possible types can be found in the com.db4o.diagnostic package/namespace.</p>
+        <p>At the present moment the following diagnostic classes are implemented:</p>
+        <ul>
+            <li value="1">ClassHasNoFields </li>
+            <li value="2">LoadedFromClassIndex </li>
+            <li value="3">NativeQueryNotOptimized </li>
+            <li value="4">UpdateDepthGreaterOne</li>
+            <li value="5">DescendIntoTranslator</li>
+        </ul> More Reading:<ul><li value="1"><p><a href="diagnostics/classhasnofields.htm">ClassHasNoFields</a></p></li><li value="2"><p><a href="diagnostics/loadedfromclassindex.htm">LoadedFromClassIndex</a></p></li><li value="3"><p><a href="diagnostics/nativequerynotoptimized.htm">NativeQueryNotOptimized</a></p></li><li value="4"><p><a href="diagnostics/updatedepthgreaterone.htm">UpdateDepthGreaterOne</a></p></li><li value="5"><p><a href="diagnostics/diagnostic_messages_filter.htm">Diagnostic Messages Filter</a></p></li><li value="6"><p><a href="diagnostics/descendintotranslator.htm">DescendIntoTranslator</a></p></li></ul><script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

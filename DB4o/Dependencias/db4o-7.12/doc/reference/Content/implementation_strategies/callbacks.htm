@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Callbacks	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../Resources/Code/prettify.js">
+        </script>
+        <script src="../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../index_CSH.html#implementation_strategies/callbacks.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Callbacks	</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor68"></a>Callbacks</h1>
+        <p>External
+Callbacks enable you to add Listeners to an <MadCap:conditionalText MadCap:conditions="Primary.Java">ObjectContainer</MadCap:conditionalText> for the following
+db4o events</p>
+        <ul>
+            <li value="1">QueryStarted </li>
+            <li value="2">QueryFinished </li>
+            <li value="3">Creating (first time an object is about to be saved) </li>
+            <li value="4">Created (after the object is saved)</li>
+            <li value="5">Activating </li>
+            <li value="6">Activated </li>
+            <li value="7">Deactivating </li>
+            <li value="8">Deactivated</li>
+            <li value="9">Updating </li>
+            <li value="10">Updated</li>
+            <li value="11">Deleting (not available in networked client/server mode) </li>
+            <li value="12">Deleted (not available in networked client/server mode)</li>
+            <li value="13">Committing</li>
+            <li value="14">Committed </li>
+        </ul>
+        <p>QueryStarted
+and QueryFinished events accept QueryEventArgs as a parameter and can be used
+to gather query statistics information.</p>
+        <p>Created,
+Activated, Deactivated, Updated and Deleted events accept ObjectEventArgs and
+can be used to gather statistics information or to initiate some special
+behavior after the action has been taken.</p>
+        <p>Creating,
+Activating, Deactivating, Updating and Deleting events accept
+CancellableObjectEventArgs. Their primary usage is to perform action validity check
+and to stop the execution if necessary.</p>
+        <p>Committing event can be used to check some application-specific conditions before commit. For example it can</p>
+        <p> be used to check unique constraints. Committing event accepts CommitEventArgs as a parameter.</p>
+        <p>Committed event is raised when the container has completely finished the commit operation. Event subscribers get the notification in a separate thread. Committed event accepts CommitEventArgs. </p>
+        <p> More Reading:<ul><li value="1"><p><a href="callbacks/event_registry_api.htm">Event Registry API</a></p></li><li value="2"><p><a href="callbacks/possible_usecases.htm">Possible Usecases</a></p></li><li value="3"><p><a href="callbacks/benefits.htm">Benefits</a></p></li><li value="4"><p><a href="callbacks/commit-time_callbacks.htm">Commit-Time Callbacks</a></p></li></ul></p>
+        <script type="text/javascript" src="../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

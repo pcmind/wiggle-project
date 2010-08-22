@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Reporting|Reporting With JasperReports" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Data Source	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/reporting/reporting_with_jasperreports/data_source.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../reporting.htm">Reporting</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../reporting_with_jasperreports.htm">Reporting With JasperReports</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Data Source</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Data Source</h1>
+        <p>JasperReports can be built on any data having visual
+representation. In order to make the data "understandable" to the report
+object, it should be supplied through a JRDataSource interface. The
+JasperReports package supplies several implementations, which can be used with
+a <span class="MCTextPopup"><a href="javascript:void(0);" class="MCTextPopupSpot" onclick="FMCTextPopup( event, this ); return false;">RDBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a><span class="MCTextPopupBody" style="display: none; ">Relational Database Management System</span></span>, xml, csv and object data sources.</p>
+        <p>In order to represent db4o objects in the most convenient
+way, we will build a special JRDataSource implementation - ObjectDataSource -
+using reflection to obtain object field values. </p>
+        <p>ObjectDataSource will accept data as a list of objects,
+because this is the way it is returned from a db4o query:</p>
+        <p><code>List &lt;Pilot&gt; pilots =
+objectContainer.query(pilotPredicate);</code>
+        </p>
+        <pre class="prettyprint" xml:space="preserve">ObjectDataSource.java: ObjectDataSource
+/** *//**
+ * ObjectDataSource class is used to extract object field values for the report.
+ * &lt;br&gt;&lt;br&gt;
+ * usage:&lt;br&gt;
+ * List pilots =  &lt;br&gt;
+ * ObjectDataSource dataSource = new ObjectDataSource(pilots);&lt;br&gt;  
+ * In the report (*.jrxml) you will need to define fields. For example: &lt;br&gt;
+ *   &lt;field name="Name" class="java.lang.String"/&gt;&lt;br&gt;
+ *   where field name should correspond to your getter method:&lt;br&gt;
+ *   "Name" - for getName()&lt;br&gt;
+ *   "Id" - for getId()&lt;br&gt; 
+ *
+ */
+public class ObjectDataSource implements JRDataSource  {
+
+  private Iterator iterator;
+
+  private Object currentValue;
+
+  public ObjectDataSource(List list)  {
+    this.iterator = list.iterator();
+  }</pre>
+        <p>ObjectDataSource must implement 2 methods:</p>
+        <p><code>public boolean next()</code>
+        </p>
+        <p>and</p>
+        <p><code>public Object getFieldValue(JRField field)</code>
+        </p>
+        <p>The <code>next()</code> implementation is very simple: it
+just moves the current pointer to the next object in the list:</p>
+        <pre class="prettyprint" xml:space="preserve">ObjectDataSource.java: next
+public boolean next() throws JRException  {
+    currentValue = iterator.hasNext() ? iterator.next() : null;
+    return (currentValue != null);
+  }</pre>
+        <p><code>getFieldValue</code> method should return the value
+for the specified field. The field is defined in <a href="report_structure.htm">*.jrxml</a>file and is passed to the <code>JRDataSource</code> as a <code>JRField</code>.
+In the case of an object list datasource the objective is to correspond field
+names to the object field values. One of the ways to do this is to correspond
+the name of the field in the report to the name of the getter method in the
+object class. For example:</p>
+        <p><code>&lt;field
+name="Name" class="java.lang.String"/&gt;</code>
+        </p>
+        <p><code>class Pilot</code>
+        </p>
+        <p><code>{</code>
+        </p>
+        <p><code> ... </code>
+        </p>
+        <p><code>    public
+String getName(){</code>
+        </p>
+        <p><code>        return
+name; </code>
+        </p>
+        <p><code>    }</code>
+        </p>
+        <p><code>}</code>
+        </p>
+        <p>The method name is "get" + JRField#getName() or "get" +
+"Name". Knowing the method name, we can invoke it using reflection and obtain
+the value of the object field:</p>
+        <pre class="prettyprint" xml:space="preserve">ObjectDataSource.java: getFieldValue
+public Object getFieldValue(JRField field) throws JRException  {
+    Object value = null;
+    try  {
+      // getter method signature is assembled from "get" + field name 
+      // as specified in the report
+      Method fieldAccessor = currentValue.getClass().getMethod("get" + field.getName(), null);
+      value = fieldAccessor.invoke(currentValue, null);
+    } catch (IllegalAccessException iae)  {
+      iae.printStackTrace();
+    } catch (InvocationTargetException ite)  {
+      ite.printStackTrace();
+    } catch (NoSuchMethodException nsme)  {
+      nsme.printStackTrace();
+    }
+    return value;
+  }</pre>The full code of the class can be downloaded from
+<a href="objectdatasource.htm">ObjectDataSource</a>.
+
+ 
+     
+
+
+        <p MadCap:conditions="Primary.Online">Download example code:</p><p MadCap:conditions="Primary.Online"><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="jasperjava.zip">Java </a></MadCap:conditionalText></p><script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

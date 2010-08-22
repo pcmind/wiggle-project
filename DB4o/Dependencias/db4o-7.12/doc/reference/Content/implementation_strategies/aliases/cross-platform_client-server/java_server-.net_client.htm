@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Aliases|Cross-Platform Client-Server" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Java Server-.NET Client	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/aliases/cross-platform_client-server/java_server-.net_client.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../aliases.htm">Aliases</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../cross-platform_client-server.htm">Cross-Platform Client-Server</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Java Server-.NET Client</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Java Server-.NET Client</h1>
+        <p>Java server code is a typical server code:</p>
+        <pre class="prettyprint" xml:space="preserve">Server.java
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+package com.db4odoc.JavaDotNetClientServer;
+
+import com.db4o.*;
+import com.db4o.cs.*;
+import com.db4o.cs.config.*;
+import com.db4o.messaging.*;
+
+public class Server implements ServerInfo, MessageRecipient  {
+    
+    /** *//**
+     * setting the value to true denotes that the server should be closed
+     */
+    private boolean stop = false;
+    
+    /** *//**
+     * starts a db4o server using the configuration from
+     * {@link ServerInfo}.
+     */
+    public static void main(String[] arguments)  {
+      new Server().runServer();
+    } 
+    // end main
+    
+    /** *//**
+     * opens the ObjectServer, and waits forever until close() is called
+     * or a StopServer message is being received.
+     */
+    public void runServer() {
+          synchronized(this) {
+        ServerConfiguration c = Db4oClientServer.newServerConfiguration();
+        
+        ObjectServer db4oServer = Db4oClientServer.openServer(c, FILE, PORT);
+        db4oServer.grantAccess(USER, PASS);
+        
+        // Using the messaging functionality to redirect all
+        // messages to this.processMessage
+        db4oServer.ext().configure().clientServer().setMessageRecipient(this);
+        
+        // to identify the thread in a debugger
+        Thread.currentThread().setName(this.getClass().getName());
+        
+        // We only need low priority since the db4o server has
+        // it's own thread.
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        try  {
+            if(! stop) {
+              // wait forever for notify() from close()
+              this.wait(Long.MAX_VALUE);   
+            }
+        } catch (Exception e)  {
+          e.printStackTrace();
+        }
+        db4oServer.close();
+      }
+    }
+    // end runServer
+    
+    /** *//**
+     * messaging callback
+     * @see com.db4o.messaging.MessageRecipient#processMessage(ObjectContainer, Object)
+     */
+    public void processMessage(MessageContext context, Object message)  {
+      if(message instanceof StopServer) {
+        close();
+      }
+    }
+    // end processMessage
+    
+    /** *//**
+     * closes this server.
+     */
+    public void close() {
+      synchronized(this) {
+        stop = true;
+        this.notify();
+      }
+    }
+    // end close
+
+}</pre>
+        <pre class="prettyprint" xml:space="preserve">ServerInfo.java
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+package com.db4odoc.JavaDotNetClientServer;
+
+/** *//**
+ * Configuration used for {@link StartServer} and {@link StopServer}.
+ * 
+ * @sharpen.ignore
+ */
+public interface ServerInfo  {
+  
+  /** *//**
+   * the host to be used.
+   * &lt;br&gt;If you want to run the client server examples on two computers,
+   * enter the computer name of the one that you want to use as server. 
+   */
+  public String   HOST = "localhost";  
+   
+  /** *//**
+   * the database file to be used by the server.
+   */
+  public String   FILE = "reference.db4o";
+  
+  /** *//**
+   * the port to be used by the server.
+   */
+  public int    PORT = 0xdb40;
+  
+  /** *//**
+   * the user name for access control.
+   */
+  public String   USER = "db4o";
+  
+  /** *//**
+   * the pasword for access control.
+   */
+  public String   PASS = "db4o";
+}</pre>
+        <p>We'll save and retrieve simple Pilot and Car classes:</p>
+        <p>c#:  </p>
+        <pre class="prettyprint" xml:space="preserve">Pilot.cs
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+using System;
+
+namespace JavaDotnetClientServer
+ {
+    class Pilot
+     {
+        private String name;
+
+        public Pilot(String name)
+         {
+            this.name = name;
+        }
+
+        public String getName()
+         {
+            return name;
+        }
+
+        public void setName(String pilotName)
+         {
+            this.name = pilotName;
+        }
+
+        public override String ToString()
+         {
+            return name;
+        }
+    }
+}</pre>
+        <pre class="prettyprint" xml:space="preserve">Car.cs
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+using System;
+
+namespace JavaDotnetClientServer
+ {
+    class Car
+     {
+        private String model;
+        private Pilot pilot;
+
+        public Car(String carModel, Pilot carPilot)
+         {
+            this.model = carModel;
+            this.pilot = carPilot;
+        }
+
+        public Pilot Pilot
+         {
+            get  { return pilot; }
+        }
+
+        public string Model
+         {
+            get  { return model; }
+        }
+
+
+        public override String ToString()
+         {
+            return Model + "[" + Pilot + "]";
+        }
+    }
+}</pre>
+        <p>VB.NET:  </p>
+        <pre class="prettyprint lang-vb" xml:space="preserve">Pilot.vb
+' Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com 
+
+Imports System
+
+Class PilotClass Pilot
+    Private name As [String]
+
+    Public Sub New()Sub New(ByVal name As [String])
+        Me.name = name
+    End Sub
+
+    Public Function getName()Function getName() As [String]
+        Return name
+    End Function
+
+    Public Sub setName()Sub setName(ByVal pilotName As [String])
+        Me.name = pilotName
+    End Sub
+
+    Public Overloads Overrides Function ToString()Function ToString() As [String]
+        Return name
+    End Function
+End Class</pre>
+        <pre class="prettyprint lang-vb" xml:space="preserve">Car.vb
+' Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com 
+
+Imports System
+
+Class CarClass Car
+    Private model As String
+    Private pilot As Pilot
+
+    Public Sub New()Sub New(ByVal carModel As String, ByVal carPilot As Pilot)
+        Me.model = carModel
+        Me.pilot = carPilot
+    End Sub
+
+
+
+
+    Public Overloads Overrides Function ToString()Function ToString() As String
+        Return String.Format("{0} [{1}]", model, pilot)
+    End Function
+End Class</pre>
+        <p>Now, remember requirement #1: the same classes should be available on the server. So
+we create Pilot and Car version in Java (don't forget that member names should
+match all along:</p>
+        <pre class="prettyprint" xml:space="preserve">Pilot.java
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+
+package com.db4odoc.JavaDotNetClientServer;
+
+
+public class Pilot  {
+  private String name;
+    
+    public Pilot(String name)  {
+        this.name=name;
+    }
+
+    public String getName()  {
+        return name;
+    }
+    
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String toString()  {
+        return name;
+    }
+}</pre>
+        <pre class="prettyprint" xml:space="preserve">Car.java
+/**//* Copyright (C) 2004 - 2009  Versant Corporation http://www.versant.com */
+
+package com.db4odoc.JavaDotNetClientServer;
+
+public class Car  {
+    private String model;
+    private Pilot pilot;
+    
+    public Car(String model, Pilot pilot)  {
+        this.model=model;
+        this.pilot=pilot;
+    }
+
+    public Pilot getPilot()  {
+        return pilot;
+    }
+
+    public String getModel()  {
+        return model;
+    }
+
+    public String toString()  {
+        return model+"["+pilot+"]";
+    }
+}</pre>
+        <p>Here is our testing code:</p>
+        <p>c#:  </p>
+        <pre class="prettyprint" xml:space="preserve">Client.cs: Main
+public static void Main(string[] args)
+         {
+            IObjectContainer db = Db4oClientServer.OpenClient(GetConfig(), host,
+                port, user, password);
+            db.Store(new Car("Ferrari", new Pilot("Michael Schumacher")));
+            db.Store(new Car("BMW", new Pilot("Rubens Barrichello")));
+            db.Close();
+
+            db = Db4oClientServer.OpenClient(GetConfig(), host, port, user,
+                    password);
+            IList&lt;Car&gt; cars = db.Query&lt;Car&gt;();
+            foreach (Car car in cars)
+             {
+                System.Console.WriteLine(car);
+            }
+            db.Close();
+        }</pre>
+        <p>VB.NET:  </p>
+        <pre class="prettyprint lang-vb" xml:space="preserve">Client.vb: Main
+Public Shared Sub Main()Sub Main(ByVal args As String())
+        Dim db As IObjectContainer = Db4oClientServer. _ 
+OpenClient(GetConfig(), host, port, user, password)
+        db.Store(New Car("Ferrari", New Pilot("Michael Schumacher")))
+        db.Store(New Car("BMW", New Pilot("Rubens Barrichello")))
+        db.Close()
+
+        db = Db4oClientServer.OpenClient(GetConfig(), host, port, user, password)
+        Dim cars As IList(Of Car) = db.Query(Of Car)()
+        For Each car As Car In cars
+            System.Console.WriteLine(car)
+        Next
+        db.Close()
+    End Sub</pre>
+        <p>Nothing special above - just storing and retrieving objects.
+The main interest is in the call to GetConfig() method:</p>
+        <p>c#:  </p>
+        <pre class="prettyprint" xml:space="preserve">Client.cs: GetConfig
+private static IClientConfiguration GetConfig()
+         {
+            IClientConfiguration config = Db4oClientServer.NewClientConfiguration();
+            config.Common.AddAlias(new WildcardAlias("com.db4odoc.JavaDotNetClientServer.*", 
+                "JavaDotnetClientServer.*, JavaDotnetClientServer"));
+            config.Common.Add(new JavaSupport());
+            return config;
+        }</pre>
+        <p>VB.NET:  </p>
+        <pre class="prettyprint lang-vb" xml:space="preserve">Client.vb: GetConfig
+Private Shared Function GetConfig()Function GetConfig() As IClientConfiguration
+        Dim config As IClientConfiguration = _ 
+Db4oClientServer.NewClientConfiguration()
+        config.Common.AddAlias(New WildcardAlias( _ 
+"com.db4odoc.JavaDotNetClientServer.*", "JavaDotnetClientServer.*, JavaDotnetClientServer"))
+        config.Common.Add(New JavaSupport())
+        Return config
+    End Function</pre>
+        <p>From the above we can see that there are 2 steps required to
+get access to the Java server:</p>
+        <ol>
+            <li value="1">Add JavaSupport</li>
+            <li value="2">Add alias for the persistent classes (In the
+example we use WildcardAlias, however separate aliases for Pilot and Car
+classes will work the same).</li>
+        </ol>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="javadotnetclientserverjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

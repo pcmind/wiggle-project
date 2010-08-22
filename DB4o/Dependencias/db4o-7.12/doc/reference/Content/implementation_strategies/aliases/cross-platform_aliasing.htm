@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Aliases" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Cross-Platform Aliasing	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/aliases/cross-platform_aliasing.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../aliases.htm">Aliases</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Cross-Platform Aliasing</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor92"></a>Cross-Platform Aliasing</h1>
+        <p>One of the most valuable aliases usecases is working with persistent
+Java classes from a .NET application and vice versa. You can use both TypeAlias
+and WildcardAlias depending on how many classes you need to access.</p>
+        <p>Below you will get an example of a system where classes were saved to the database from a Java application and read and modified later from a .NET application. A vice versa example is reviewed in <a href="cross-platform_aliasing_from_.net_to_java.htm">Cross-Platform Aliasing From .NET To Java</a>. </p>
+        <p>For example, Pilot objects are saved to a database from a Java
+application:</p>
+        <pre class="prettyprint" xml:space="preserve">InterLanguageExample.java: saveObjects
+private static void saveObjects()  {
+    new File(DB4O_FILE_NAME).delete();
+    ObjectContainer container = Db4oEmbedded.openFile(Db4oEmbedded
+        .newConfiguration(), DB4O_FILE_NAME);
+    try  {
+      Pilot pilot = new Pilot("David Barrichello", 99);
+      container.store(pilot);
+      pilot = new Pilot("Michael Schumacher", 100);
+      container.store(pilot);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        <p>In order to read the saved objects successfully from a .NET application
+we will need to define an alias for persistent classes and add JavaSupport to configuration. JavaSupport is a special configuration item, which defines aliases for all necessary internal db4o classes that might be referenced in the database file. We will use a <a href="wildcardalias.htm">WildcardAlias</a> for all the persistent classes. This alias must reference the corresponding persistent class definitions on Java and .NET (remember that only matching field names will be accessible in aliased objects):</p>
+        <pre class="prettyprint" xml:space="preserve">InterLanguageExample.cs: ConfigureAlias
+private static IEmbeddedConfiguration ConfigureAlias()
+         {
+            IEmbeddedConfiguration configuration = 
+Db4oEmbedded.NewConfiguration();
+            configuration.Common.AddAlias(new WildcardAlias(
+"com.db4odoc.aliases.*", "Db4odoc.Aliases.*, Db4odoc"));
+            configuration.Common.Add(new JavaSupport());
+            return configuration;
+        }</pre>Now the objects are accessible from the .NET application:
+<pre class="prettyprint" xml:space="preserve">InterLanguageExample.cs: GetObjects
+private static void GetObjects(IEmbeddedConfiguration configuration)
+         {
+            IObjectContainer db = Db4oEmbedded.OpenFile(configuration, Db4oFileName);
+            try
+             {
+                IList&lt;Pilot&gt; result = db.Query&lt;Pilot&gt;(delegate(Pilot pilot)  
+{ return pilot.Points%2 == 0; });
+                for (int i = 0; i &lt; result.Count; i++)
+                 {
+                    Pilot pilot = result[i];
+                    pilot.Name = "Modified " + pilot.Name;
+                    db.Store(pilot);
+                }
+                ListResult(result);
+            }
+            finally
+             {
+                db.Close();
+            }
+        }</pre><p>We can read the database from the initial Java application again. Note, that no alias is required as the class definitions were created from Java:</p><pre class="prettyprint" xml:space="preserve">InterLanguageExample.java: readObjects
+private static void readObjects()  {
+    ObjectContainer container = Db4oEmbedded.openFile(Db4oEmbedded
+        .newConfiguration(), DB4O_FILE_NAME);
+    try  {
+      ObjectSet&lt;Pilot&gt; result = container.queryByExample(new Pilot(null, 0));
+      listResult(result);
+    } finally  {
+      container.close();
+    }
+  }</pre><script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

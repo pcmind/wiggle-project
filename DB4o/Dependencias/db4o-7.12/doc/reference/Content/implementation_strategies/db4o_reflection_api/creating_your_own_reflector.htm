@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|db4o Reflection API" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Creating your own reflector	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/db4o_reflection_api/creating_your_own_reflector.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../db4o_reflection_api.htm">db4o Reflection API</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Creating your own reflector</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Creating your own reflector</h1>
+        <p><a name="kanchor79"></a>By default db4o uses JdkReflector(Java) or NetReflector (.NET) as a GenericReflector delegate.</p>
+        <p>However, the programmer can instruct db4o to use a specially designed reflection implementation:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: <code>Db4o.configure().reflectWith(reflector)</code></p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>where reflector is one of the available reflectors or your own reflector implementation. </p>
+        <p>At present db4o comes with SelfReflector, which was designed for environments, which do not have built-in support for reflections (J2ME for example). In this implementation all the classes' information is stored in special registry. User classes should implement self_get and self_set methods to be registered individually and become "known" to SelfReflector. </p>
+        <p>Specific reflectors can be written for special usecases. </p>
+        <p>Let's look how to create a reflector. Remember that db4o relies on reflector to read the database, so errors in reflector may prevent your database from opening.</p>
+        <p>To keep things simple we will write a LoggingReflector, its only difference from standard reflector is that information about loaded classes is outputted to console. All reflectors used by db4o should implement com.db4o.reflect.Reflector/Db4objects.Db4o.Reflect.IReflector interface.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">
+                <a name="kanchor80"></a>LoggingReflector.java
+/** Copyright (C) 2004   Versant Inc.   http://www.db4o.com */
+
+package com.db4odoc.reflections;
+
+import com.db4o.internal.Platform4;
+import com.db4o.reflect.ReflectArray;
+import com.db4o.reflect.ReflectClass;
+import com.db4o.reflect.Reflector;
+import com.db4o.reflect.ReflectorConfiguration;
+import com.db4o.reflect.jdk.ClassLoaderJdkLoader;
+import com.db4o.reflect.jdk.JavaReflectClass;
+import com.db4o.reflect.jdk.JdkClass;
+import com.db4o.reflect.jdk.JdkLoader;
+import com.db4o.reflect.jdk.JdkReflector;
+
+/** 
+ * db4o wrapper for JDK reflector functionality
+ * 
+ * @see com.db4o.ext.ExtObjectContainer#reflector()
+ * @see com.db4o.reflect.generic.GenericReflector
+ * 
+ * @sharpen.ignore
+ */
+public class LoggingReflector implements Reflector  {
+
+  private final JdkLoader _classLoader;
+  protected Reflector _parent;
+  private ReflectArray _array;
+  private ReflectorConfiguration _config;
+
+  /** 
+   * <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../object_lifecycle/object_construction.htm">Constructor<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>
+   * 
+   * @param classLoader
+   *            class loader
+   */
+  public LoggingReflector(ClassLoader classLoader)  {
+    this(new ClassLoaderJdkLoader(classLoader));
+  }
+
+  /** 
+   * Constructor
+   * 
+   * @param classLoader
+   *            class loader
+   */
+  public LoggingReflector(JdkLoader classLoader)  {
+    this(classLoader, null);
+  }
+
+  private LoggingReflector(JdkLoader classLoader,
+      ReflectorConfiguration config)  {
+    _classLoader = classLoader;
+    _config = config;
+  }
+
+  /** 
+   * ReflectArray factory
+   * 
+   * @return ReflectArray instance
+   */
+  public ReflectArray array()  {
+    if (_array == null)  {
+      _array = new LoggingArray(parent());
+    }
+    return _array;
+  }
+
+  /** 
+   * Creates a copy of the object
+   * 
+   * @param obj
+   *            object to copy
+   * @return object copy
+   */
+  public Object deepClone(Object obj)  {
+    return new LoggingReflector(_classLoader, _config);
+  }
+
+  /** 
+   * Returns ReflectClass for the specified class
+   * 
+   * @param clazz
+   *            class
+   * @return ReflectClass for the specified class
+   */
+  public ReflectClass forClass(Class clazz)  {
+    ReflectClass rc = createClass(clazz);
+    System.out.println("forClass: " + clazz + " -&gt; "
+        + (rc == null ? "" : rc.getName()));
+
+    return rc;
+  }
+
+  /**
+   * Returns ReflectClass for the specified class name
+   * 
+   * @param className
+   *            class name
+   * @return ReflectClass for the specified class name
+   */
+  public ReflectClass forName(String className)  {
+    Class clazz = _classLoader.loadClass(className);
+    ReflectClass rc = createClass(clazz);
+    System.out.println("forName: " + className + " -&gt; "
+        + (rc == null ? "" : rc.getName()));
+    return rc;
+
+  }
+
+  /** 
+   * creates a Class reflector when passed a class. This method is protected
+   * to allow overriding in cusom reflectors that override JdkReflector.
+   * 
+   * @param clazz
+   *            the class
+   * @return the class reflector
+   */
+  protected JdkClass createClass(Class clazz)  {
+    if (clazz == null)  {
+      return null;
+    }
+    JdkReflector jdkReflector = new JdkReflector(this.getClass()
+        .getClassLoader());
+    jdkReflector.configuration(_config);
+
+    JdkClass rc = new JdkClass(parent(), jdkReflector, clazz);
+    return rc;
+  }
+
+  /** 
+   * Returns ReflectClass for the specified class object
+   * 
+   * @param a_object
+   *            class object
+   * @return ReflectClass for the specified class object
+   */
+  public ReflectClass forObject(Object a_object)  {
+    if (a_object == null)  {
+      return null;
+    }
+    ReflectClass rc = parent().forClass(a_object.getClass());
+    System.out.println("forObject:" + a_object + " -&gt; "
+        + (rc == null ? "" : rc.getName()));
+    return rc;
+  }
+
+  /**
+   * Method stub. Returns false.
+   */
+  public boolean isCollection(ReflectClass candidate)  {
+    return false;
+  }
+
+  /** 
+   * Method stub. Returns false.
+   */
+  public boolean methodCallsSupported()  {
+    return true;
+  }
+
+  /** 
+   * Sets parent reflector
+   * 
+   * @param reflector
+   *            parent reflector
+   */
+  public void setParent(Reflector reflector)  {
+    _parent = reflector;
+  }
+
+  /**
+   * Creates ReflectClass[] array from the Class[] array using the reflector
+   * specified
+   * 
+   * @param reflector
+   *            reflector to use
+   * @param clazz
+   *            class
+   * @return ReflectClass[] array
+   */
+  public static ReflectClass[] toMeta(Reflector reflector, Class[] clazz)  {
+    ReflectClass[] claxx = null;
+    if (clazz != null)  {
+      claxx = new ReflectClass[clazz.length];
+      for (int i = 0; i &lt; clazz.length; i++)  {
+        if (clazz[i] != null)  {
+          claxx[i] = reflector.forClass(clazz[i]);
+        }
+      }
+    }
+    return claxx;
+  }
+
+  /** 
+   * Creates Class[] array from the ReflectClass[] array
+   * 
+   * @param claxx
+   *            ReflectClass array
+   * @return Class[] array
+   */
+  static Class[] toNative(ReflectClass[] claxx)  {
+    Class[] clazz = null;
+    if (claxx != null)  {
+      clazz = new Class[claxx.length];
+      for (int i = 0; i &lt; claxx.length; i++)  {
+        clazz[i] = toNative(claxx[i]);
+      }
+    }
+    return clazz;
+  }
+
+  /** 
+   * Translates a ReflectClass into a native Class
+   * 
+   * @param claxx
+   *            ReflectClass to translate
+   * @return Class
+   */
+  public static Class toNative(ReflectClass claxx)  {
+    if (claxx == null)  {
+      return null;
+    }
+    System.out.println("toNative: " + claxx.getName());
+    if (claxx instanceof JavaReflectClass)  {
+      return ((JavaReflectClass) claxx).getJavaClass();
+    }
+    ReflectClass d = claxx.getDelegate();
+    if (d == claxx)  {
+      return null;
+    }
+    return toNative(d);
+  }
+
+  public void configuration(ReflectorConfiguration config)  {
+    _config = config;
+  }
+
+  public ReflectorConfiguration configuration()  {
+    return _config;
+  }
+
+  Object nullValue(ReflectClass clazz)  {
+    return Platform4.nullValue(toNative(clazz));
+  }
+
+  private Reflector parent()  {
+    if (_parent == null)  {
+      return this;
+    }
+    return _parent;
+  }
+
+}</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>It is easy to see that this reflector provides the same functionality as JdkReflector or NetReflector extended by console output. The following simple test will show how it works:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">ReflectorExample.java: testReflector
+private static void testReflector()
+   {
+    LoggingReflector logger = new LoggingReflector(Db4o.class.getClassLoader());
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.reflectWith(logger);
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      ReflectClass rc  = container.ext().reflector().forName(Car.class.getName());
+      System.out.println("Reflected class: " + rc);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>The output can help you to track all the loaded classes. </p>
+        <p><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../db4o_reflection_api.htm">Reflection<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> is a powerful tool, which plays a fundamental role in db4o. Understanding reflection will help you to understand the whole db4o functionality in detail. </p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="reflectionsjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Querying|Query Modes" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Immediate Queries	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#object_lifecycle/querying/query_modes/immediate_queries.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../querying.htm">Querying</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../query_modes.htm">Query Modes</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Immediate Queries</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Immediate Queries</h1>
+        <p>This is the default query mode:
+the whole query result is evaluated upon query execution and object IDs list is
+produced as a result. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QueryModesExample.java: testImmediateQueries
+private static void testImmediateQueries()  {
+    System.out.println(
+"Testing query performance on 10000 pilot objects in Immediate mode");
+    fillUpDB(10000);
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.queries().evaluationMode(QueryEvaluationMode.IMMEDIATE);
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      QueryStats stats = new QueryStats();
+      stats.connect(container);
+      Query query = container.query();
+      query.constrain(Pilot.class);
+      query.descend("points").constrain(99).greater();
+      query.execute();
+      long executionTime = stats.executionTime();
+      System.out.println("Query execution time: "
+          + executionTime);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Obviously object evaluation
+takes some time and in a case of big resultsets you will have to wait for a long
+time before the first result will be returned. This is especially unpleasant in
+a client-server setup, when query processing can block the server for seconds or even minutes.</p>
+        <p>This mode makes the whole
+objects result set available at once - <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../implementation_strategies/ids_and_uuids/internal_ids.htm">ID<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> list is built based on the committed
+state in the database. As soon as a result is delivered it won't be changed
+neither by changes in current transaction neither by committed changes from
+another transactions. </p>
+        <p>Note, that resultset contains
+only references to objects, you were querying for, which means that if an
+object field has changed by the time of the actual object retrieval from the
+object set - you will get the new field value:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">QueryModesExample.java: testImmediateChanged
+private static void testImmediateChanged()  {
+    System.out
+        .println("Testing immediate mode with field changes");
+    fillUpDB(10);
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.queries().evaluationMode(QueryEvaluationMode.IMMEDIATE);
+    ObjectContainer container = Db4o.openFile(configuration, DB4O_FILE_NAME);
+    try  {
+      Query query1 = container.query();
+      query1.constrain(Pilot.class);
+      query1.descend("points").constrain(5).smaller();
+      ObjectSet result1 = query1.execute();
+
+      // change field
+      Query query2 = container.query();
+      query2.constrain(Pilot.class);
+      query2.descend("points").constrain(2);
+      ObjectSet result2 = query2.execute();
+      Pilot pilot2 = (Pilot) result2.queryByExample(0);
+      pilot2.addPoints(22);
+      container.store(pilot2);
+      listResult(result1);
+    } finally  {
+      container.close();
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="Immediate Mode Pros And Cons"></a>
+        <h2>Immediate Mode Pros And Cons</h2>
+        <p>Pros:</p>
+        <ul>
+            <li value="1">If the query is intended to iterate through the entire resulting ObjectSet, this mode will be slightly faster than the
+others.</li>
+            <li value="2">The query will process without intermediate
+side effects from changed objects (by the caller or by other transactions).</li>
+        </ul>
+        <p>Cons:</p>
+        <ul>
+            <li value="1">Query processing can block the server for a long time.</li>
+            <li value="2">In comparison to the other modes it will take longest until the first
+results are returned.</li>
+            <li value="3">The ObjectSet will require a considerate amount of memory to hold the
+IDs of all found objects.</li>
+        </ul>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

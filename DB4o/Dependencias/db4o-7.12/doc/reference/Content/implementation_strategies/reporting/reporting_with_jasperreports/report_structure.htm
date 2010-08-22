@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Reporting|Reporting With JasperReports" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Report Structure	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#implementation_strategies/reporting/reporting_with_jasperreports/report_structure.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../reporting.htm">Reporting</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../reporting_with_jasperreports.htm">Reporting With JasperReports</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Report Structure</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Report Structure</h1>
+        <p>Report design is defined in an xml file with a conventional
+extension *.jrxml. The xml structure is defined in a DTD file and can be
+downloaded from the <a href="http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">sourceforge</a>.</p>
+        <p>A simplest table report definition can look like this:</p>
+        <pre class="prettyprint" xml:space="preserve">simple_report.xml
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd"&gt;
+
+&lt;jasperReport name="Simple_Report"&gt;
+&lt;field name="Name" class="java.lang.String"/&gt;
+  &lt;detail&gt;
+    &lt;band height="20"&gt;
+      &lt;textField bookmarkLevel="2"&gt;
+        &lt;reportElement x="0" y="0" width="100" height="15"/&gt;
+        &lt;textFieldExpression class="java.lang.String"&gt;$F{Name}
+&lt;/textFieldExpression&gt;
+      &lt;/textField&gt;
+    &lt;/band&gt;
+  &lt;/detail&gt;
+&lt;/jasperReport&gt;</pre>
+        <p>For a simple example, we will use the following Jasper xml
+elements:</p>
+        <p><b>parameter</b> - represents the definition of a report
+parameter. </p>
+        <p>In jrxml file:</p>
+        <p><code>&lt;parameter
+name="Title" class="java.lang.String"&gt;
+&lt;/parameter&gt;</code>
+        </p>
+        <p>In *.java file:</p>
+        <p><code>Map parameters = <b>new</b>HashMap();</code>
+        </p>
+        <p><code>parameters.put("Title",
+"The Pilot Report");</code>
+        </p>
+        <p>parameters map is
+further passed to the <a href="report_generation.htm">report filling function</a>.</p>
+        <p><b>field</b> - represents the definition of a data
+field that will store values retrieved from the data source of the report.</p>
+        <p>In *.jrxml file:</p>
+        <p><code>&lt;field
+name="Name" class="java.lang.String"/&gt;</code>
+        </p>
+        <p>In *.java file fields are handled by classes implementing
+<a href="data_source.htm">JRDataSource</a> interface.</p>For the full description of JasperReports xml elements
+please refer to the <a href="http://jasperforge.org/uploads/publish/jasperreportswebsite/trunk/schema.reference.htm">Reference</a>.
+
+ 
+     
+
+
+        <p MadCap:conditions="Primary.Online">Download example code:</p><p MadCap:conditions="Primary.Online"><MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="jasperjava.zip">Java </a></MadCap:conditionalText></p><script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js"></script></body>
+</html>

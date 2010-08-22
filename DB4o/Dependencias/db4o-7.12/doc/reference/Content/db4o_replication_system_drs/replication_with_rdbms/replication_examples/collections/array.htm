@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="db4o Replication System dRS|Replication With RDBMS|Replication Examples|Collections" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Array	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../../index_CSH.html#db4o_replication_system_drs/replication_with_rdbms/replication_examples/collections/array.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../../db4o_replication_system_drs.htm">db4o Replication System dRS</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../../replication_with_rdbms.htm">Replication With RDBMS</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../replication_examples.htm">Replication Examples</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Array</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Array</h1>
+        <p>Hibernate version used with <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../../db4o_replication_system_drs.htm">dRS<img style="border: none;margin-left: 5px;" src="../../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> supports one dimensional arrays but does not support multidimensional arrays. </p>
+        <pre class="prettyprint" xml:space="preserve">Pilot.java
+/** Copyright (C) 2004 - 2008  Versant Inc.  http://www.db4o.com
+
+This file is part of the db4o open source object database.
+
+db4o is free software; you can redistribute it and/or modify it under
+the terms of version 2 of the GNU General Public License as published
+by the Free Software Foundation and as clarified by db4objects' GPL 
+interpretation policy, available at
+http://www.db4o.com/about/company/legalpolicies/gplinterpretation/
+Alternatively you can write to db4objects, Inc., 1900 S Norfolk Street,
+Suite 350, San Mateo, CA 94403, USA.
+
+db4o is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. */
+package f1.collection.array;
+
+import f1.collection.Car;
+
+public class Pilot  {
+  String name;
+  Car[] cars;
+}</pre>
+        <pre class="prettyprint" xml:space="preserve">Pilot.hbm.xml
+&lt;?xml version="1.0"?&gt;
+
+&lt;!-- Copyright (C) 2004 - 2008  Versant Inc.  http://www.db4o.com --&gt;
+
+&lt;!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"&gt;
+
+&lt;hibernate-mapping default-access="field" 
+default-lazy="false" default-cascade="save-update"&gt;
+  &lt;class name="f1.collection.array.Pilot"&gt;
+    &lt;id column="typed_id" type="long"&gt;
+      &lt;generator class="native"/&gt;
+    &lt;/id&gt;
+
+    &lt;property name="name"/&gt;
+
+    &lt;array name="cars" table="cars"&gt;
+      &lt;key column="pilotId"/&gt;
+      &lt;list-index column="sortOrder"/&gt;
+      &lt;one-to-many class="f1.collection.Car"/&gt;
+    &lt;/array&gt;
+  &lt;/class&gt;
+&lt;/hibernate-mapping&gt;</pre>
+        <p>Add Pilot and Car to hibernate.cfg.xml</p>
+        <p><code>&lt;mapping resource="f1/collection/array/Pilot.hbm.xml"/&gt;</code>
+        </p>
+        <p><code>&lt;mapping resource="f1/collection/Car.hbm.xml"/&gt;</code>
+        </p>
+        <p>Save the pilot as usual and start replication:</p>
+        <pre class="prettyprint" xml:space="preserve">ArrayExample.java: main
+</pre>
+        <pre>public static void main(String[] args) {</pre>
+        <pre xml:space="preserve">   new File("ArrayExample.yap").delete();</pre>
+        <pre xml:space="preserve">   System.out.println("Running Array example.");</pre>
+        <pre xml:space="preserve">   com.db4o.config.Configuration db4oConfig = Db4o.newConfiguration();</pre>
+        <pre xml:space="preserve">   db4oConfig.generateUUIDs(ConfigScope.GLOBALLY);</pre>
+        <pre xml:space="preserve">   db4oConfig.generateVersionNumbers(ConfigScope.GLOBALLY);</pre>
+        <pre xml:space="preserve">   ObjectContainer objectContainer = Db4o.openFile(db4oConfig, "ArrayExample.yap");</pre>
+        <pre xml:space="preserve">   Pilot pilot = new Pilot();</pre>
+        <pre xml:space="preserve">   pilot.name = "John";</pre>
+        <pre xml:space="preserve">   Car car1 = new Car();</pre>
+        <pre xml:space="preserve">   car1.brand = "BMW";</pre>
+        <pre xml:space="preserve">   car1.model = "M3";</pre>
+        <pre xml:space="preserve">   Car car2 = new Car();</pre>
+        <pre xml:space="preserve">   car2.brand = "Mercedes Benz";</pre>
+        <pre xml:space="preserve">   car2.model = "S600SL";</pre>
+        <pre xml:space="preserve">   pilot.cars = new Car[]{car1, car2};</pre>
+        <pre xml:space="preserve">   objectContainer.store(pilot);</pre>
+        <pre xml:space="preserve">   objectContainer.commit();</pre>
+        <pre xml:space="preserve">   Configuration config = new Configuration().configure("f1/collection/array/hibernate.cfg.xml");</pre>
+        <pre xml:space="preserve">   ReplicationSession replication = HibernateReplication.begin(objectContainer, config);</pre>
+        <pre xml:space="preserve">   ObjectSet changed = replication.providerA().objectsChangedSinceLastReplication();</pre>
+        <pre xml:space="preserve">   while (changed.hasNext())</pre>
+        <pre xml:space="preserve">      replication.replicate(changed.next());</pre>
+        <pre xml:space="preserve">      replication.commit();</pre>
+        <pre xml:space="preserve">      replication.close();</pre>
+        <pre xml:space="preserve">      objectContainer.close();</pre>
+        <pre xml:space="preserve">      new File("ArrayExample.yap").delete();</pre>
+        <pre xml:space="preserve">   }
+}</pre>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="../../hibernate.zip">Java</a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

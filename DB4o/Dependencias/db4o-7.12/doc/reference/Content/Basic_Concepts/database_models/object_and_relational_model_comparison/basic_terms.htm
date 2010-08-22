@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Basic Concepts|Database Models|Object And Relational Model Comparison" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Basic Terms	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../../index_CSH.html#Basic_Concepts/database_models/object_and_relational_model_comparison/basic_terms.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../../Basic_Concepts.htm">Basic Concepts</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../../database_models.htm">Database Models</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../object_and_relational_model_comparison.htm">Object And Relational Model Comparison</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Basic Terms</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Basic Terms</h1>
+        <p>While relational and object databases use different sets of
+terms, it is possible to draw parallels between some of the terms:</p>
+        <table border="1" cellpadding="0" cellspacing="0">
+            <tr>
+                <td valign="top">
+                    <p><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../product_philosophy/oodbms.htm">OODBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>
+                    </p>
+                </td>
+                <td valign="top">
+                    <p><span class="MCTextPopup"><a href="javascript:void(0);" class="MCTextPopupSpot" onclick="FMCTextPopup( event, this ); return false;">RDBMS<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a><span class="MCTextPopupBody" style="display: none; ">Relational Database Management System</span></span>
+                    </p>
+                </td>
+                <td valign="top">
+                    <p>Similar</p>
+                </td>
+                <td valign="top">
+                    <p>Different</p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Class</p>
+                </td>
+                <td valign="top">
+                    <p>Table</p>
+                </td>
+                <td valign="top">
+                    <p>Define an entity data structure.</p>
+                </td>
+                <td valign="top">
+                    <p>Class can define fields (static data) and methods, while
+  table can only define static data.</p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Object instance</p>
+                </td>
+                <td valign="top">
+                    <p>Tuple</p>
+                </td>
+                <td valign="top">
+                    <p>Represent an instance of data defined in a class or a
+  table.</p>
+                </td>
+                <td valign="top">
+                    <p>Object can hold data of different visibility and
+  references to other objects. Tuple consists of system type data. </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p><span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../../implementation_strategies/using_attributes.htm">Attribute<img style="border: none;margin-left: 5px;" src="../../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span>
+                    </p>
+                </td>
+                <td valign="top">
+                    <p>Column</p>
+                </td>
+                <td valign="top">
+                    <p>Define one of the fields in the data definition.</p>
+                </td>
+                <td valign="top">
+                    <p>RDBMS has a preset collection of types, which can be used
+  to define the type of the data in the column. OODBMS can use user-defined
+  types.</p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Method</p>
+                </td>
+                <td valign="top">
+                    <p>Stored Procedure</p>
+                </td>
+                <td valign="top">
+                    <p>Define a piece of functionality.</p>
+                </td>
+                <td valign="top">
+                    <p>Method is a characteristic of a class. Stored procedure is
+  a separate object in RDBMS.</p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Identity</p>
+                </td>
+                <td valign="top">
+                    <p>Key</p>
+                </td>
+                <td valign="top">
+                    <p>Identify a single object or tuple.</p>
+                </td>
+                <td valign="top">
+                    <p>Object identity makes any object unique independently of
+  the object content. Key imposes a uniqueness of a database object based on
+  the uniqueness of the column values.</p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <p>Reference</p>
+                </td>
+                <td valign="top">
+                    <p>Relation</p>
+                </td>
+                <td valign="top">
+                    <p>Link different objects within a database.</p>
+                </td>
+                <td valign="top">
+                    <p>In OODBMS direct object links are used. In RDBMS objects
+  are linked through foreign keys, i.e. identical values in different rows.</p>
+                </td>
+            </tr>
+        </table>
+        <p>Note, that the above-mentioned terms are similar only to a
+certain degree; there are some fundamental differences between them.</p>
+        <script type="text/javascript" src="../../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

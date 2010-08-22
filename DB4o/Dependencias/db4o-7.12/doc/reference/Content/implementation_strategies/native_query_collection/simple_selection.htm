@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Implementation Strategies|Native Query Collection" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Simple Selection	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#implementation_strategies/native_query_collection/simple_selection.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../implementation_strategies.htm">Implementation Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../native_query_collection.htm">Native Query Collection</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Simple Selection</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Simple Selection</h1>
+        <p>The following examples show how to use <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../Basic_Concepts/native_query_concepts.htm">NQ<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> to select all
+objects of the specified type from a database. <a href="store_pilots.htm">Store Pilots</a> function is used to fill in the database. </p><a name="SelectAllPilots"></a>
+        <h2>SelectAllPilots</h2>
+        <p>For languages with generics support (Java5-6; .NET2.0-3.0):</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: selectAllPilots
+private static void selectAllPilots()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List&lt;Pilot&gt; result = container.query(new Predicate&lt;Pilot&gt;()  {
+          public boolean match(Pilot pilot)  {
+            // each Pilot is included in the result
+            return true;
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" /><a name="SelectAllPilotsNonGeneric"></a>
+        <h2>SelectAllPilotsNonGeneric</h2>
+        <p>For languages without generics support (Java1.1-1.4;
+.NET1.0):</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">SimpleExamples.java: selectAllPilotsNonGeneric
+private static void selectAllPilotsNonGeneric()  {
+    ObjectContainer container = database();
+    if (container != null)  {
+      try  {
+        List result = container.query(new Predicate()  {
+          public boolean match(Object object)  {
+            // each Pilot is included in the result
+            if (object instanceof Pilot)  {
+              return true;
+            }
+            return false;
+          }
+        });
+        listResult(result);
+      } catch (Exception ex)  {
+        System.out.println("System Exception: " + ex.getMessage());
+      } finally  {
+        closeDatabase();
+      }
+    }
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="nqcollectionjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

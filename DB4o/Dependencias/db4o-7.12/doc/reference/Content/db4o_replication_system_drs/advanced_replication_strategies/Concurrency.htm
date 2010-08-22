@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="db4o Replication System dRS|Advanced Replication Strategies" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Concurrency-Limitations</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../SkinSupport/MadCapAll.js">
+        </script>
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#db4o_replication_system_drs/advanced_replication_strategies/Concurrency.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../db4o_replication_system_drs.htm">db4o Replication System dRS</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../advanced_replication_strategies.htm">Advanced Replication Strategies</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Concurrency-Limitations</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1><a name="kanchor181"></a>Concurrency-Limitations</h1>
+        <p>Currently the <span class="MCPopup"><a href="javascript:void(0);" class="MCPopupSpot" onclick="FMCPopup( event, this ); return false;" MadCap:src="../../db4o_replication_system_drs.htm">dRS<img style="border: none;margin-left: 5px;" src="../../SkinSupport/ExpandingClosed.gif" MadCap:altsrc="../../SkinSupport/ExpandingOpen.gif" class="MCExpandingIcon" onload="if ( typeof( FMCPreloadImage ) == 'function' ) { FMCPreloadImage( '../../SkinSupport/ExpandingOpen.gif' ); }" /></a></span> has a limitation &#160;considering concurrently replicating and updating a database. Changes which are made during a replication are never replicated. For example a mobile device connects <a href="../../client-server.htm">to a db4o server </a> and replicates the changes. During that process other clients store changes on the server. Now all changes which happen during this replication process are never replicated to the mobile device. </p>
+        <div class="codesnippet" MadCap:conditions="Primary.Java">
+            <pre class="prettyprint" xml:space="preserve">ObjectServer serverDatabase = openDatabaseServer(DESKTOP_DATABASE_NAME);
+ObjectContainer mobileDatabase = openDatabase(MOBILE_DATABASE_NAME);
+
+{
+
+    ObjectContainer serverDbConnection =
+            Db4oClientServer.openClient(HOST, PORT, USER_NAME, USER_NAME);
+    serverDbConnection.store(new Pilot("Pilot 1"));
+    serverDbConnection.commit();
+
+    // The replication starts here
+    ObjectContainer connectionForReplication = Db4oClientServer.openClient(HOST, PORT, USER_NAME, USER_NAME);
+    ReplicationSession replicationSession = Replication.begin(connectionForReplication, mobileDatabase);
+    ObjectSet changesOnDesktop = replicationSession.providerA().objectsChangedSinceLastReplication();
+
+    // during the replication other clients store data on the server
+    serverDbConnection.store(new Pilot("Pilot 2"));
+    serverDbConnection.commit();
+
+    for (Object changedObjectOnDesktop : changesOnDesktop) {
+        replicationSession.replicate(changedObjectOnDesktop);
+    }
+
+    replicationSession.commit();
+
+    serverDbConnection.store(new Pilot("Pilot 3"));
+    serverDbConnection.commit();
+
+}
+
+// Pilot 2 is not replicated
+printPilots(mobileDatabase);
+
+
+{
+    ObjectContainer connectionForReplication = Db4oClientServer.openClient(HOST, PORT, USER_NAME, USER_NAME);
+    ReplicationSession replicationSession = Replication.begin(connectionForReplication, mobileDatabase);
+    ObjectSet changesOnDesktop = replicationSession.providerA().objectsChangedSinceLastReplication();
+    for (Object changedOnDesktop : changesOnDesktop) {
+        replicationSession.replicate(changedOnDesktop);
+    }
+    replicationSession.commit();
+}
+
+// Pilot 2 is still not replicated
+printPilots(mobileDatabase);</pre>
+            <div class="codesnippet-meta">AdvancedReplicationExamples.java: Lost replication<a href="../../CodeExamples/drs/advanced/Example-drs-advanced-java.zip" class="codedownload" MadCap:conditions="Primary.Online">Download Example Code</a></div>
+        </div>
+        <p>The only way to avoid this limitation is to prevent changing the database during a replication.</p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>

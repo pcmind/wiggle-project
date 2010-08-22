@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" MadCap:lastBlockDepth="2" MadCap:lastHeight="120" MadCap:lastWidth="624" MadCap:disableMasterStylesheet="true" MadCap:tocPath="Object Lifecycle|Working With Structured Objects" MadCap:InPreviewMode="false" MadCap:RuntimeFileType="Topic" MadCap:TargetType="WebHelp" MadCap:PathToHelpSystem="../../../" MadCap:HelpSystemFileName="index.xml" MadCap:SearchType="Stem">
+    <head><title>Updating Structured Objects	</title>
+        <script type="text/javascript">/* <![CDATA[ */
+			window.onload = function(){
+                             prettyPrint();
+			};
+                /* ]]> */</script>
+        <link href="../../SkinSupport/MadCap.css" rel="stylesheet" />
+        <link href="../../Resources/Stylesheets/OnlineStyle.css" rel="stylesheet" />
+        <script src="../../Resources/Code/prettify.js">
+        </script>
+        <script src="../../Resources/Code/lang-vb.js">
+        </script>
+        <script src="../../SkinSupport/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <p class="MCWebHelpFramesetLink" style="display: none;"><a href="../../../index_CSH.html#object_lifecycle/working_with_structured_objects/updating_structured_objects.htm" style="">Open topic with navigation</a>
+        </p>
+        <div class="MCBreadcrumbsBox"><span class="MCBreadcrumbsPrefix">You are here: </span><a class="MCBreadcrumbsLink" href="../../object_lifecycle.htm">Object Lifecycle</a><span class="MCBreadcrumbsDivider"> &gt; </span><a class="MCBreadcrumbsLink" href="../working_with_structured_objects.htm">Working With Structured Objects</a><span class="MCBreadcrumbsDivider"> &gt; </span><span class="MCBreadcrumbs">Updating Structured Objects</span>
+        </div>
+        <p>
+            <script type="text/javascript">/*<![CDATA[*/document.write('<a href="' + location.href +'">');
+				document.write("Direct Link");
+			document.write('</a>');/*]]>*/</script>
+        </p>
+        <p>
+        </p>
+        <h1>Updating Structured Objects</h1>
+        <p>To update structured objects in db4o, you simply call store() on them again.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updateCar
+private static void updateCar(ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    Car found = (Car) result.next();
+    found.setPilot(new Pilot("Somebody else", 0));
+    container.store(found);
+    result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Let's modify the pilot, too.</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSingleSession
+private static void updatePilotSingleSession(
+      ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    Car found = (Car) result.next();
+    found.getPilot().addPoints(1);
+    container.store(found);
+    result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>Nice and easy, isn't it? But there is something that is not obvious in this example. Let's see what happens if we split this task in two separate db4o sessions: In the first we modify our pilot and update his car:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSeparateSessionsPart1
+private static void updatePilotSeparateSessionsPart1(
+      ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    Car found = (Car) result.next();
+    found.getPilot().addPoints(1);
+    container.store(found);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>And in the second, we'll double-check our modification:</p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSeparateSessionsPart2
+private static void updatePilotSeparateSessionsPart2(
+      ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>If you will execute this code you will see that Pilot's points are not changed What's happening here and what can we do to fix it?</p><a name="Update Depth"></a>
+        <h2><a name="kanchor34"></a>Update Depth</h2>
+        <p>Imagine a complex object with many members that have many members themselves. When updating this object, db4o would have to update all its children, grandchildren, etc. This poses a severe performance penalty and will not be necessary in most cases - sometimes, however, it will.  So, in our previous update example, we were modifying the Pilot child of a Car object. When we saved the change, we told db4o to save our Car object and assumed that the modified Pilot would be updated. But we were modifying and saving in the same manner as we were in the first update sample, so why did it work before? The first time we made the modification, db4o never actually had to retrieve the modified Pilot it returned the same one that was still in memory that we modified, but it never actually updated the database. Restarting the application would show that the value was unchanged.  To be able to handle this dilemma as flexible as possible, db4o introduces the concept of update depth to control how deep an object's member tree will be traversed on update. The default update depth for all objects is 0, meaning that only primitive and String members will be updated, but changes in object members will not be reflected.  db4o provides means to control update depth with very fine granularity. For our current problem we'll advise db4o to update the full graph for Car objects by setting cascadeOnUpdate() for this class accordingly. </p>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSeparateSessionsImprovedPart1
+private static Configuration updatePilotSeparateSessionsImprovedPart1()  {
+    Configuration configuration = Db4o.newConfiguration();
+    configuration.objectClass("com.db4o.f1.chapter2.Car")
+        .cascadeOnUpdate(true);
+    return configuration;
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSeparateSessionsImprovedPart2
+private static void updatePilotSeparateSessionsImprovedPart2(
+      ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    Car found = (Car) result.next();
+    found.getPilot().addPoints(1);
+    container.store(found);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <pre class="prettyprint" xml:space="preserve">StructuredExample.java: updatePilotSeparateSessionsImprovedPart3
+private static void updatePilotSeparateSessionsImprovedPart3(
+      ObjectContainer container)  {
+    ObjectSet result = container.query(new Predicate&lt;Car&gt;()  {
+      public boolean match(Car car)  {
+        return car.getModel().equals("Ferrari");
+      }
+    });
+    listResult(result);
+  }</pre>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>You can also achieve expected results using:</p>
+        <ol>
+            <p MadCap:conditions="Primary.Java,Primary.All languages">&gt;
+Java:
+            <li value="1">ExtObjectContainer#set(object, depth) to update exact amount of referenced fields</li><li value="2">Use configuration.objectClass(clazz).updateDepth(depth) setting to define sufficient update depth for a specific object</li></p>
+            <p MadCap:conditions="Global.Primary:java" />
+            <p MadCap:conditions="Global.Primary:net" />
+            <li value="4">Use global setting for all the persisted objects:</li>
+        </ol>
+        <p MadCap:conditions="Primary.Java,Primary.All languages">
+            <p>Java: </p>
+            <p><code>configuration.updateDepth(depth);</code>
+            </p>
+        </p>
+        <p MadCap:conditions="Global.Primary:java" />
+        <p MadCap:conditions="Global.Primary:cs" />
+        <p MadCap:conditions="Global.Primary:vb" />
+        <p>However global updateDepth is not flexible enough for real-world objects having different depth of reference structures. </p>
+        <p>ATTENTION: Setting global update depth to the maximum value will result in serious performance penalty. Please, use this setting ONLY for debug purposes. </p>
+        <p>Note, that container configuration must be set before the container is opened and/or passed to the <code>openFile/openClient/openServer</code> method.</p>
+        <p MadCap:conditions="Primary.Online">Download example code:</p>
+        <p MadCap:conditions="Primary.Online">
+            <MadCap:conditionalText MadCap:conditions="Primary.Java"><a href="structuredjava.zip">Java </a>
+            </MadCap:conditionalText>
+        </p>
+        <script type="text/javascript" src="../../SkinSupport/MadCapBodyEnd.js">
+        </script>
+    </body>
+</html>
