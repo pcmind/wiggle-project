@@ -7,11 +7,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity(name="pagina")
 public class Pagina {
 
+	@Id
+	@GeneratedValue
+	private int id;
+	
 	//o título da página
 	@Column(name = "chave")
 	private String chave;
@@ -55,6 +61,14 @@ public class Pagina {
 
 	public List<Link> getListaLink() {
 		return listaLink;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
 	}
 	
 }
