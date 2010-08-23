@@ -1,7 +1,12 @@
 package org.ufrj.db4o.wrapper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -18,10 +23,12 @@ public class ObjectContainerWrapper implements ObjectContainer{
 	
 	private ObjectContainer delegate;
 	private Map<String, EntityClass> mapaEntidades;
+	private Map<String, EntityQuery> mapaNamedQuery;
 	
-	public ObjectContainerWrapper(ObjectContainer objectContainer, Map<String, EntityClass> mapaEntidades){
+	public ObjectContainerWrapper(ObjectContainer objectContainer, Map<String, EntityClass> mapaEntidades, Map<String, EntityQuery> mapaNamedquery){
 		this.delegate = objectContainer;
 		this.mapaEntidades = mapaEntidades;
+		this.mapaNamedQuery = new HashMap<String, EntityQuery>(mapaNamedquery);
 	}
 
 	@Override
@@ -53,6 +60,10 @@ public class ObjectContainerWrapper implements ObjectContainer{
 	@Override
 	public void delete(Object obj) throws Db4oIOException,
 			DatabaseClosedException, DatabaseReadOnlyException {
+		
+		if(mapaEntidades.get(obj.getClass().getSimpleName())==null){
+			throw new Db4oIOException("Esta classe não é uma entidade");
+		}
 		delegate.delete(obj);
 		
 	}
@@ -127,6 +138,44 @@ public class ObjectContainerWrapper implements ObjectContainer{
 			DatabaseReadOnlyException {
 		delegate.store(obj);
 		
+	}
+	
+	public void store(Object obj, boolean newObject) throws DatabaseClosedException, OperacaoNaoRealizadaException{
+		EntityClass entityClass = mapaEntidades.get(obj.getClass().getSimpleName());
+		
+		if(entityClass==null){
+			throw new OperacaoNaoRealizadaException("O objeto não é uma entidade");
+		}
+		
+		try {
+		
+			if(newObject){
+				EntityId entityId = entityClass.getEntityId();
+				
+				if(entityId.getClazz().equals(int.class) || entityId.getClazz().equals(Integer.class)){
+					
+					PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), 0);
+					
+				}else if(entityId.getClazz().equals(long.class) || entityId.getClazz().equals(Long.class)){
+					PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), new Long(0));
+				}
+			
+				
+			}else{
+				
+			}
+			
+			store(obj);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

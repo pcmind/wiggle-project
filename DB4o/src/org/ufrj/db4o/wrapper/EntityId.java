@@ -9,8 +9,11 @@ public class EntityId {
 	
 	private boolean autoIncrement;
 	
+	private boolean notNull;
+	
 	public EntityId(){
 		this.autoIncrement = false;
+		this.notNull = true;
 	}
 	
 	public void setClazz(Class<?> clazz) {
@@ -38,6 +41,14 @@ public class EntityId {
 
 		public boolean isAutoIncrement() {
 			return autoIncrement;
+		}
+
+		public void setNotNull(boolean notNull) {
+			this.notNull = notNull;
+		}
+
+		public boolean isNotNull() {
+			return notNull;
 		}
 	
 }

@@ -2,7 +2,9 @@ package org.ufrj.db4o.wrapper;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import javax.xml.bind.JAXBException;
 
 import org.ufrj.db4o.Configuracao;
 import org.ufrj.db4o.EntityHandler;
+import org.ufrj.db4o.QueryHandler;
 import org.ufrj.db4o.ScanEntity;
 import org.ufrj.db4o.User;
 import org.ufrj.db4o.XMLFactory;
@@ -60,22 +63,39 @@ public static int BLOCK_SIZE = 8;
 	
 	
 	private static Map<String, EntityClass> mapaEntidades;
+	
+	private static Map<String, EntityQuery> mapaNamedQuery;
 
 	static{
 		if(mapaEntidades==null){
 			mapaEntidades = new HashMap<String, EntityClass>();
+			mapaNamedQuery = new HashMap<String, EntityQuery>();
+			List<NamedQuery> listaNamedQuery = new ArrayList<NamedQuery>();
 			Set<Class<?>> classes = ScanEntity.findAll(Thread.currentThread().getContextClassLoader());
 			
-			for(Class<?> clazz : classes){
-				try {
-					mapaEntidades.put(clazz.getSimpleName(), EntityHandler.create(clazz));
-				} catch (OperacaoNaoRealizadaException e) {
-					throw new Db4oIOException(e);
+			try {
+			
+				for(Class<?> clazz : classes){
+					
+						mapaEntidades.put(clazz.getSimpleName(), EntityHandler.create(clazz));
+						listaNamedQuery.addAll(EntityHandler.namedQueries(clazz));
+						
+					
 				}
+				
+				
+				for(NamedQuery namedQuery : listaNamedQuery){
+					mapaNamedQuery.put(namedQuery.getName(), QueryHandler.create(namedQuery, mapaEntidades));
+					
+				}
+			} catch (OperacaoNaoRealizadaException e) {
+				throw new Db4oIOException(e);
 			}
 			
 			
 		}
+		
+		
 	}
 
 	/**
@@ -166,8 +186,6 @@ public static int BLOCK_SIZE = 8;
 	
 	private static void configuracaoPadraoServidor(ServerConfiguration config) {
 		
-		
-		
 		//config.common().activationDepth(0);
 		//config.common().addAlias(null);
 		config.common().allowVersionUpdates(ALLOW_VERSION_UPDATE); //c - s
@@ -196,12 +214,7 @@ public static int BLOCK_SIZE = 8;
 		//config.file().databaseGrowthSize(0); // sei la
 		config.file().generateUUIDs(ConfigScope.INDIVIDUALLY);
 		config.file().generateVersionNumbers(ConfigScope.INDIVIDUALLY);
-		
-		
-		ObjectClass objectClass = config.common().objectClass(null); //configura as classes
-		//objectClass.
-		
-				
+					
 	}
 	
 	/**
@@ -249,7 +262,7 @@ public static int BLOCK_SIZE = 8;
 			throw new InvalidLoginException("Usuário ou senha inválido", e);
 		}
 		
-		return new ObjectContainerWrapper(container, mapaEntidades);
+		return new ObjectContainerWrapper(container, mapaEntidades, mapaNamedQuery);
 	}
 	
 	private static void configuraEntidades(ClientConfiguration config) {
@@ -275,12 +288,6 @@ public static int BLOCK_SIZE = 8;
 	 */
 	public static ObjectContainer openClient(String host, int port, String user, String password) throws InvalidLoginException{
 		return openClient(null, host, port, user, password);
-	}
-	
-	public static ObjectContainer openClient() throws InvalidLoginException{
-		Configuracao configXML = recuperarConfiguracaoXML();
-		
-		return openClient(null, configXML.getHostName(), configXML.getPort(), configXML.getUsuario(), configXML.getSenha());
 	}
 	
 	private static void configuracaoPadraoClient(ClientConfiguration config) {

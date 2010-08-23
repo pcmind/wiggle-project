@@ -15,6 +15,8 @@ public class EntityField {
 	private boolean cascadeInsert;
 	
 	private boolean cascadeDelete;
+	
+	private boolean notNull;
 
 	public EntityField() {
 		this.collection = false;
@@ -22,6 +24,7 @@ public class EntityField {
 		cascadeUpdate = false;
 		cascadeDelete = false;
 		cascadeInsert = false;
+		notNull = false;
 	}
 	
 	public void setClazz(Class<?> clazz) {
@@ -78,6 +81,14 @@ public class EntityField {
 
 	public boolean isCollection() {
 		return collection;
+	}
+
+	public void setNotNull(boolean notNull) {
+		this.notNull = notNull;
+	}
+
+	public boolean isNotNull() {
+		return notNull;
 	}
 	
 }
