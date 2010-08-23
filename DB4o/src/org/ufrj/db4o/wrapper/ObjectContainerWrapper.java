@@ -147,9 +147,26 @@ public class ObjectContainerWrapper implements ObjectContainer{
 			throw new OperacaoNaoRealizadaException("O objeto não é uma entidade");
 		}
 		
+		
+		
 		try {
+			
+			//valida os campos nulos.
+			for(EntityField entityField: entityClass.getListaEntityField()){
+				if(entityField.isNotNull()){
+					
+					if(PropertyUtils.getProperty(obj, entityField.getFieldName())==null){
+						throw new OperacaoNaoRealizadaException("Atributo "+entityField.getFieldName()+ " não pode ser nulo.");
+					}
+				}
+			}
+			
 		
 			if(newObject){
+				if(delegate.ext().isActive(obj)){
+					throw new OperacaoNaoRealizadaException("O objeto já foi persistido.");
+				}
+				
 				EntityId entityId = entityClass.getEntityId();
 				
 				if(entityId.getClazz().equals(int.class) || entityId.getClazz().equals(Integer.class)){
@@ -160,12 +177,35 @@ public class ObjectContainerWrapper implements ObjectContainer{
 					PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), new Long(0));
 				}
 			
-				
+			
 			}else{
+				EntityId entityId = entityClass.getEntityId();
+				if(entityId!=null){
+					if(PropertyUtils.getProperty(obj, entityId.getNomeAtributo())==null){
+						throw new OperacaoNaoRealizadaException("A chave deve ser informado");
+					}
+				}
+				//se o objeto não está no container devemos recuperá-lo no banco.
+				if(!delegate.ext().isActive(obj)){
+					ObjectSet objectSet = delegate.queryByExample(obj);
+					if(objectSet.size()!= 1){
+						throw new OperacaoNaoRealizadaException();
+					}
+					
+					Object resultado = objectSet.next();
+					for(EntityField entityField: entityClass.getListaEntityField()){
+						PropertyUtils.setProperty(resultado, entityField.getFieldName(), 
+								PropertyUtils.getProperty(obj, entityField.getFieldName()));
+					}
+					
+					obj = resultado;
+					
+				}
 				
 			}
 			
 			store(obj);
+			
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
