@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Db4o"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EJB"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jaxb"/>
+	<classpathentry kind="lib" path="Dependencias/commons-beanutils-1.8.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
