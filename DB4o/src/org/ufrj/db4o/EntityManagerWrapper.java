@@ -12,9 +12,12 @@ import javax.persistence.Query;
 import javax.xml.bind.JAXBException;
 
 import org.ufrj.db4o.exception.InvalidLoginException;
+import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.wrapper.DB4oServerWrapper;
+import org.ufrj.db4o.wrapper.ObjectContainerWrapper;
 
 import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
 import com.db4o.ext.DatabaseClosedException;
 import com.db4o.ext.DatabaseReadOnlyException;
 import com.db4o.ext.Db4oIOException;
@@ -26,7 +29,7 @@ public class EntityManagerWrapper implements EntityManager{
 	ObjectContainer objectContainer;
 	Configuracao configXML;
 	
-	EntityManagerWrapper() {
+	public EntityManagerWrapper() {
 		
 		
 		configXML = recuperarConfiguracaoXML();
@@ -71,7 +74,7 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public boolean contains(Object arg0) {
-		throw new UnsupportedOperationException("Operação não é suportada por db4o", null);
+		return getObjectContainer().ext().isStored(arg0);
 	}
 
 	@Override
@@ -146,8 +149,11 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public boolean isOpen() {
-		
-		return getObjectContainer()!=null;
+		if(objectContainer==null){
+			return true;
+		}else{
+			return !getObjectContainer().ext().isClosed();
+		}
 	}
 
 	@Override
@@ -164,13 +170,30 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public <T> T merge(T arg0) {
-		//TODO 
-		return null;
+		try {
+			((ObjectContainerWrapper)getObjectContainer()).store(arg0, false);
+		} catch (DatabaseClosedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OperacaoNaoRealizadaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		this.flush();
+		return arg0;
+		
 	}
 
 	@Override
 	public void persist(Object arg0) {
-		// TODO Auto-generated method stub
+		try {
+			((ObjectContainerWrapper)getObjectContainer()).store(arg0, true);
+		} catch (DatabaseClosedException e) {
+			throw new PersistenceException();
+		} catch (OperacaoNaoRealizadaException e) {
+			throw new PersistenceException();
+		}
 		
 	}
 
@@ -184,7 +207,16 @@ public class EntityManagerWrapper implements EntityManager{
 	public void remove(Object arg0) {
 		
 		try{
-		getObjectContainer().delete(arg0);
+			
+		ObjectSet objectSet = getObjectContainer().queryByExample(arg0);
+		if(objectSet.size()==0){
+			throw new PersistenceException("Objeto passado não foi persistido anteriormente.");
+		}
+		if(objectSet.size()>1){
+			throw new PersistenceException("Objeto está duplicado.");
+		}
+			
+		getObjectContainer().delete(objectSet.next());
 		}catch(Db4oIOException e){
 			throw new IllegalArgumentException(e);
 		}catch(DatabaseClosedException e){

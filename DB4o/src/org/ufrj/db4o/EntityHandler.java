@@ -16,14 +16,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.NotEmpty;
+import org.hibernate.validator.NotNull;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.wrapper.EntityClass;
 import org.ufrj.db4o.wrapper.EntityField;
 import org.ufrj.db4o.wrapper.EntityId;
+import org.ufrj.db4o.wrapper.NamedQuery;
 
 public class EntityHandler {
 
@@ -93,6 +97,10 @@ public class EntityHandler {
 			}
 		}
 		
+		if(field.getAnnotation(NotNull.class)!=null || field.getAnnotation(NotEmpty.class)!=null){
+			entityField.setNotNull(true);
+		}
+		
 		Annotation annAssociacao = null;
 		for(Class annotationClass : listaAnotacoesAssociacao){
 			annAssociacao = field.getAnnotation(annotationClass);
@@ -148,6 +156,28 @@ public class EntityHandler {
 	}
 	
 	
-	
+	public static List<NamedQuery> namedQueries(Class clazz){
+		
+		List<NamedQuery> listaNamedQuery = new ArrayList<NamedQuery>();
+		if(clazz.getAnnotation(javax.persistence.NamedQuery.class)!=null){
+			NamedQuery namedQuery = new NamedQuery();
+			javax.persistence.NamedQuery query = (javax.persistence.NamedQuery) clazz.getAnnotation(javax.persistence.NamedQuery.class);
+			namedQuery.setName(query.name());
+			namedQuery.setQuery(query.query());
+			listaNamedQuery.add(namedQuery);
+			
+		}else if(clazz.getAnnotation(NamedQueries.class)!=null){
+			NamedQueries namedQueries = (NamedQueries) clazz.getAnnotation(javax.persistence.NamedQueries.class);
+			for(javax.persistence.NamedQuery query: namedQueries.value()){
+				NamedQuery namedQuery = new NamedQuery();
+				namedQuery.setName(query.name());
+				namedQuery.setQuery(query.query());
+				listaNamedQuery.add(namedQuery);
+			}
+		}
+			
+		return listaNamedQuery;	
+		
+	}
 	
 }
