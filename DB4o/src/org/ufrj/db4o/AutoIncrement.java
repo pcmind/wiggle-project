@@ -5,6 +5,10 @@ public class AutoIncrement {
 	private String className;
 	
 	private int currentValue;
+	
+	public AutoIncrement(){
+		currentValue = 0;
+	}
 
 	public void setClassName(String className) {
 		this.className = className;
@@ -21,5 +25,5 @@ public class AutoIncrement {
 	public int getCurrentValue() {
 		return currentValue;
 	}
-	
+
 }

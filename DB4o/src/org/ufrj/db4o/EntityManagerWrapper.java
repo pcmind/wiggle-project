@@ -106,8 +106,11 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public <T> T find(Class<T> arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return ((ObjectContainerWrapper)getObjectContainer()).find(arg0, arg1);
+		} catch (OperacaoNaoRealizadaException e) {
+			throw new PersistenceException(e);
+		}
 	}
 
 	@Override
@@ -207,7 +210,11 @@ public class EntityManagerWrapper implements EntityManager{
 	public void remove(Object arg0) {
 		
 		try{
-			
+		if(getObjectContainer().ext().isActive(arg0)){
+			getObjectContainer().delete(arg0);
+			return;
+		}
+		
 		ObjectSet objectSet = getObjectContainer().queryByExample(arg0);
 		if(objectSet.size()==0){
 			throw new PersistenceException("Objeto passado não foi persistido anteriormente.");

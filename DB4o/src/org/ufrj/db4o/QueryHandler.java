@@ -30,8 +30,7 @@ public class QueryHandler {
 		hql = hql.replaceAll("[Aa][Nn][Dd]", "AND");
 		hql = hql.replaceAll("[Oo][Rr]", "OR");
 		hql = hql.replaceAll("[Cc][Oo][Nn][Tt][Aa][Ii][Nn][Ss]", "CONTAINS");
-		hql = hql.replaceAll("", "");
-		
+				
 		int posicao = hql.indexOf("SELECT");
 		if(posicao == -1){
 			throw new OperacaoNaoRealizadaException("Cláusula Select Não Encontrada.");
