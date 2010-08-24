@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.ufrj.db4o.AutoIncrement;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 
 import com.db4o.ObjectContainer;
@@ -161,51 +162,77 @@ public class ObjectContainerWrapper implements ObjectContainer{
 				}
 			}
 			
-		
 			if(newObject){
+				
+				//só preciso verificar se o objeto está ativo, caso não esteja o db4o aceita replicação sem problemas.
 				if(delegate.ext().isActive(obj)){
 					throw new OperacaoNaoRealizadaException("O objeto já foi persistido.");
 				}
 				
 				EntityId entityId = entityClass.getEntityId();
 				
-				if(entityId.getClazz().equals(int.class) || entityId.getClazz().equals(Integer.class)){
+				if(entityId != null){
+					//gera um semaforo na forma SINGLETON_AutoIncrement.nomeClasse
+					//fico em um loop até que tenha o dominio sobre o semaforo
+					boolean hasLock = true;
+					while(hasLock){
+						hasLock = delegate.ext().setSemaphore("SINGLETON_"+ AutoIncrement.class.getSimpleName()+"."+entityClass.getClazz().getSimpleName(), 10);
+							 
+					}
+					//recupero o autoIncrement da classe que quero persistir.
+					Query query = delegate.query();
+					query.constrain(AutoIncrement.class);
+					query.descend("className").constrain(entityClass.getClazz().getSimpleName());
+					ObjectSet<AutoIncrement> objectSetAutoIncrement = query.execute();
 					
-					PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), 0);
+					AutoIncrement autoIncrement = objectSetAutoIncrement.next();
+					autoIncrement.setCurrentValue(autoIncrement.getCurrentValue()+1);
 					
-				}else if(entityId.getClazz().equals(long.class) || entityId.getClazz().equals(Long.class)){
-					PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), new Long(0));
+					if(entityId.getClazz().equals(int.class) || entityId.getClazz().equals(Integer.class)){
+						
+						PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), autoIncrement.getCurrentValue());
+						
+					}else if(entityId.getClazz().equals(long.class) || entityId.getClazz().equals(Long.class)){
+						PropertyUtils.setProperty(obj, entityId.getNomeAtributo(), new Long(autoIncrement.getCurrentValue()));
+					}
+					store(autoIncrement);
+					store(obj);
+					commit();
+					//libero o semaforo depois de persistir o objeto e o autoIncrement.
+					delegate.ext().releaseSemaphore("SINGLETON_"+ AutoIncrement.class.getSimpleName()+"."+entityClass.getClazz().getSimpleName());
 				}
 			
-			
 			}else{
+				
 				EntityId entityId = entityClass.getEntityId();
+				//se a classe possui anotação de Id e o atributo esta vazio, JPA define como um objeto a ser persistido.
 				if(entityId!=null){
-					if(PropertyUtils.getProperty(obj, entityId.getNomeAtributo())==null){
-						throw new OperacaoNaoRealizadaException("A chave deve ser informado");
+					if(PropertyUtils.getProperty(obj, entityId.getNomeAtributo())!=null){
+						store(obj, true);
 					}
 				}
 				//se o objeto não está no container devemos recuperá-lo no banco.
-				if(!delegate.ext().isActive(obj)){
+				if(delegate.ext().isActive(obj)){
 					ObjectSet objectSet = delegate.queryByExample(obj);
 					if(objectSet.size()!= 1){
 						throw new OperacaoNaoRealizadaException();
 					}
 					
 					Object resultado = objectSet.next();
+					//seto os novos valores no objeto retornado
 					for(EntityField entityField: entityClass.getListaEntityField()){
 						PropertyUtils.setProperty(resultado, entityField.getFieldName(), 
 								PropertyUtils.getProperty(obj, entityField.getFieldName()));
 					}
-					
+					//passo o objeto retornado para persistencia
 					obj = resultado;
 					
 				}
 				
 			}
-			
+			//commit só deve ser forçado no autoIncrement
 			store(obj);
-			
+					
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -215,6 +242,34 @@ public class ObjectContainerWrapper implements ObjectContainer{
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public <T> T find(Class<T> arg0, Object arg1) throws OperacaoNaoRealizadaException{
+		EntityClass entityClass = mapaEntidades.get(arg0.getSimpleName());
+		
+		if(entityClass==null){
+			throw new OperacaoNaoRealizadaException("O objeto não é uma entidade");
+		}
+		
+		EntityId entityId = entityClass.getEntityId();
+		if(entityId==null){
+			throw new OperacaoNaoRealizadaException("A classe não possui um identificador único");
+		}
+		
+		if(!entityId.getClazz().equals(arg1.getClass().getSimpleName())){
+			throw new OperacaoNaoRealizadaException("O tipo de identificador passado não combina com o anotado na classe.");
+		}
+		
+		Query query = delegate.query();
+		query.constrain(arg0);
+		query.descend(entityId.getNomeAtributo()).constrain(arg1);
+		ObjectSet<T> objectSet = query.execute();
+		
+		if(objectSet.size()!=1){
+			throw new OperacaoNaoRealizadaException();
+		}else{
+			return (T) objectSet.next();
 		}
 	}
 	

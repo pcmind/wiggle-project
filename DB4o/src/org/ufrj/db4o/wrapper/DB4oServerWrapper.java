@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.ufrj.db4o.AutoIncrement;
 import org.ufrj.db4o.Configuracao;
 import org.ufrj.db4o.EntityHandler;
 import org.ufrj.db4o.QueryHandler;
@@ -41,6 +42,7 @@ import com.db4o.ext.IncompatibleFileFormatException;
 import com.db4o.ext.InvalidPasswordException;
 import com.db4o.ext.OldFormatException;
 import com.db4o.internal.Config4Impl;
+import com.db4o.query.Query;
 
 public class DB4oServerWrapper{
 	
@@ -143,11 +145,29 @@ public static int BLOCK_SIZE = 8;
 		
 		EmbeddedObjectContainer container = Db4oEmbedded.openFile(databaseFileName.substring(0, databaseFileName.length()-4)+".config.yap");
 		
-		ObjectSet<User> objectSet = container.query(User.class);
-		for(User user : objectSet){
+		ObjectSet<User> objectSetUser = container.query(User.class);
+		for(User user : objectSetUser){
 			objectServer.grantAccess(user.getUsuario(), user.getSenha());
 		}
+		
+		
 		container.close();
+		
+		ObjectContainer serverContainer = objectServer.ext().objectContainer();
+		for(EntityClass entityClass : mapaEntidades.values()){
+			Query query = serverContainer.query();
+			query.constrain(AutoIncrement.class);
+			query.descend("className").constrain(entityClass.getClazz().getSimpleName());
+			ObjectSet<AutoIncrement> objectSetAutoIncrement = query.execute();
+			
+			if(objectSetAutoIncrement.isEmpty()){ //se não existir a sequence crio uma nova.
+				AutoIncrement autoIncrement = new AutoIncrement();
+				autoIncrement.setClassName(entityClass.getClazz().getSimpleName());
+				serverContainer.store(autoIncrement);
+			}
+			
+		}
+		serverContainer.commit();
 		
 		return objectServer;
 		
