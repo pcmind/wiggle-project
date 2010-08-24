@@ -2,6 +2,8 @@ package org.ufrj.db4o.entityManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -16,7 +18,6 @@ import org.ufrj.db4o.exception.InvalidLoginException;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.internal.entity.Configuracao;
 import org.ufrj.db4o.internal.entity.query.EntityQuery;
-import org.ufrj.db4o.internal.entity.query.QueryHandler;
 import org.ufrj.db4o.wrapper.DB4oServerWrapper;
 import org.ufrj.db4o.wrapper.ObjectContainerWrapper;
 
@@ -32,6 +33,8 @@ public class EntityManagerWrapper implements EntityManager{
 	
 	ObjectContainer objectContainer;
 	Configuracao configXML;
+	//mapa de querys que são criadas em runtime e já foram utilizadas pelo menos uma vez
+	Map<String, EntityQuery> mapaQueryRuntime;
 	
 	public EntityManagerWrapper() {
 		
@@ -109,11 +112,17 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public Query createQuery(String arg0) {
-		EntityQuery entityQuery = null;
-		try {
-			entityQuery =  ((ObjectContainerWrapper)getObjectContainer()).criarQuery(arg0);
-		} catch (OperacaoNaoRealizadaException e) {
-			throw new PersistenceException();
+		EntityQuery entityQuery = getMapaQueryRuntime().get(arg0);
+		
+		//caso a query nao tenha sido executada previamente ela tem q ser gerada.
+		if(entityQuery==null){
+			try {
+				entityQuery =  ((ObjectContainerWrapper)getObjectContainer()).criarQuery(arg0);
+			} catch (OperacaoNaoRealizadaException e) {
+				throw new PersistenceException();
+			}
+			//insiro a query gerada no entityManager para otimizar uma nova execução.
+			getMapaQueryRuntime().put(arg0, entityQuery);
 		}
 		return new QueryWrapper(getObjectContainer().query(), entityQuery);
 	}
@@ -270,6 +279,14 @@ public class EntityManagerWrapper implements EntityManager{
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Map<String, EntityQuery> getMapaQueryRuntime(){
+		if(mapaQueryRuntime==null){
+			mapaQueryRuntime = new HashMap<String, EntityQuery>();
+		}
+		
+		return mapaQueryRuntime;
 	}
 
 }
