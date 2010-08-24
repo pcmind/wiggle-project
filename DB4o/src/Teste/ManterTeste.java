@@ -2,7 +2,7 @@ package Teste;
 
 import javax.persistence.EntityManager;
 
-import org.ufrj.db4o.EntityManagerWrapper;
+import org.ufrj.db4o.entityManager.EntityManagerWrapper;
 
 import Teste.Entidades.Pagina;
 import Teste.Entidades.Termo;
@@ -92,9 +92,9 @@ public class ManterTeste {
 		}
 	}
 	
-	public Termo recuperarPagina(Integer chave){
+	public Pagina recuperarPagina(Integer chave){
 		try{
-			return em.find(Termo.class, chave);
+			return em.find(Pagina.class, chave);
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
