@@ -1,6 +1,9 @@
 package Teste;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.ufrj.db4o.entityManager.EntityManagerWrapper;
 
@@ -99,6 +102,17 @@ public class ManterTeste {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public List<Pagina> recuperarPaginaQuery1(){
+		Query query = em.createNamedQuery("Pagina.Query1");
+		return query.getResultList();
+	}
+	
+	public Pagina recuperarpaginaById(){
+		Query query = em.createNamedQuery("Pagina.Query2");
+		query.setParameter("id", 2);
+		return (Pagina) query.getSingleResult();
 	}
 	
 	

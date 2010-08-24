@@ -1,5 +1,9 @@
 package Teste;
 
+import java.util.List;
+
+import Teste.Entidades.Pagina;
+
 
 
 public class TestClient {
@@ -13,8 +17,14 @@ public class TestClient {
 	ManterTeste manterTeste = new ManterTeste();
 	private void runClient() {
 		
-	System.out.println();
+	List<Pagina> listaPagina = manterTeste.recuperarPaginaQuery1();
 	
+	for(Pagina pagina : listaPagina){
+		System.out.println(pagina.getChave());
+	}
+	
+	Pagina pagina2 = manterTeste.recuperarpaginaById();
+	System.out.println(pagina2.getChave());
 		
 		/*manterTeste.persistirTermo(termo);
 		manterTeste.deletarTermo(termo);
