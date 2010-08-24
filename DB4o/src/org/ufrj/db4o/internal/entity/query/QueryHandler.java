@@ -1,5 +1,6 @@
 package org.ufrj.db4o.internal.entity.query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -10,7 +11,11 @@ import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.internal.entity.NamedQuery;
 import org.ufrj.db4o.internal.entity.classes.EntityClass;
 import org.ufrj.db4o.internal.entity.classes.EntityField;
+import org.ufrj.db4o.internal.entity.classes.EntityId;
 import org.ufrj.db4o.internal.entity.query.Where.TipoOperacao;
+
+import com.db4o.query.Constraint;
+import com.db4o.query.Query;
 
 public class QueryHandler {
 
@@ -100,6 +105,15 @@ public class QueryHandler {
 				if(classPai == null){
 					throw new OperacaoNaoRealizadaException("Query Inconsistente");
 				}
+				
+				EntityId entityId = classPai.getEntityId();
+				
+				if(entityId!=null){
+					if(entityId.getNomeAtributo().equals(nextInChain)){
+						break;
+					}
+				}
+
 				
 				if(!validaFilho(nextInChain,classPai)){
 					throw new OperacaoNaoRealizadaException("Query Inconsistente");
@@ -265,5 +279,74 @@ public class QueryHandler {
 			fromClause.adicionarClasse(alias, entityClass.getClazz());
 		}
 		return fromClause;
+	}
+	
+	public static Query createQuery(Query query, EntityQuery entityQuery, Map<String, Object> mapaParametros)  throws OperacaoNaoRealizadaException{
+		
+		
+		query.constrain(entityQuery.getPrimeiraClasseRetorno());
+		List<Operacao> listaOperacoes = entityQuery.recuperarListaOperacaoAnd();
+		if(listaOperacoes.size()==0){
+			return query;
+		}
+		
+		Operacao operacaoInicial =  listaOperacoes.get(0);
+		listaOperacoes.remove(0);
+		createConstraint(query, listaOperacoes, operacaoInicial, mapaParametros);
+		return query;
+	}
+	
+	private static Constraint createConstraint(Query query, List<Operacao> listaOperacoes, Operacao operacao, Map<String, Object> mapaParametros)  throws OperacaoNaoRealizadaException{
+		Constraint constraint = null;
+		
+		Query queryAuxiliar = null;
+		StringTokenizer stk = new StringTokenizer(operacao.getLadoEsquerdo(),".");
+		//o primeiro já é o objeto filtrado, não to validando ainda se existem outros
+		stk.nextToken();
+		while(stk.hasMoreTokens()){
+			queryAuxiliar = descend(query, queryAuxiliar, stk.nextToken());
+		}
+		
+		if(operacao.getOperacao().equals(QueryOperation.CONTAINS)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).contains();
+		}else if (operacao.getOperacao().equals(QueryOperation.DIFERENTE)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).not();
+		}else if (operacao.getOperacao().equals(QueryOperation.IGUAL)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros);
+		}else if (operacao.getOperacao().equals(QueryOperation.MAIOR)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).contains().greater();
+		}else if (operacao.getOperacao().equals(QueryOperation.MAIOR_IGUAL)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).contains().greater().equal();
+		}else if (operacao.getOperacao().equals(QueryOperation.MENOR)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).contains().smaller();
+		}else if (operacao.getOperacao().equals(QueryOperation.MENOR_IGUAL)){
+			constraint =  insereValor(queryAuxiliar, operacao, mapaParametros).contains().smaller().equal();
+		}
+		
+		if(listaOperacoes!=null){
+			for(Operacao novaOperacao: listaOperacoes){
+				constraint = constraint.and(createConstraint(query, null, novaOperacao, mapaParametros));
+			}
+		}
+		return constraint;
+	}
+	
+	private static Query descend(Query query, Query queryAuxiliar, String nomeAtributo){
+		if(queryAuxiliar == null){
+			return query.descend(nomeAtributo);
+		}else{
+			return queryAuxiliar.descend(nomeAtributo);
+		}
+		
+	}
+	
+	private static Constraint insereValor(Query query, Operacao operacao, Map<String, Object> mapaParametros) throws OperacaoNaoRealizadaException{
+		if(operacao.isHasValue()){
+			return query.constrain(operacao.getLadoDireito());
+		}else if(operacao.isParametro()){
+			return query.constrain(mapaParametros.get(operacao.getLadoDireito()));
+		}
+		throw new OperacaoNaoRealizadaException("TODO");
+		
 	}
 }

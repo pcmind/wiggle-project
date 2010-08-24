@@ -1,5 +1,8 @@
 package org.ufrj.db4o.internal.entity.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EntityQuery {
 
 	private Select selectClause;
@@ -50,5 +53,20 @@ public class EntityQuery {
 			next = next.getNext();
 		}
 		return sb.toString().substring(0,sb.length()-1);
+	}
+	
+	public Class getPrimeiraClasseRetorno(){
+		return fromClause.recuperarClasse(selectClause.getAlias());
+	}
+	
+	public Class recuperarClasse(String alias){
+		return fromClause.recuperarClasse(alias);
+	}
+	
+	public List<Operacao> recuperarListaOperacaoAnd(){
+		if(whereClause==null){
+			return new ArrayList<Operacao>();
+		}
+		return whereClause.getListaOperacoes();
 	}
 }
