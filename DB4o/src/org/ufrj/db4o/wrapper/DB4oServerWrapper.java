@@ -10,15 +10,19 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.ufrj.db4o.AutoIncrement;
-import org.ufrj.db4o.Configuracao;
-import org.ufrj.db4o.EntityHandler;
-import org.ufrj.db4o.QueryHandler;
-import org.ufrj.db4o.ScanEntity;
-import org.ufrj.db4o.User;
-import org.ufrj.db4o.XMLFactory;
+import org.ufrj.db4o.Utils.ScanEntity;
+import org.ufrj.db4o.Utils.XMLFactory;
 import org.ufrj.db4o.exception.InvalidLoginException;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
+import org.ufrj.db4o.internal.entity.AutoIncrement;
+import org.ufrj.db4o.internal.entity.Configuracao;
+import org.ufrj.db4o.internal.entity.NamedQuery;
+import org.ufrj.db4o.internal.entity.User;
+import org.ufrj.db4o.internal.entity.classes.EntityClass;
+import org.ufrj.db4o.internal.entity.classes.EntityField;
+import org.ufrj.db4o.internal.entity.classes.EntityHandler;
+import org.ufrj.db4o.internal.entity.query.EntityQuery;
+import org.ufrj.db4o.internal.entity.query.QueryHandler;
 
 import com.db4o.Db4o;
 import com.db4o.Db4oEmbedded;

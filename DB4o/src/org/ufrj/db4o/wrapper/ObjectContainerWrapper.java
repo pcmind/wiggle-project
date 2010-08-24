@@ -6,11 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.ufrj.db4o.AutoIncrement;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
+import org.ufrj.db4o.internal.entity.AutoIncrement;
+import org.ufrj.db4o.internal.entity.classes.EntityClass;
+import org.ufrj.db4o.internal.entity.classes.EntityField;
+import org.ufrj.db4o.internal.entity.classes.EntityId;
+import org.ufrj.db4o.internal.entity.query.EntityQuery;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.config.ObjectClass;
 import com.db4o.ext.DatabaseClosedException;
 import com.db4o.ext.DatabaseReadOnlyException;
 import com.db4o.ext.Db4oIOException;
@@ -174,8 +179,8 @@ public class ObjectContainerWrapper implements ObjectContainer{
 				if(entityId != null){
 					//gera um semaforo na forma SINGLETON_AutoIncrement.nomeClasse
 					//fico em um loop até que tenha o dominio sobre o semaforo
-					boolean hasLock = true;
-					while(hasLock){
+					boolean hasLock = false;
+					while(!hasLock){
 						hasLock = delegate.ext().setSemaphore("SINGLETON_"+ AutoIncrement.class.getSimpleName()+"."+entityClass.getClazz().getSimpleName(), 10);
 							 
 					}
@@ -200,33 +205,48 @@ public class ObjectContainerWrapper implements ObjectContainer{
 					commit();
 					//libero o semaforo depois de persistir o objeto e o autoIncrement.
 					delegate.ext().releaseSemaphore("SINGLETON_"+ AutoIncrement.class.getSimpleName()+"."+entityClass.getClazz().getSimpleName());
+					return;
 				}
 			
 			}else{
 				
 				EntityId entityId = entityClass.getEntityId();
-				//se a classe possui anotação de Id e o atributo esta vazio, JPA define como um objeto a ser persistido.
+				//se a classe possui anotação de Id e o atributo está vazio, JPA define como um objeto a ser persistido.
 				if(entityId!=null){
-					if(PropertyUtils.getProperty(obj, entityId.getNomeAtributo())!=null){
+					
+					//se a classe tem Id e o ido foi passado como nulo, tento persistir como um novo objeto.
+					if(PropertyUtils.getProperty(obj, entityId.getNomeAtributo())==null){
+						store(obj, true);
+					}else{
+						
+						Query query = delegate.query();
+						query.constrain(entityClass.getClazz());
+						query.descend(entityId.getNomeAtributo()).constrain(PropertyUtils.getProperty(obj, entityId.getNomeAtributo()));
+						ObjectSet objectSet = query.execute();
+						
+						if(objectSet.size()!=1){
+							System.out.println(objectSet.next());
+							throw new OperacaoNaoRealizadaException("O identificador não é mais único");
+						}else{
+							Object resultado = objectSet.next();
+							//seto os novos valores no objeto retornado
+							for(EntityField entityField: entityClass.getListaEntityField()){
+								PropertyUtils.setProperty(resultado, entityField.getFieldName(), 
+										PropertyUtils.getProperty(obj, entityField.getFieldName()));
+							}
+							obj = resultado;
+							
+						}
+						
+						
+						
+					}
+				}else{
+					//se não tem id único
+					//se o objeto está ativo deixa persistir, senão persisto como um objeto novo
+					if(!delegate.ext().isActive(obj)){
 						store(obj, true);
 					}
-				}
-				//se o objeto não está no container devemos recuperá-lo no banco.
-				if(delegate.ext().isActive(obj)){
-					ObjectSet objectSet = delegate.queryByExample(obj);
-					if(objectSet.size()!= 1){
-						throw new OperacaoNaoRealizadaException();
-					}
-					
-					Object resultado = objectSet.next();
-					//seto os novos valores no objeto retornado
-					for(EntityField entityField: entityClass.getListaEntityField()){
-						PropertyUtils.setProperty(resultado, entityField.getFieldName(), 
-								PropertyUtils.getProperty(obj, entityField.getFieldName()));
-					}
-					//passo o objeto retornado para persistencia
-					obj = resultado;
-					
 				}
 				
 			}
@@ -234,13 +254,13 @@ public class ObjectContainerWrapper implements ObjectContainer{
 			store(obj);
 					
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+		
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -257,7 +277,14 @@ public class ObjectContainerWrapper implements ObjectContainer{
 			throw new OperacaoNaoRealizadaException("A classe não possui um identificador único");
 		}
 		
-		if(!entityId.getClazz().equals(arg1.getClass().getSimpleName())){
+		String simpleClassIdName = entityId.getClazz().getSimpleName();
+		String simpleClassObjectName = arg1.getClass().getSimpleName();
+		simpleClassIdName = simpleClassIdName.replace("int", "Integer");
+		simpleClassIdName = simpleClassIdName.replace("long", "Long");
+		simpleClassObjectName = simpleClassObjectName.replace("int", "Integer");
+		simpleClassObjectName = simpleClassObjectName.replace("long", "Long");
+		
+		if(!simpleClassIdName.equals(simpleClassObjectName)){
 			throw new OperacaoNaoRealizadaException("O tipo de identificador passado não combina com o anotado na classe.");
 		}
 		
