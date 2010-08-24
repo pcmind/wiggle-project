@@ -14,7 +14,7 @@ public class EntityQuery {
 		this.selectClause = selectClause;
 	}
 
-	private Select getSelectClause() {
+	protected Select getSelectClause() {
 		return selectClause;
 	}
 
@@ -22,7 +22,7 @@ public class EntityQuery {
 		this.fromClause = fromClause;
 	}
 
-	private From getFromClause() {
+	protected From getFromClause() {
 		return fromClause;
 	}
 
@@ -30,7 +30,7 @@ public class EntityQuery {
 		this.whereClause = whereClause;
 	}
 
-	private Where getWhereClause() {
+	protected Where getWhereClause() {
 		return whereClause;
 	}
 
@@ -40,5 +40,15 @@ public class EntityQuery {
 
 	public String getSql() {
 		return sql;
+	}
+	
+	public String getSelectString(){
+		StringBuffer sb = new StringBuffer();
+		Select next = this.selectClause;
+		while(next!=null){
+			sb.append(next.getAlias()+".");
+			next = next.getNext();
+		}
+		return sb.toString().substring(0,sb.length()-1);
 	}
 }

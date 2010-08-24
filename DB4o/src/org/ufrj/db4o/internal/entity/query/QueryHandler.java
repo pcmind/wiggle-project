@@ -3,10 +3,14 @@ package org.ufrj.db4o.internal.entity.query;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
+import org.ufrj.db4o.Utils.QueryOperation;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.internal.entity.NamedQuery;
 import org.ufrj.db4o.internal.entity.classes.EntityClass;
+import org.ufrj.db4o.internal.entity.classes.EntityField;
+import org.ufrj.db4o.internal.entity.query.Where.TipoOperacao;
 
 public class QueryHandler {
 
@@ -21,16 +25,16 @@ public class QueryHandler {
 	
 	public static EntityQuery create(String hql, Map<String, EntityClass> mapaEntidades) throws OperacaoNaoRealizadaException{
 		
-		hql = hql.replaceAll("[ ][Ss][Ee][Ll][Ee][Cc][Tt]", " SELECT ");
-		hql = hql.replaceAll("[ ][Ff][Rr][Oo][Mm][ ]", " FROM ");
-		hql = hql.replaceAll("[ ][Ww][Hh][Ee][Rr][Ee][ ]", " WHERE ");
-		hql = hql.replaceAll("[ ][Aa][Nn][Dd][ ]", " AND ");
-		hql = hql.replaceAll("[ ][Oo][Rr][ ]", " OR ");
-		hql = hql.replaceAll("[ ][Cc][Oo][Nn][Tt][Aa][Ii][Nn][Ss][ ]", " CONTAINS ");
-		hql = hql.replaceAll("[ ][Ii][ss][ ]", " IS ");
-		hql = hql.replaceAll("[ ][Nn][Oo][Tt][ ]", " NOT ");
-		hql = hql.replaceAll("[ ][Nn][Uu][Ll][Ll][ ]", " NULL ");
-				
+		hql = Pattern.compile("\n", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll("");
+		hql = Pattern.compile("select", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll("SELECT");
+		hql = Pattern.compile(" from ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" FROM ");
+		hql = Pattern.compile(" WHERE ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" WHERE ");
+		hql = Pattern.compile(" AND ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" AND ");
+		hql = Pattern.compile(" OR ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" OR ");
+		hql = Pattern.compile(" IS ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" IS ");
+		hql = Pattern.compile(" NOT ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" NOT ");
+		hql = Pattern.compile(" NULL ", Pattern.CASE_INSENSITIVE).matcher(hql).replaceAll(" NULL ");
+		
 		int posicao = hql.indexOf("SELECT");
 		if(posicao == -1){
 			throw new OperacaoNaoRealizadaException("Cláusula Select Não Encontrada.");
@@ -48,26 +52,29 @@ public class QueryHandler {
 		}
 		
 		//pego o select
-		String select = hql.substring(0, posicao);
-		entityQuery.setSelectClause(createSelectStatment(select));
+		String proximoPasso = hql.substring(0, posicao);
+		entityQuery.setSelectClause(createSelectStatment(proximoPasso));
 		
 		//elemino tudo q vem antes do FROM e o FROM tmb
 		hql = hql.substring(posicao+4);
 		
 		
 		posicao = hql.indexOf("WHERE");
-		if(posicao == -1){
-			throw new OperacaoNaoRealizadaException("Cláusula Where Não Encontrada.");
-		}
-		//pego o from
-		String from = hql.substring(0, posicao);
-		entityQuery.setFromClause(createFromStatment(select, mapaEntidades));
 		
-		validaSelect(entityQuery, mapaEntidades);
+		if(posicao == -1){
+			entityQuery.setFromClause(createFromStatment(hql, mapaEntidades));
+			validaTermo(entityQuery.getSelectString(), entityQuery.getFromClause(),mapaEntidades);
+			return entityQuery;
+			
+		}
+		
+		proximoPasso = hql.substring(0, posicao);
+		entityQuery.setFromClause(createFromStatment(proximoPasso, mapaEntidades));
+		validaTermo(entityQuery.getSelectString(), entityQuery.getFromClause(), mapaEntidades);
 		
 		//elemino tudo q vem antes do WHERE e o WHERE tmb
 		hql = hql.substring(posicao+5);
-		createWhereStatment(hql, mapaEntidades);
+		entityQuery.setWhereClause(createWhereStatment(hql, entityQuery.getFromClause(), mapaEntidades));
 		
 		return entityQuery;
 		
@@ -77,15 +84,137 @@ public class QueryHandler {
 	 * Responsável por verificar se o select é válido
 	 * @param entityQuery
 	 */
-	private static void validaSelect(EntityQuery entityQuery, Map<String, EntityClass> mapaEntidades) {
+	private static void validaTermo(String termo, From from, Map<String, EntityClass> mapaEntidades) throws OperacaoNaoRealizadaException{
+		StringTokenizer stk = new StringTokenizer(termo, ".");
 		
+		
+		//valida se a classe de retorno existe no from
+		Class classeRetorno = from.recuperarClasse(stk.nextToken());
+		if(classeRetorno==null){
+			throw new OperacaoNaoRealizadaException("Query inconsistente.");
+		}else{
+			EntityClass classPai = mapaEntidades.get(classeRetorno.getSimpleName());
+					
+			while(stk.hasMoreTokens()){
+				String nextInChain = stk.nextToken();
+				if(classPai == null){
+					throw new OperacaoNaoRealizadaException("Query Inconsistente");
+				}
+				
+				if(!validaFilho(nextInChain,classPai)){
+					throw new OperacaoNaoRealizadaException("Query Inconsistente");
+				}
+				
+				EntityField entityField = classPai.recuperarField(nextInChain);
+				classPai = mapaEntidades.get(entityField.getClazz().getSimpleName());
+								
+				
+			}
+			
+		}
+		
+	}
+	
+	private static boolean validaFilho(String nomeAtributo, EntityClass classe){
+		
+		for(EntityField entityField: classe.getListaEntityField()) {
+			if(entityField.getFieldName().equals(nomeAtributo)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static Where createWhereStatment(String hql, From from, Map<String, EntityClass> mapaEntidades) throws OperacaoNaoRealizadaException{
+		StringTokenizer stk = new StringTokenizer(hql, "AND");
+		
+		Where where = new Where();
+		while(stk.hasMoreElements()){
+			Operacao operacao = createWhereOperation(stk.nextToken());
+			validaTermo(operacao.getLadoEsquerdo(), from, mapaEntidades);
+			if(!operacao.isParametro() && !operacao.isHasValue()){
+				validaTermo(operacao.getLadoDireito(), from, mapaEntidades);
+			}
+			where.adicionarOperacao(operacao, TipoOperacao.AND);
+			
+		}
+		return where;
 		
 	}
 
-	private static void createWhereStatment(String hql,
-			Map<String, EntityClass> mapaEntidades) {
-		// TODO Auto-generated method stub
+	private static Operacao createWhereOperation(String strOperacao) throws OperacaoNaoRealizadaException{
+		String[] tokens = null;;
 		
+		tokens = strOperacao.split(">=");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MAIOR_IGUAL);
+			
+		}
+		
+		tokens = strOperacao.split("=>");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MAIOR_IGUAL);
+			
+		}
+		
+		tokens = strOperacao.split("<=");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MAIOR_IGUAL);
+			
+		}
+		
+		tokens = strOperacao.split("=<");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MENOR_IGUAL);
+			
+		}
+		
+		tokens = strOperacao.split("<>");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.DIFERENTE);
+			
+		}
+		
+		tokens = strOperacao.split("CONTAINS");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.CONTAINS);
+		}
+		
+		tokens = strOperacao.split(">");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MAIOR);
+		}
+		
+		tokens = strOperacao.split("<");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.MAIOR);
+		}
+		
+		tokens = strOperacao.split("=");
+		if(tokens.length==2){
+			return createOperation(tokens[0], tokens[1], QueryOperation.IGUAL);
+		}
+		
+		throw new OperacaoNaoRealizadaException("Query Inconsistente.");
+	}
+
+	private static Operacao createOperation(String ladoEsquerdo,
+			String ladoDireito, QueryOperation queryOperation) {
+		Operacao operacao = new Operacao();
+		operacao.setLadoEsquerdo(ladoEsquerdo.trim());
+		operacao.setOperacao(queryOperation);
+		
+		ladoDireito = ladoDireito.trim();
+		if(ladoDireito.startsWith(":")){
+			operacao.setParametro(true);
+			operacao.setLadoDireito(ladoDireito.substring(1));
+		}else if(ladoDireito.startsWith("'") && ladoDireito.endsWith("'")){
+			operacao.setHasValue(true);
+			operacao.setLadoDireito(ladoDireito.substring(1, ladoDireito.length()-1));
+		}else{
+			operacao.setLadoDireito(ladoDireito);
+		}
+		return operacao;
 	}
 
 	private static Select createSelectStatment(String select){
@@ -95,10 +224,10 @@ public class QueryHandler {
 		while(stk.hasMoreTokens()){
 			if(selectClause == null){
 				selectClause = new Select();
-				selectClause.setAlias(stk.nextToken());
+				selectClause.setAlias(stk.nextToken().trim());
 			}else{
 				Select subSelect = new Select();
-				subSelect.setAlias(stk.nextToken());
+				subSelect.setAlias(stk.nextToken().trim());
 				selectClause.insereNext(subSelect);
 			}
 		}
