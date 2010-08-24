@@ -15,6 +15,8 @@ import org.ufrj.db4o.Utils.XMLFactory;
 import org.ufrj.db4o.exception.InvalidLoginException;
 import org.ufrj.db4o.exception.OperacaoNaoRealizadaException;
 import org.ufrj.db4o.internal.entity.Configuracao;
+import org.ufrj.db4o.internal.entity.query.EntityQuery;
+import org.ufrj.db4o.internal.entity.query.QueryHandler;
 import org.ufrj.db4o.wrapper.DB4oServerWrapper;
 import org.ufrj.db4o.wrapper.ObjectContainerWrapper;
 
@@ -81,8 +83,13 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public Query createNamedQuery(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		EntityQuery entityQuery = null;
+		try {
+			entityQuery = ((ObjectContainerWrapper)getObjectContainer()).criarNamedQuery(arg0);
+		} catch (OperacaoNaoRealizadaException e) {
+			throw new PersistenceException();
+		}
+		return new QueryWrapper(getObjectContainer().query(), entityQuery);
 	}
 
 	@Override
@@ -102,8 +109,13 @@ public class EntityManagerWrapper implements EntityManager{
 
 	@Override
 	public Query createQuery(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		EntityQuery entityQuery = null;
+		try {
+			entityQuery =  ((ObjectContainerWrapper)getObjectContainer()).criarQuery(arg0);
+		} catch (OperacaoNaoRealizadaException e) {
+			throw new PersistenceException();
+		}
+		return new QueryWrapper(getObjectContainer().query(), entityQuery);
 	}
 
 	@Override

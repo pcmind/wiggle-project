@@ -8,8 +8,18 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.ufrj.db4o.internal.entity.query.EntityQuery;
+
 public class QueryWrapper implements Query{
 
+	private com.db4o.query.Query queryDb4o;
+	private EntityQuery entityQuery;
+	
+	public QueryWrapper(com.db4o.query.Query querydb4o, EntityQuery entityQuery){
+		this.queryDb4o = querydb4o;
+		this.entityQuery = entityQuery;
+	}
+	
 	@Override
 	public int executeUpdate() {
 		// TODO Auto-generated method stub
@@ -36,8 +46,7 @@ public class QueryWrapper implements Query{
 
 	@Override
 	public Query setFlushMode(FlushModeType arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Operação não suportada pelo db4o.");
 	}
 
 	@Override
