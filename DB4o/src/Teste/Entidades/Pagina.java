@@ -9,9 +9,17 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 @Entity(name="pagina")
+@NamedQueries({
+	@NamedQuery(name = "Pagina.Query1", query = "Select p From Pagina p"),
+	@NamedQuery(name = "Pagina.Query2", query = "SELECT p.listaLink from Pagina p Where p.chave = :chave " +
+			"AND p.chave => 'Teste'"),
+	
+})
 public class Pagina {
 
 	@Id
