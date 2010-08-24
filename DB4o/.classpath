@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EJB"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jaxb"/>
 	<classpathentry kind="lib" path="Dependencias/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="Dependencias/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
