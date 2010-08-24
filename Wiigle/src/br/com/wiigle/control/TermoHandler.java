@@ -37,10 +37,11 @@ public class TermoHandler {
 				pag.setChave(desambiguacao);
 				pag.setDescricao(disambiguations.get(desambiguacao));
 				pag.setListaLink(WikiRequester.getLinksFromPage(pag));
+				//O conteúdo da página é setado no getLinksFromPage
 				paginas.add(pag);
 			}
 			
-			//termo.setDesambiguacoes(paginas);
+			termo.setPaginasDeDesambiguacao(paginas);
 			
 			//Seta a nova validade no termo
 			Calendar validade = Calendar.getInstance();

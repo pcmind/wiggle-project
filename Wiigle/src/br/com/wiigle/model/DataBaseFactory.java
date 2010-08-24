@@ -17,7 +17,7 @@ public class DataBaseFactory {
 	private static Configuration getConfiguration(){
 		Configuration conf = Db4o.cloneConfiguration();
 		conf.objectClass(Termo.class).objectField("chave").indexed(true);
-		conf.objectClass(Termo.class).updateDepth(2);
+		conf.objectClass(Termo.class).updateDepth(3);
 		return conf;
 	}
 	
@@ -29,8 +29,9 @@ public class DataBaseFactory {
 	}
 	
 	protected static Boolean closeDatabase(){
+		boolean closed = db.close();
 		db = null;
 		
-		return db.close();
+		return closed; 
 	}
 }

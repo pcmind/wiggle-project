@@ -1,6 +1,7 @@
 package br.com.wiigle.model.entity;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -18,6 +19,16 @@ public class Termo {
 	
 	private Date dataExpiracao;
 	
+	private List<Pagina> paginasDeDesambiguacao;
+	
+	public List<Pagina> getPaginasDeDesambiguacao() {
+		return paginasDeDesambiguacao;
+	}
+
+	public void setPaginasDeDesambiguacao(List<Pagina> paginasDeDesambiguacao) {
+		this.paginasDeDesambiguacao = paginasDeDesambiguacao;
+	}
+
 	public void setChave(String chave) {
 		this.chave = chave;
 	}

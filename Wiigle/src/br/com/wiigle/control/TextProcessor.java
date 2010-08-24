@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +22,6 @@ public class TextProcessor {
 	private static String stopWordRegex = null;
 	
 	public synchronized static Set<TermoIndexado> processText(String texto) throws Exception{
-		//TODO Ainda não foi testado - adaptei do meu trabalho do Xexeo
 		texto = transformaEmMinusculas(texto);
 		texto = processaCaracteres(texto);
 		texto = removeStopWords(texto);
@@ -37,21 +38,27 @@ public class TextProcessor {
 		PorterStemmer ps = new PorterStemmer();
 		
 		Set<TermoIndexado> listaTermo =  new HashSet<TermoIndexado>();
-		texto = texto.toLowerCase();
-		
+		HashMap<String, TermoIndexado> mapaTermo= new HashMap<String, TermoIndexado>();
 		// Para cada palavra do texto, aplicar o Porter:
 		StringTokenizer palavras = new StringTokenizer(texto);
 		TermoIndexado termoIndexado;
 		while(palavras.hasMoreTokens()){
-			termoIndexado = new TermoIndexado();
+			String palavra = palavras.nextToken();
+			String palavraProcessada = ps.stem(palavra);
+			if(palavraProcessada.equals("Invalid term"))
+				palavraProcessada = palavra;
+			termoIndexado = mapaTermo.get(palavraProcessada);
+			if(termoIndexado == null)
+				termoIndexado = new TermoIndexado();
 			Termo termo = new Termo();
-			termo.setChave(palavras.nextToken());
-			termoIndexado.setChave(ps.stem(termo.getChave())); 
+			termo.setChave(palavra);
+			termoIndexado.setChave(palavraProcessada); 
 			termo.setTermoIndexado(termoIndexado);
 			termoIndexado.getListaTermo().add(termo);
 			termoIndexado.setQtdRelevante(termoIndexado.getQtdRelevante()+1);
-			listaTermo.add(termoIndexado);
+			mapaTermo.put(palavraProcessada, termoIndexado);
 		}
+		listaTermo.addAll(mapaTermo.values());
 		return listaTermo;
 	}
 
@@ -68,7 +75,7 @@ public class TextProcessor {
 	
 	private static String recuperarStopWords() throws Exception{
 		
-		BufferedReader in = new BufferedReader(new FileReader("model/stopWordList.txt"));
+		BufferedReader in = new BufferedReader(new FileReader(Thread.currentThread().getContextClassLoader().getResource("br/com/wiigle/model/stopWordList.txt").getFile().replaceAll("%20", " ")));
 		String str;
 		String stopWords = "\\b(";
 		while((str = in.readLine()) != null){
@@ -108,7 +115,7 @@ public class TextProcessor {
 	public synchronized static List sortByValue(Map<?, Integer> map, Integer max) {
 		
 		
-		/*List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
+		List<Map.Entry> list = new ArrayList<Map.Entry>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry>() {
 			public int compare(Map.Entry o1, Map.Entry o2) {
 				return ((Integer)o2.getValue()).compareTo((Integer)o1.getValue());
@@ -121,8 +128,7 @@ public class TextProcessor {
 			if(max!=null && max<=resultado.size())
 				break;
 		}
-		return resultado; */
-		return null;
+		return resultado;
 	}
 
 }

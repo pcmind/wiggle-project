@@ -6,23 +6,33 @@ public class Link {
 	
 	private Pagina paginaDestino;
 
-	private Termo alias;
+	private String alias;
 	
+	private String linkName;
+
 	private boolean strongLink;
 	
 	public void setPaginaDestino(Pagina paginaDestino) {
 		this.paginaDestino = paginaDestino;
+	}
+	
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
 	}
 
 	public Pagina getPaginaDestino() {
 		return paginaDestino;
 	}
 
-	public void setAlias(Termo alias) {
+	public void setAlias(String alias) {
 		this.alias = alias;
 	}
 
-	public Termo getAlias() {
+	public String getAlias() {
 		return alias;
 	}
 

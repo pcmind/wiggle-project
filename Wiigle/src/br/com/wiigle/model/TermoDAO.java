@@ -22,6 +22,8 @@ public class TermoDAO {
 				return null;
 		}catch(Exception e){
 			e.printStackTrace();
+		}finally{
+			DataBaseFactory.closeDatabase();
 		}
 		
 		return null;
@@ -36,6 +38,8 @@ public class TermoDAO {
 		}catch(Exception e){
 			db.rollback();
 			e.printStackTrace();
+		}finally{
+			DataBaseFactory.closeDatabase();
 		}
 	}
 	
