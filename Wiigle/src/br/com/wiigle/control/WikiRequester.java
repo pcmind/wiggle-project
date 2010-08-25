@@ -72,14 +72,11 @@ public class WikiRequester {
 		String[] linhas = desambiguacoes.split("\n");
 		HashMap<String, String> retorno = new HashMap<String, String>();
 		for (String linha : linhas) {
-			if(!linha.startsWith("* [["))
+			if(!linha.startsWith("*") || !linha.contains("[[") || !linha.contains("]]"))
 				continue;//Não é uma desambiguação
 			
-			//Removendo o começo da linha
-			linha = linha.replaceFirst("\\* \\[\\[", "");
-			
 			//Removendo o resto da linha, para ficar apenas com os termos de desambiguação
-			String termo = linha.substring(0, linha.indexOf("]]"));
+			String termo = linha.substring(linha.indexOf("[[")+2, linha.indexOf("]]"));
 			if(termo.contains("|"))
 				termo= termo.substring(0, termo.indexOf("|"));
 
