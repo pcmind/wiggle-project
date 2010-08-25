@@ -125,7 +125,7 @@ public class ManterPesquisa implements IManterPesquisa{
 			
 			//Enviar resposta do domínio ao usuário
 			//TODO atualmente apenas imprime no console
-			System.out.println("O texto fornecido fala sobre " + paginaRelevante.getChave() + 
+			System.out.println("O texto fornecido fala sobre " + paginaRelevante.getChave() + ", " + 
 					paginaRelevante.getDescricao());
 		
 		}catch(Exception e){

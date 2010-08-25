@@ -122,7 +122,7 @@ public class TextProcessor {
 			}
 		});
 		List resultado = new ArrayList();
-		for (Iterator iter = resultado.iterator(); iter.hasNext();) {
+		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			Map.Entry element = (Map.Entry) iter.next();
 			resultado.add(element.getKey());
 			if(max!=null && max<=resultado.size())
