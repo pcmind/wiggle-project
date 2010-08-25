@@ -65,7 +65,7 @@ public class WikiRequester {
 	}
 	
 	private static String getRedirect(String a){
-		return a.substring(a.indexOf("[[")+2,a.indexOf("]]"));
+		return a.substring(a.indexOf("[[")+2,a.indexOf("]]")).replaceAll(" ", "_");
 	}
 	
 	private static Map<String,String> processaDesambiguacoes(String desambiguacoes){
