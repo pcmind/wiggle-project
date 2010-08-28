@@ -3,11 +3,10 @@ package br.com.wiigle.view.bean;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
@@ -15,9 +14,12 @@ import org.richfaces.model.UploadItem;
 import br.com.wiigle.control.IManterPesquisa;
 import br.com.wiigle.control.ManterPesquisa;
 import br.com.wiigle.view.utils.Consulta;
+import br.com.wiigle.view.utils.Context;
 import br.com.wiigle.view.utils.MBean;
+import br.com.wiigle.view.vo.ResultadoVO;
+import br.com.wiigle.view.vo.SugestaoVO;
 
-public class PesquisaMBean {
+public class PesquisaMBean extends MBean{
 	
 	IManterPesquisa manterPesquisa;
 	
@@ -46,6 +48,8 @@ public class PesquisaMBean {
 	
 	public boolean renderizaUpload;
 	
+	private List<ResultadoVO> listaResultado;
+	
 	
 	//quantidade de linhas que aparece na suggestionbox
 	private Integer intRows;
@@ -57,9 +61,7 @@ public class PesquisaMBean {
 		intRows = 5;
 		renderizaUpload = false;
 		manterPesquisa = new ManterPesquisa();
-		System.out.println("Passou aqui");
-		
-		
+			
 		/*Consulta consulta = new Consulta();
 		consulta.setValor("foca");
 		listaConsulta.add(consulta);
@@ -74,11 +76,10 @@ public class PesquisaMBean {
 		listaConsulta.add(consulta);*/
 	}
 
-	  public List<Consulta> autocomplete(Object suggest) {
+	  public List<SugestaoVO> autocomplete(Object suggest) {
 	      //TODO aqui entrará o código de auto 
-		  manterPesquisa.desambiguacaoRapida((String) suggest);
-		  return null;
-		 /* String pref = (String)suggest;
+		  return manterPesquisa.desambiguacaoRapida((String) suggest);
+		  /* String pref = (String)suggest;
 	        List<Consulta> result = new ArrayList<Consulta>();
 
 	        Iterator<Consulta> iterator = getListaConsulta().iterator();
@@ -126,9 +127,15 @@ public class PesquisaMBean {
 	/**
 	 * Ação do botão "Desambiguação"
 	 */
-	public void desambiguar(){
+	public String desambiguar(){
 		
-		manterPesquisa.desambiguacao(consulta);
+		listaResultado = manterPesquisa.desambiguacao(consulta);
+		if(listaResultado.size()==0){
+			Context.addMessage(super.getMensagens().getString("nenhumaDesambiguacaoEncontrada"), Context.AVISO);
+			return MBean.FALHA;
+		}
+		
+		return MBean.SUCESSO;
 	}
 	
 	 /**
@@ -247,5 +254,42 @@ public class PesquisaMBean {
 		public void setConsulta(Consulta consulta) {
 			this.consulta = consulta;
 		}
+		
+	public String redirecionaGoogle(){
+		if(consulta.getValor()==null || consulta.getValor().trim().equals("")){
+			Context.addMessage(super.getMensagens().getString("nadaDigitado"), Context.AVISO);
+			return MBean.FALHA;
+		}
+		
+		StringBuffer sb = new StringBuffer();
+		for(String termo : consulta.getValor().split(" ")){
+			sb.append(termo+"+");
+		}
+		Context.redirect("http://www.google.com/#q=" + sb.toString().substring(0, sb.length()-1));
+		return MBean.SUCESSO;
+	}
+	
+	public String redirecionaResultadoGoogle(){
+				
+		StringBuffer sb = new StringBuffer();
+		for(ResultadoVO resultado : listaResultado){
+			sb.append(resultado.getBusca()+"+");
+		}
+		
+		String consulta = Pattern.compile("[ ]").matcher(sb.toString().substring(0, sb.length()-1)).replaceAll("+");
+		Context.redirect("http://www.google.com/#q=" + consulta);
+		return MBean.SUCESSO;
+	}
+
+	public void setListaResultado(List<ResultadoVO> listaResultado) {
+		this.listaResultado = listaResultado;
+	}
+
+	public List<ResultadoVO> getListaResultado() {
+		if(listaResultado==null){
+			listaResultado = new ArrayList<ResultadoVO>();
+		}
+		return listaResultado;
+	}
 	
 }
