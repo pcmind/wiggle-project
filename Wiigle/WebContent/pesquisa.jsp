@@ -33,17 +33,31 @@
 		                    width="400"
 		                    height="300"
 		                    suggestionAction="#{Pesquisa.autocomplete}" var="result"
-		                    fetchValue="#{result.valor}" rows="#{Pesquisa.intRows}"
-		                    nothingLabel="Nada encontrado" columnClasses="center"
+		                    fetchValue="#{result.busca}" rows="#{Pesquisa.intRows}"
+		                    nothingLabel="#{mensagens.tenteDesambiguacao}" columnClasses="center"
 		                    usingSuggestObjects="true">
 		                    
 		                    <h:column>
-		                        <h:outputText value="#{result.valor}" />
+		                        <h:outputText value="#{result.termo}" />
 		                    </h:column>
 		                    <h:column>
-		                        <h:outputText value="#{result.valor}" style="font-style:italic" />
+		                        <h:outputText value="#{result.descricao}" style="font-style:italic" />
 		                    </h:column>
 		                </rich:suggestionbox>
+		                
+		                
+		                	<h:commandButton action= "#{Pesquisa.redirecionaGoogle}" 
+								 value="#{botoes.pesquisar}"
+								 id="botaoRedirecionaId"
+								 type="submit"
+								 rendered= "#{!Pesquisa.renderizaUpload}"
+								 styleClass="botao"
+								 ignoreDupResponses="true"
+								 reRender="botaoCancelarId, botaoUploadId, uploadId,pesquisaId, botaoDesambiguacaoId"/>
+								 	
+							
+		  				
+		  			
 					</div>
 					
 					<div class="centro">	
@@ -56,7 +70,8 @@
 									 listHeight="60px"
 									 listWidth="625px"
 									 locale="pt_BR"
-									 rendered = "#{Pesquisa.renderizaUpload}"/>
+									 rendered = "#{Pesquisa.renderizaUpload}"
+									 style="float:center; width: 500px;"/>
 					
 					</div>
 				
