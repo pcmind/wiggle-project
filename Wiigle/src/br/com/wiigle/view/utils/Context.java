@@ -1,9 +1,12 @@
 package br.com.wiigle.view.utils;
 
+import java.io.IOException;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class Context {
 	  
@@ -51,6 +54,16 @@ public class Context {
 		}
 
 		return (T) obj;
+	}
+	
+	public static void redirect(String link){
+		try {
+			FacesContext.getCurrentInstance().getExternalContext().redirect(link);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
     
 }

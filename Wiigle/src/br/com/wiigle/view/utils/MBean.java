@@ -26,13 +26,13 @@ public abstract class MBean {
 	}
 	
 	private void carregarMensagens() {
-		HttpSession sessao = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		HttpSession sessao = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
         
         //se ainda nao armazenou na sessao o arquivo de mensagens
         if (sessao.getAttribute("mensagens") == null) {
         	
         	//le o arquivo de mensagens e guarda-o na sessao
-        	mensagens = ResourceBundle.getBundle("br.com.projetofinal.view.resources.Mensagens");
+        	mensagens = ResourceBundle.getBundle("br.com.wiigle.view.resources.Mensagens");
         	sessao.setAttribute("mensagens", mensagens);
         
         //se o arquivo ja esta na sessao, recupera-o
