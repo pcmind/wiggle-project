@@ -5,17 +5,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import br.com.wiigle.model.entity.Link;
 import br.com.wiigle.model.entity.Pagina;
 import br.com.wiigle.model.entity.Termo;
 import br.com.wiigle.model.entity.TermoIndexado;
 import br.com.wiigle.view.utils.Consulta;
+import br.com.wiigle.view.vo.ResultadoVO;
+import br.com.wiigle.view.vo.SugestaoVO;
 
 /**
  * Classe responsável por implementar as funcionalidades da interface Pesquisa.
@@ -29,11 +33,33 @@ public class ManterPesquisa implements IManterPesquisa{
 	private final int NUMERO_PALAVRAS_RELEVANTES = 5;
 	
 	
-	public List<String> desambiguacaoRapida(String consulta){
-		return null;
+	public List<SugestaoVO> desambiguacaoRapida(String consulta){
+		
+		List<SugestaoVO> listaSugestoes = new ArrayList<SugestaoVO>();
+		Map<String, String> mapaSugestoes = null;
+		try {
+			mapaSugestoes = WikiRequester.getDisambiguations(consulta);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(mapaSugestoes!=null){
+			SugestaoVO sugestao = null;
+			Pattern pattern = Pattern.compile("[()]", Pattern.CASE_INSENSITIVE);
+			for(String termo : mapaSugestoes.keySet() ){
+				sugestao = new SugestaoVO();
+				sugestao.setTermo(termo);
+				sugestao.setBusca(pattern.matcher(termo).replaceAll("\""));
+				sugestao.setDescricao(mapaSugestoes.get(termo));
+				listaSugestoes.add(sugestao);
+			}
+		}
+		
+		return listaSugestoes;
 	}
 	
-	public List<String> desambiguacao(Consulta consulta) {
+	public List<ResultadoVO> desambiguacao(Consulta consulta) {
 		if(consulta.isPath()){
 			File file = new File(consulta.getValor());
 			return desambiguacao(file);
@@ -47,7 +73,7 @@ public class ManterPesquisa implements IManterPesquisa{
 	 * @param file
 	 * @return
 	 */
-	private List<String> desambiguacao(File file){
+	private List<ResultadoVO> desambiguacao(File file){
 		StringBuffer sb = new StringBuffer(); 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
@@ -66,13 +92,17 @@ public class ManterPesquisa implements IManterPesquisa{
 		return desambiguacao(sb.toString());
 	}
 	
-	private List<String> desambiguacao(String consulta){
+	private List<ResultadoVO> desambiguacao(String consulta){
+		
+		List<ResultadoVO> listaResultado = new ArrayList<ResultadoVO>();
+		
 		try{
 			//Aplicar os algoritmos de processamento de texto (StopWords, Porter, etc.)
 			Set<TermoIndexado> listaTermo = TextProcessor.processText(consulta);
 			
+			int numeroPalavrasRelevantes = calculaQtdadePalavrasRelevantes(listaTermo.size());
 			//Fazer as contagens de palavras, ou TF-IDF, e pegar as palavras que mais aparecem
-			List<Termo> relevantWords = TextProcessor.getRelevantWords(listaTermo,NUMERO_PALAVRAS_RELEVANTES);
+			List<Termo> relevantWords = TextProcessor.getRelevantWords(listaTermo,numeroPalavrasRelevantes);
 			//Map com as paginas e contagens:
 			Map<Pagina, Integer> contagem = new HashMap<Pagina, Integer>();
 			
@@ -119,19 +149,48 @@ public class ManterPesquisa implements IManterPesquisa{
 				
 			}
 			
-			//Comparar em qual domínio apareceram mais os outros termos
-			//TODO atualmente pega apenas a pagina que mais aparece.
-			Pagina paginaRelevante = (Pagina) TextProcessor.sortByValue(contagem, null).get(0);
+			int qtdadeResultadosRelevantes = calculaQtdadeResultadosRelevantes(listaTermo.size(),numeroPalavrasRelevantes, contagem.size());
+			List<Pagina> listaPaginas =  TextProcessor.sortByValue(contagem, qtdadeResultadosRelevantes);
 			
-			//Enviar resposta do domínio ao usuário
-			//TODO atualmente apenas imprime no console
-			System.out.println("O texto fornecido fala sobre " + paginaRelevante.getChave() + ", " + 
-					paginaRelevante.getDescricao());
+			
+			ResultadoVO resultado = null;
+			Pattern pattern = Pattern.compile("[()]", Pattern.CASE_INSENSITIVE);
+			for(Pagina pagina :listaPaginas){
+				resultado = new ResultadoVO();
+				resultado.setSelecionado(false);
+				resultado.setTermo(pagina.getChave());
+				resultado.setDescricao(pagina.getDescricao());
+				resultado.setBusca(pattern.matcher(pagina.getChave()).replaceAll("\""));
+				listaResultado.add(resultado);
+			}
+			
 		
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return null;
+		return listaResultado;
+	}
+
+	private int calculaQtdadeResultadosRelevantes(int qtadeTermosExistentesTexto,
+			int numeroPalavrasRelevantesUtilizadas, int qtdadeDominiosEncontrados) {
+		
+		int numeroResultadosRelevante = (int) (numeroPalavrasRelevantesUtilizadas*0.4);
+		if(numeroResultadosRelevante<2){
+			return 2;
+		}else if(numeroResultadosRelevante> 10){
+			return 10;
+		}else{
+			return numeroResultadosRelevante;
+		}
+	}
+
+	private int calculaQtdadePalavrasRelevantes(int qtdadeTermos) {
+		int qtdadeTermosRelevantes = (int) (qtdadeTermos*0.05);
+		if(qtdadeTermosRelevantes < NUMERO_PALAVRAS_RELEVANTES){
+			return NUMERO_PALAVRAS_RELEVANTES;
+		}else{
+			return qtdadeTermosRelevantes;
+		}
 	}
 	
 
