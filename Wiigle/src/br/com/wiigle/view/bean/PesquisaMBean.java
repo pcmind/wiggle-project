@@ -273,7 +273,9 @@ public class PesquisaMBean extends MBean{
 				
 		StringBuffer sb = new StringBuffer();
 		for(ResultadoVO resultado : listaResultado){
-			sb.append(resultado.getBusca()+"+");
+			if(resultado.isSelecionado()){
+				sb.append(resultado.getBusca()+"+");
+			}
 		}
 		
 		String consulta = Pattern.compile("[ ]").matcher(sb.toString().substring(0, sb.length()-1)).replaceAll("+");
