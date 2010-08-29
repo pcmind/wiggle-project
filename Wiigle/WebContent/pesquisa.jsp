@@ -60,7 +60,7 @@
 		  			
 					</div>
 					
-					<div class="centro">	
+				<div align="center">
 					
 					<rich:fileUpload fileUploadListener = "#{Pesquisa.listener}"
 									 maxFilesQuantity="#{Pesquisa.uploadsAvailable}"   
@@ -71,7 +71,7 @@
 									 listWidth="625px"
 									 locale="pt_BR"
 									 rendered = "#{Pesquisa.renderizaUpload}"
-									 style="float:center; width: 500px;"/>
+									 style="width: 500px;"/>
 					
 					</div>
 				
