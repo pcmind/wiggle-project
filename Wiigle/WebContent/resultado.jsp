@@ -32,14 +32,21 @@
 			  				var="objeto"
 			  				id="tabelaResultadoId">
 			  				
-			  			<h:column>
+			  			<rich:column style="text-align:left;">
 			  				<h:selectBooleanCheckbox value="#{objeto.selecionado}"/>
 			  				<h:outputText value="#{objeto.termo}" />
-			  			</h:column>
+			  			</rich:column>
 			  			
-			  			<h:column>
+			  			<rich:column>
 			  				<h:outputText value="#{objeto.descricao}" />
-			  			</h:column>
+			  			</rich:column>
+			  			
+			  			<rich:column style="text-align:center;">		     			                  
+									<a4j:commandLink id="linkWikipediaId" action="#{Pesquisa.redirecionaWiki}">
+										<h:graphicImage style = "border:0px" value="img/wiki.jpg"/>
+									</a4j:commandLink>		
+									<rich:toolTip for="linkWikipediaId" value="labels.wiki"/>
+						</rich:column>
 			  				
 		  			
 		  			
