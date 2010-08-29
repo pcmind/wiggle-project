@@ -55,7 +55,7 @@
 										 type="submit"
 										 styleClass="botao"
 										 ignoreDupResponses="true"/>
-		  			<div>	
+		  			</div>	
 					
 	
 				</a4j:form>																					
