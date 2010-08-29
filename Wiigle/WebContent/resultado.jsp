@@ -26,7 +26,7 @@
 		  			
 		  			<div class="topoResultado"></div>
 		  			
-		  			<div class="centro">
+		  			<div align="center">
 			  			<h:outputLabel value="#{labels.dominioTexto}"/>
 			  			<rich:dataTable value="#{Pesquisa.listaResultado}"
 			  				var="objeto"
