@@ -120,6 +120,8 @@ public class WikiRequester {
 				alias = alias.substring(0, alias.indexOf("|"));
 			}
 			else{
+				if(alias.indexOf("]]")==-1)
+					continue;
 				alias = alias.substring(0, alias.indexOf("]]"));
 				linkName=alias;
 			}
