@@ -278,9 +278,20 @@ public class PesquisaMBean extends MBean{
 			}
 		}
 		
+		if(sb.length()==0){
+			Context.addMessage(super.getMensagens().getString("nadaSelecionado"), Context.AVISO);
+			return MBean.FALHA;
+		}
+		
 		String consulta = Pattern.compile("[ ]").matcher(sb.toString().substring(0, sb.length()-1)).replaceAll("+");
 		Context.redirect("http://www.google.com/#q=" + consulta);
 		return MBean.SUCESSO;
+	}
+	
+	public void redirecionaWiki(){
+		ResultadoVO resultado = Context.getAttribute("objeto");
+		
+		Context.redirect("http://en.wikipedia.org/wiki/"+resultado.getTermo());
 	}
 
 	public void setListaResultado(List<ResultadoVO> listaResultado) {
