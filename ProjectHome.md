@@ -1,0 +1,1 @@
+Tem como objetivo gerar desambiguação nas consultas do google.
